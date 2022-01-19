@@ -10,4 +10,4 @@ a_human_and_definitely_not_a_robot
 ```
 
 ### Cool Site
-[visit this cool site where I create a fake virus popup](strixgoldhorn.github.io/for_the_lolz/fakeviruspopup.html)
+[visit this cool site where I create a fake virus popup](for_the_lolz/fakeviruspopup.html)
