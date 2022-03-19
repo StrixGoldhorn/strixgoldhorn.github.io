@@ -23,7 +23,8 @@ RBS 70 Simulator written with ThreeJS.
 1 week of coding + (re)learning Javascript resulted in this simplistic simulator
 
 Models created in Blender, skybox and favicon with FireAlpaca.
-[click here for simulator](./VSHORAD%20(EXPORT)/vshoradsim.html)
+
+**[click here for simulator](./VSHORAD%20(EXPORT)/vshoradsim.html)**
 
 #### Background
 RBS 70 is a MANPADS for VSHORAD / MSHORAD.
