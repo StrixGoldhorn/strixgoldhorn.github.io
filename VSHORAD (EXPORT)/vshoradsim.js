@@ -309,17 +309,6 @@ function rotateWpn() {
         SeatMesh.position.z + camera.getWorldDirection(alignWpnVector).z,
     )
     SeatMesh.lookAt(focalSeat);
-
-    var camOrigin = new THREE.Vector3(
-        camera.getWorldDirection(alignWpnVector).x,
-        2 + camera.getWorldDirection(alignWpnVector).y,
-        camera.getWorldDirection(alignWpnVector).z
-    );
-    var longFocal = new THREE.Vector3(
-        camera.getWorldDirection(alignWpnVector).x,
-        camera.getWorldDirection(alignWpnVector).y,
-        camera.getWorldDirection(alignWpnVector).z
-    );
     requestAnimationFrame(rotateWpn);
 }
 
