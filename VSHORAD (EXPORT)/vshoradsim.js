@@ -1,3 +1,8 @@
+/*
+NEED TO UPDATE:
+all bounding boxes needs to update from Box3 AABB to OBB via import { OBB } from './jsm/math/OBB.js';
+*/
+
 // import required modules
 import * as THREE from "./modules/three.module.js";
 import * as dat from "./modules/datgui/dat.gui.module.js";
@@ -135,6 +140,8 @@ function setControls() {
     controls.addEventListener('change', () => {
         renderer.render(scene, camera)
     });
+
+    // change from default camera settings
     controls.target.set(0.5, 2.6, 0);
     controls.enablePan = false;
     controls.enableZoom = false;
@@ -162,6 +169,7 @@ function loadMissile() {
         const clips = gltf.animations;
         const missileMixer = new THREE.AnimationMixer(gltf.scene);
 
+        // get clip for unfolding fins
         clips.forEach((iclip) => {
             const clip = gltf.animations.find((clip) => clip.name === iclip.name);
             const finDeploy = missileMixer.clipAction(clip);
@@ -171,6 +179,7 @@ function loadMissile() {
             renderer.render(scene, camera)
         });
 
+        // animate fins
         function missileAnim() {
             missileMixer.timeScale = 10;
             missileMixer.update(clock.getDelta());
@@ -219,6 +228,7 @@ loader.load("assets/c130_(EXPORT).glb", (gltf) => {
     c130Mesh.name = "c130Mesh";
     scene.add(c130Mesh);
 
+    // init position and update scene
     c130Mesh.position.set(0, 20, 0);
     renderer.render(scene, camera);
     c130anim();
@@ -231,8 +241,10 @@ scene.add(c130BBHelper);
 
 // c130 calcaulate bounding box + movement
 var c130t = 0;
+var c130hit = false;
 
 function c130anim() {
+    if(c130hit){return}
     const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
     c130Mesh.geometry.computeBoundingBox();
     c130BB.copy(c130Mesh.geometry.boundingBox).applyMatrix4(c130Mesh.matrixWorld);
@@ -250,6 +262,12 @@ function c130anim() {
     c130Mesh.rotateX(Math.PI / 8);
 
     requestAnimationFrame(c130anim)
+}
+
+function c130hitcam(){
+    const c130pcam = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 5000);
+    const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
+    c130pcam.position.set(c130Mesh.position.x, c130Mesh.position.y + 2, c130Mesh.position.z);
 }
 
 // add lighting to scene
@@ -278,9 +296,12 @@ function animate() {
     } else {
         target.position.x += 0.05;
     }
+
+    // set proper rotation for target
     target.lookAt(camera);
     target.rotation.set(0, 0, Math.PI / 2);
 
+    // update bounding box for target
     target.geometry.computeBoundingBox();
     targetBB.copy(target.geometry.boundingBox).applyMatrix4(target.matrixWorld);
 
@@ -293,21 +314,25 @@ animate();
 
 // rbs70 weapon animation
 function rotateWpn() {
+    // select appropriate meshes
     const WeaponMesh = scene.children.find(obj => obj.name === "WeaponMesh");
     const SeatMesh = scene.children.find(obj => obj.name === "SeatMesh");
-    var alignWpnVector = new THREE.Vector3()
+
+    // create vectors, align to camera (where player looks)
+    var alignWpnVector = new THREE.Vector3();
     var focalWpn = new THREE.Vector3(
         WeaponMesh.position.x + camera.getWorldDirection(alignWpnVector).x,
         WeaponMesh.position.y + camera.getWorldDirection(alignWpnVector).y,
         WeaponMesh.position.z + camera.getWorldDirection(alignWpnVector).z,
-    )
-    WeaponMesh.lookAt(focalWpn);
-
+    );
     var focalSeat = new THREE.Vector3(
         SeatMesh.position.x + camera.getWorldDirection(alignWpnVector).x,
         SeatMesh.position.y,
         SeatMesh.position.z + camera.getWorldDirection(alignWpnVector).z,
-    )
+    );
+    
+    // update weapon and seat rotation
+    WeaponMesh.lookAt(focalWpn);
     SeatMesh.lookAt(focalSeat);
     requestAnimationFrame(rotateWpn);
 }
@@ -338,10 +363,12 @@ const tempCross = document.getElementById("tempCross");
 var currspeed = 0;
 var rotateAnim = 0;
 
-const missileTrackLine = []
+// create missile track line
+const missileTrackLine = [];
 var mTLcount = 0;
 const mTLMaterial = new THREE.LineBasicMaterial({
     color: 0xff00ff,
+    linewidth: 5
 });
 var mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
 var TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
@@ -352,6 +379,7 @@ function fire() {
         requestAnimationFrame(fire);
 
         if (!shotout) {
+            // set vars for missile fired
             loadMissile();
             animate();
             scene.add(missileLight);
@@ -375,7 +403,7 @@ function fire() {
         missileBox.expandByScalar(worldSettings.missile.proxFuse);
 
         // check for successful hit
-        if (missileBox.intersectsBox(targetBB) || missileBox.intersectsBox(c130BB)) {
+        if(missileBox.intersectsBox(targetBB) || missileBox.intersectsBox(c130BB)) {
             missileLight.intensity = 500;
             missileLight.distance = 10;
             shotend = true;
@@ -386,6 +414,11 @@ function fire() {
             TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
 
             scene.add(TrackLine);
+        }
+
+        if(missileBox.intersectsBox(c130BB)){
+            c130hit = true;
+            c130hitcam();
         }
 
         // animation + movement of missile
@@ -442,10 +475,12 @@ document.addEventListener("contextmenu", () => {
     rightClicked = !rightClicked;
 
     if (rightClicked) {
+        // zoom in
         camera.setFocalLength(120);
         controls.dampingFactor = 0.01;
 
     } else {
+        // zoom out
         camera.setFocalLength(17.15234644359233);
         controls.dampingFactor = 0.05;
     }
@@ -492,10 +527,19 @@ document.addEventListener("keypress", (e) => {
                 return
             };
 
+            // reset vars for firing
             shotout = false;
             fired = false;
             shotend = false;
             currspeed = 0;
+
+            // restart c130 anim
+            if(c130hit){
+                c130hit = false;
+                c130anim();
+            }
+
+            // reset missile
 
             missileTrackLine.length = 0;
             scene.remove(TrackLine);
