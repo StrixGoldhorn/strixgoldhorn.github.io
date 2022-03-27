@@ -1,6 +1,8 @@
 /*
-v1.1
+v1.2a
 */
+
+
 
 // import required modules
 import * as THREE from "./modules/three.module.js";
@@ -10,7 +12,10 @@ import {
 } from "./modules/OrbitControls.js";
 import {
     GLTFLoader
-} from './modules/GLTFLoader.js';
+} from "./modules/GLTFLoader.js";
+import {
+    OBB
+} from "./modules/OBB.js"
 
 var startSim = false;
 var rightClicked = false;
@@ -38,17 +43,36 @@ const worldSettings = {
     },
 
     missile: {
-        speed: 1,
+        // approx mach 1.6, max speed of mark 0/1
+        speed: 10,
         proxFuse: 1.25,
+    },
+
+    operator:{
+        zoomed:{
+            focalLength: 160,
+            dampingFactor: 0.01
+        },
+        normal:{
+            focalLength: 20,
+            dampingFactor: 0.05
+        }
     }
 };
 
 const c130Folder = gui.addFolder("c130");
-c130Folder.add(worldSettings.c130, 'radius', 100, 3000);
-c130Folder.add(worldSettings.c130, 'gndspeed', 0.0001, 0.01);
+c130Folder.add(worldSettings.c130, "radius", 100, 3000);
+c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.01);
 const missileFolder = gui.addFolder("missile");
-missileFolder.add(worldSettings.missile, 'speed', 0.1, 10);
-missileFolder.add(worldSettings.missile, 'proxFuse', 1.25, 5);
+missileFolder.add(worldSettings.missile, "speed", 1, 20);
+missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
+const operatorFolder = gui.addFolder("operator");
+const zoomedFolder = operatorFolder.addFolder("zoomed");
+zoomedFolder.add(worldSettings.operator.zoomed, "focalLength", 50, 250);
+zoomedFolder.add(worldSettings.operator.zoomed, "dampingFactor", 0.001, 0.1);
+const normalFolder = operatorFolder.addFolder("noraml");
+normalFolder.add(worldSettings.operator.normal, "focalLength", 0, 50);
+normalFolder.add(worldSettings.operator.normal, "dampingFactor", 0.01, 0.1);
 
 // create skybox
 const sbLoad = new THREE.CubeTextureLoader();
@@ -62,12 +86,11 @@ const sbTexture = sbLoad.load([
 ]);
 scene.background = sbTexture
 
-const planesize = 20
-
-// create objects and add to scene
-const wireplaneMesh = new THREE.PlaneGeometry(100, 100, planesize, planesize);
+// add plane
+const planesize = 100
+const wireplaneMesh = new THREE.PlaneGeometry(1000, 1000, planesize, planesize);
 const wireplaneMaterial = new THREE.MeshBasicMaterial({
-    color: 0x444444,
+    color: 0x008800,
     side: THREE.DoubleSide,
     wireframe: true,
 });
@@ -80,15 +103,13 @@ const wireplaneMeshArray = wireplane.geometry.attributes.position.array;
 
 var prev = 0;
 for (let i = 0; i < wireplaneMeshArray.length; i += 3) {
-    const x = wireplaneMeshArray[i];
-    const y = wireplaneMeshArray[i + 1];
     const z = wireplaneMeshArray[i + 2];
 
     // noob way to smoothen plane
     var rdm = 0;
     var weight = Math.random();
     var posneg = Math.random();
-    if (posneg > 0.25) {
+    if (posneg > 0.5) {
         rdm = weight;
     } else {
         rdm = -weight;
@@ -115,7 +136,6 @@ scene.add(properplane)
 renderer.render(scene, camera);
 
 // add basic target mesh
-
 const targetMesh = new THREE.PlaneGeometry(10, 10);
 const targetMaterial = new THREE.MeshStandardMaterial({
     color: 0xFF0000,
@@ -152,7 +172,7 @@ setControls();
 // load 3d models
 const loader = new GLTFLoader();
 
-const missileLight = new THREE.PointLight(0xffbb11, 10, 2);
+const missileLight = new THREE.PointLight(0xffbb11, 6, 1);
 scene.add(missileLight);
 missileLight.position.set(0, -50, 0);
 
@@ -222,8 +242,6 @@ loader.load("assets/rbs70_SEAT_scaled_1_5_(EXPORT).glb", (gltf) => {
 loader.load("assets/c130_(EXPORT).glb", (gltf) => {
     const c130Mesh = gltf.scene;
 
-    // shrink else too big
-    c130Mesh.scale.set(c130Mesh.scale.x * 0.2, c130Mesh.scale.y * 0.2, c130Mesh.scale.z * 0.2);
     c130Mesh.name = "c130Mesh";
     scene.add(c130Mesh);
 
@@ -233,11 +251,6 @@ loader.load("assets/c130_(EXPORT).glb", (gltf) => {
     c130anim();
 });
 
-// add bounding box for c130
-const c130BB = new THREE.Box3();
-const c130BBHelper = new THREE.Box3Helper(c130BB, 0xffff00);
-scene.add(c130BBHelper);
-
 // c130 calcaulate bounding box + movement
 var c130t = 0;
 var c130hit = false;
@@ -246,21 +259,22 @@ function c130anim() {
     if(c130hit){return}
     const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
     c130Mesh.geometry.computeBoundingBox();
-    c130BB.copy(c130Mesh.geometry.boundingBox).applyMatrix4(c130Mesh.matrixWorld);
-
-    // roughly decrease bounding box to better fit mesh
-    c130BB.expandByScalar(-1.5);
 
     // circular movement using sine and cosine
     c130t += worldSettings.c130.gndspeed;
     c130Mesh.position.x = worldSettings.c130.radius * Math.cos(c130t) + 0;
     c130Mesh.position.z = worldSettings.c130.radius * Math.sin(c130t) + 0;
-
     // make c130 face properly (for circular movement)
     c130Mesh.lookAt(0, 0, 0);
     c130Mesh.rotateX(Math.PI / 8);
 
-    requestAnimationFrame(c130anim)
+    // use obb for hitbox
+    c130Mesh.userData.obb = new OBB();
+    c130Mesh.userData.obb.applyMatrix4(c130Mesh.matrixWorld);
+    c130Mesh.userData.obb.halfSize = new THREE.Vector3(10, 10, 10);
+    // --!-- without the above halfsize multiplier, it breaks, as you will need to hit in the direct center of the C-130 for it to register a hit
+
+    requestAnimationFrame(c130anim);
 }
 
 function c130hitcam(){
@@ -278,22 +292,22 @@ ptLight.position.set(2, 5, 5);
 scene.add(ptLight);
 
 // should be renamed as targetMoveLeft
-var targetMoveRight = false;
+var targetMoveRight = true;
 
 function animate() {
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
 
     // animate moving target
-    if (target.position.x === 100) {
+    if (target.position.x > 100) {
         targetMoveRight = true;
-    } else if (target.position.x === -100) {
+    } else if (target.position.x < -100) {
         targetMoveRight = false;
     }
     if (targetMoveRight) {
-        target.position.x -= 0.05;
+        target.position.x -= 0.1;
     } else {
-        target.position.x += 0.05;
+        target.position.x += 0.1;
     }
 
     // set proper rotation for target
@@ -362,12 +376,15 @@ const tempCross = document.getElementById("tempCross");
 var currspeed = 0;
 var rotateAnim = 0;
 
+const alertDoc = document.getElementById("alert");
+
 // create missile track line
 const missileTrackLine = [];
+missileTrackLine.push(new THREE.Vector3(0, 2, 0));
 var mTLcount = 0;
 const mTLMaterial = new THREE.LineBasicMaterial({
-    color: 0xff00ff,
-    linewidth: 5
+    color: 0x0000ff,
+    linewidth: 50
 });
 var mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
 var TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
@@ -390,6 +407,10 @@ function fire() {
             loadIndicate.style.background = "yellow";
             loadIndicate.innerText = "In-Flight"
             loadIndicate.style.color = "black";
+
+            
+            alertDoc.innerText = "";
+            alertDoc.style.opacity = "0";
         }
 
         // load mesh for missile + calculate bounding box
@@ -402,7 +423,8 @@ function fire() {
         missileBox.expandByScalar(worldSettings.missile.proxFuse);
 
         // check for successful hit
-        if(missileBox.intersectsBox(targetBB) || missileBox.intersectsBox(c130BB)) {
+        const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
+        if(missileBox.intersectsBox(targetBB) || c130Mesh.userData.obb.intersectsBox3(missileBox)){
             missileLight.intensity = 500;
             missileLight.distance = 10;
             shotend = true;
@@ -411,11 +433,10 @@ function fire() {
 
             mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
             TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
-
             scene.add(TrackLine);
         }
 
-        if(missileBox.intersectsBox(c130BB)){
+        if(c130Mesh.userData.obb.intersectsBox3(missileBox)){
             c130hit = true;
             c130hitcam();
         }
@@ -441,6 +462,7 @@ function fire() {
         MissileMesh.rotateZ(rotateAnim * (Math.PI / 180));
         rotateAnim += 2;
 
+        // --!-- this is literally just teleporting the missile to wherever you're looking at, so basically its unrealistic cause you can zoom zoom zoom it all around the place, unlike a real missile
         missileLight.position.set(MissileMesh.position.x - 0.5, MissileMesh.position.y, MissileMesh.position.z);
         MissileMesh.position.set(focalWpn.x, focalWpn.y, focalWpn.z);
 
@@ -450,6 +472,21 @@ function fire() {
             mTLcount = 0;
         } else {
             mTLcount += 1;
+        }
+        
+        // check for missile max ange
+        if(Math.round(missilePt.length()) > 9000){
+            shotend = true;
+            console.log("- ! - Max Range Exceeded");
+            mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
+            TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
+
+            scene.add(TrackLine);
+            
+            tempCross.innerHTML = "------ <br />|-=!=-|<br />------";
+            alertDoc.innerText = "Max Range";
+            alertDoc.style.opacity = "1";
+            alertDoc.style.background = "#dd2222";
         }
 
     } else if (fired || shotout) {
@@ -461,6 +498,10 @@ function fire() {
         loadIndicate.style.color = "white";
     } else {
         console.log("- ! - CAGED, Cannot fire");
+        
+        alertDoc.innerText = "Uncage to fire!";
+        alertDoc.style.opacity = "1";
+        alertDoc.style.background = "#dd2222";
     }
 }
 
@@ -475,13 +516,13 @@ document.addEventListener("contextmenu", () => {
 
     if (rightClicked) {
         // zoom in
-        camera.setFocalLength(120);
-        controls.dampingFactor = 0.01;
+        camera.setFocalLength(worldSettings.operator.zoomed.focalLength);
+        controls.dampingFactor = worldSettings.operator.zoomed.dampingFactor;
 
     } else {
         // zoom out
-        camera.setFocalLength(17.15234644359233);
-        controls.dampingFactor = 0.05;
+        camera.setFocalLength(worldSettings.operator.normal.focalLength);
+        controls.dampingFactor = worldSettings.operator.normal.dampingFactor;
     }
     camera.updateProjectionMatrix();
 });
@@ -507,6 +548,9 @@ document.addEventListener("keypress", (e) => {
             loadIndicate.style.color = "white";
 
             tempCross.innerHTML = "------ <br />| + | <br />------";
+            
+            alertDoc.innerText = "";
+            alertDoc.style.opacity = "0";
 
             document.getElementById("notifsbg").remove();
 
@@ -517,6 +561,8 @@ document.addEventListener("keypress", (e) => {
             if (!startSim) {
                 return
             };
+            alertDoc.innerText = "";
+            alertDoc.style.opacity = "0";
             fire();
             break;
 
@@ -539,8 +585,8 @@ document.addEventListener("keypress", (e) => {
             }
 
             // reset missile
-
             missileTrackLine.length = 0;
+            missileTrackLine.push(new THREE.Vector3(0, 2, 0));
             scene.remove(TrackLine);
 
             const WeaponMesh = scene.children.find(obj => obj.name === "MissileMesh");
@@ -560,6 +606,11 @@ document.addEventListener("keypress", (e) => {
 
     }
 })
+
+function flash1(){
+    alertDoc.style.background = (alertDoc.style.background == 'rgb(34, 204, 85)' ? '#dd2222' : '#22cc55');
+}
+setInterval(flash1, 800);
 
 document.addEventListener("keydown", (e) => {
     if (!startSim) {
@@ -593,3 +644,15 @@ document.addEventListener("keyup", (e) => {
         cageActions();
     }
 })
+
+function winresize(){
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+}
+
+window.addEventListener( 'resize', (e) => {
+    setInterval(winresize, 500);
+});

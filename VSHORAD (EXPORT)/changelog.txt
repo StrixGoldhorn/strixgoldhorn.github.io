@@ -1,0 +1,14 @@
+/*
+Changelog specific to "EXPORT" version.
+*/
+v1.1.1 [27 Mar 2022]
+ADDED:
+- Added changelog
+- Added version numbers to index.js and index.html
+
+v1.1 [25 Mar 2022]
+ADDED:
+- Pause C130 animation when C130 is hit
+
+v1.0 [19 Mar 2022]
+First version of VSHORAD sim released
