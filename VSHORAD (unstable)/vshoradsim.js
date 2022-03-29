@@ -1,5 +1,5 @@
 /*
-v1.2a
+v1.2.1a
 */
 
 
@@ -291,7 +291,6 @@ const ptLight = new THREE.PointLight(0xffffbb, 5, 0, 1);
 ptLight.position.set(2, 5, 5);
 scene.add(ptLight);
 
-// should be renamed as targetMoveLeft
 var targetMoveRight = true;
 
 function animate() {
@@ -347,7 +346,6 @@ function rotateWpn() {
     // update weapon and seat rotation
     WeaponMesh.lookAt(focalWpn);
     SeatMesh.lookAt(focalSeat);
-    requestAnimationFrame(rotateWpn);
 }
 
 var shiftDown = false;
@@ -645,6 +643,10 @@ document.addEventListener("keyup", (e) => {
     }
 })
 
+document.addEventListener("mousemove", (e) => {
+    rotateWpn();
+})
+
 function winresize(){
     const width = window.innerWidth;
     const height = window.innerHeight;
@@ -653,6 +655,9 @@ function winresize(){
     renderer.setSize(width, height);
 }
 
-window.addEventListener( 'resize', (e) => {
+window.addEventListener('resize', (e) => {
     setInterval(winresize, 500);
 });
+
+// fps display
+(function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()

@@ -3,6 +3,12 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
+v1.2.1a [29 Mar 2022]
+ADDED:
+- FPS counter
+CHANGED:
+- Calling of animation for seat + weapon in code is now done only when mousemove event is detected
+
 v1.2a [27 Mar 2022]
 ADDED:
 - Added changelog
