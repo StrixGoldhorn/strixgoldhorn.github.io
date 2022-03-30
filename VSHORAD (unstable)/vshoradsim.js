@@ -1,5 +1,5 @@
 /*
-v1.2.1a
+v1.3a
 */
 
 
@@ -43,8 +43,6 @@ const worldSettings = {
     },
 
     missile: {
-        // approx mach 1.6, max speed of mark 0/1
-        speed: 10,
         proxFuse: 1.25,
     },
 
@@ -64,7 +62,6 @@ const c130Folder = gui.addFolder("c130");
 c130Folder.add(worldSettings.c130, "radius", 100, 3000);
 c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.01);
 const missileFolder = gui.addFolder("missile");
-missileFolder.add(worldSettings.missile, "speed", 1, 20);
 missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
 const operatorFolder = gui.addFolder("operator");
 const zoomedFolder = operatorFolder.addFolder("zoomed");
@@ -164,7 +161,7 @@ function setControls() {
     controls.target.set(0.5, 2.6, 0);
     controls.enablePan = false;
     controls.enableZoom = false;
-    controls.maxPolarAngle = 8 * (Math.PI / 12);
+    controls.maxPolarAngle = 10 * (Math.PI / 12);
     controls.minPolarAngle = 5 * (Math.PI / 12);
 }
 setControls();
@@ -371,7 +368,7 @@ const missileBox = new THREE.Box3();
 
 const loadIndicate = document.getElementById("loadIndicate");
 const tempCross = document.getElementById("tempCross");
-var currspeed = 0;
+var currdist = 0;
 var rotateAnim = 0;
 
 const alertDoc = document.getElementById("alert");
@@ -386,6 +383,26 @@ const mTLMaterial = new THREE.LineBasicMaterial({
 });
 var mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
 var TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
+
+var speedclock = new THREE.Clock(false)
+var currspeed = 50;
+var curraccel = 57;
+var s, a, t;
+
+function missiledist(u){
+    if(u > 686){
+        curraccel = -10;
+    }
+    a = curraccel;
+    t = speedclock.getDelta();
+    
+    // suvat equations! woohoo!
+    // s = ut + 0.5at^2
+    // v = u + at
+    s = u * t + 0.5 * a * t * t;
+    currspeed = u + a * t;
+    return s;
+}
 
 function fire() {
     // logic checks
@@ -409,6 +426,7 @@ function fire() {
             
             alertDoc.innerText = "";
             alertDoc.style.opacity = "0";
+            speedclock.start();
         }
 
         // load mesh for missile + calculate bounding box
@@ -449,9 +467,10 @@ function fire() {
         );
         longFocal = focalWpn.clone();
         focalWpn.normalize();
-        focalWpn.multiplyScalar(currspeed);
+        focalWpn.multiplyScalar(currdist);
         focalWpn.setY(focalWpn.y + 2);
-        currspeed += worldSettings.missile.speed;
+
+        currdist += missiledist(currspeed);
 
         var missilePt = new THREE.Vector3();
         MissileMesh.getWorldPosition(missilePt);
@@ -472,8 +491,9 @@ function fire() {
             mTLcount += 1;
         }
         
-        // check for missile max ange
-        if(Math.round(missilePt.length()) > 9000){
+        // check for missile max range
+        // intercept range of 9000m, altitude max of ~5000m
+        if(Math.round(missilePt.length()) > 9000 || Math.round(MissileMesh.position.y) > 5500){
             shotend = true;
             console.log("- ! - Max Range Exceeded");
             mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
@@ -574,7 +594,10 @@ document.addEventListener("keypress", (e) => {
             shotout = false;
             fired = false;
             shotend = false;
-            currspeed = 0;
+            currdist = 0;
+            currspeed = 50;
+            curraccel = 57;
+            speedclock.stop();
 
             // restart c130 anim
             if(c130hit){
