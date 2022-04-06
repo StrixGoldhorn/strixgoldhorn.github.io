@@ -43,13 +43,38 @@
             border-radius: 5px;
         }
 
-        #tempCross {
-            color: lime;
+        #alert {
+            margin: auto;
+            color: white;
+            top: 120px;
+            left: 10px;
             position: absolute;
-            top: 47.5%;
-            left: 45%;
-            width: 10%;
+            padding: 5px;
+            width: 200px;
+            height: 60px;
+            font-size: 30px;
+            border-radius: 5px;
+            opacity: 0;
+        }
+
+        #parent {
+        display: table;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        position: absolute;
+        pointer-events: none;
+        }
+
+        #tempCross {
+            display: table-cell;
+            vertical-align: middle;
+            color: lime;
+            margin: auto;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
             font-size: 20px;
+            padding: 50%, 0;
         }
 
         #notifsbg {
@@ -81,54 +106,54 @@
 </head>
 
 <body oncontextmenu="return false">
-    <div id="cage"></div>
-    <div id="loadIndicate"></div>
-
-    <!-- alternate reticle -->
-    <!-- <div id = "tempCross">><span style="color:black">o</span><</div> -->
-    <div id="tempCross">
-    </div>
-    <div id="notifsbg">
-        <div id="notifs">
-            <h3 style="text-align: center; font-size: 30px">VSHORAD Simulator</h3>
-            <h4>Instructions:</h4>
-
-            <p>To look around, HOLD LMB and drag (Note: deadzone in crosshair, do not click LMB there).</p>
-            <p>To zoom, CLICK RMB to toggle.</p>
-
-            <br />
-
-            <p>To uncage seeker, HOLD SHIFT. If SHIFT is lifted, seeker will be caged. (Note: HOLD LMB before uncaging)
-            </p>
-            <p>To fire, CLICK "C".</p>
-            <p>To reload and/or reset, CLICK "R".</p>
-
-            <br />
-
-            <p style="font-size: 22px;">When firing, ensure seeker is <b>UNCAGED</b> and missile is <b>LOADED. If not,
-                    missile will not fire.</b></p>
-            <p>On the top-left, there will be 2 indicators, one for status of seeker (caged | uncaged), and one for
-                status of missile (loaded | in-flight | empty)</p>
-            <p>If target is hit, crosshair will indicate "HIT". No indication if miss.</p>
-
-            <p style="text-align: center; font-size: 25px"><b>- - - PRESS SPACE TO START - - -</b></p>
-
-            <p style="font-size: 10px">
-                Notes:<br />
-                C-130 hitbox is slightly off, hence hitbox is shown in yellow<br />
-                Terrain has no hitbox, can shoot through terrain<br />
-                Use GUI on top-right to change params of C-130 and missile
-            </p>
-
+    <div id="parent">
+        <div id="cage"></div>
+        <div id="loadIndicate"></div>
+        <div id="alert"></div>
+    
+        <div id="tempCross">
         </div>
-    </div>
+        <div id="notifsbg">
+            <div id="notifs">
+                <h3 style="text-align: center; font-size: 30px">VSHORAD Simulator</h3>
+                <h4>Instructions:</h4>
+    
+                <p>To look around, HOLD LMB and drag (Note: deadzone in crosshair, do not click LMB there).</p>
+                <p>To zoom, CLICK RMB to toggle.</p>
+    
+                <br />
+    
+                <p>To uncage seeker, HOLD SHIFT. If SHIFT is lifted, seeker will be caged. (Note: HOLD LMB before uncaging)
+                </p>
+                <p>To fire, CLICK "C".</p>
+                <p>To reload and/or reset, CLICK "R".</p>
+    
+                <br />
+    
+                <p style="font-size: 22px;">When firing, ensure seeker is <b>UNCAGED</b> and missile is <b>LOADED. If not,
+                        missile will not fire.</b></p>
+                <p>On the top-left, there will be 2 indicators, one for status of seeker (caged | uncaged), and one for
+                    status of missile (loaded | in-flight | empty)</p>
+                <p>If target is hit, crosshair will indicate "HIT". No indication if miss.</p>
+    
+                <p style="text-align: center; font-size: 25px"><b>- - - PRESS SPACE TO START - - -</b></p>
+    
+                <p style="font-size: 10px">
+                    Notes:<br />
+                    C-130 hitbox is slightly off<br />
+                    Terrain has no hitbox, can shoot through terrain<br />
+                    Use GUI on top-right to change params of C-130, missile and operator (ie zoom and sensitivity)
+                </p>
+    
+            </div>
+        </div>
 
-    <div id="ver">v1.1</div>
+
+    </div>
+    
+
+    <div id="ver">v1.3</div>
 
 </body>
 
 </html>
-<!-- 
----------
-| + |
---------- -->

@@ -1,6 +1,16 @@
 /*
 Changelog specific to "EXPORT" version.
 */
+
+v1.3 [06 Apr 2022]
+ADDED:
+- FPS counter
+- Altitude limit for missile
+CHANGED:
+- Calling of animation for seat + weapon in code is now done only when mousemove event is detected
+- Increased gimbal limit of camera/controls
+- Changed calculation of missile distance and speed, now calculates with constant acceleration instead of constant speed
+
 v1.1.1 [27 Mar 2022]
 ADDED:
 - Added changelog
