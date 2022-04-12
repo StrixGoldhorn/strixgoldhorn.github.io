@@ -1,5 +1,5 @@
 /*
-v1.3a
+v1.3.1a
 */
 
 
@@ -22,7 +22,7 @@ var rightClicked = false;
 
 // initialize scene, camera, renderer, and controls
 const scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 5000);
+var camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 8000);
 const renderer = new THREE.WebGLRenderer({
     alpha: true
 });
@@ -47,6 +47,7 @@ const worldSettings = {
     },
 
     operator:{
+        showStats: false,
         zoomed:{
             focalLength: 160,
             dampingFactor: 0.01
@@ -59,15 +60,16 @@ const worldSettings = {
 };
 
 const c130Folder = gui.addFolder("c130");
-c130Folder.add(worldSettings.c130, "radius", 100, 3000);
+c130Folder.add(worldSettings.c130, "radius", 100, 5000);
 c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.01);
 const missileFolder = gui.addFolder("missile");
 missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
 const operatorFolder = gui.addFolder("operator");
+operatorFolder.add(worldSettings.operator, "showStats");
 const zoomedFolder = operatorFolder.addFolder("zoomed");
-zoomedFolder.add(worldSettings.operator.zoomed, "focalLength", 50, 250);
+zoomedFolder.add(worldSettings.operator.zoomed, "focalLength", 50, 500);
 zoomedFolder.add(worldSettings.operator.zoomed, "dampingFactor", 0.001, 0.1);
-const normalFolder = operatorFolder.addFolder("noraml");
+const normalFolder = operatorFolder.addFolder("normal");
 normalFolder.add(worldSettings.operator.normal, "focalLength", 0, 50);
 normalFolder.add(worldSettings.operator.normal, "dampingFactor", 0.01, 0.1);
 
@@ -438,6 +440,11 @@ function fire() {
         // if proximity fuse, scale bounding box
         missileBox.expandByScalar(worldSettings.missile.proxFuse);
 
+        // showStats
+        if(worldSettings.operator.showStats){
+            tempCross.innerHTML = "------ <br /> " + ("000" + Math.round(currspeed)).slice(-4)+  " | + | " + ("000" + Math.round(parseFloat(currdist/10).toFixed(4))).slice(-3) + "0<br />------";
+        }
+
         // check for successful hit
         const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
         if(missileBox.intersectsBox(targetBB) || c130Mesh.userData.obb.intersectsBox3(missileBox)){
@@ -621,7 +628,7 @@ document.addEventListener("keypress", (e) => {
             loadIndicate.innerText = "Loaded"
             loadIndicate.style.color = "white";
 
-            tempCross.innerHTML = "------ <br />| + | <br />------";
+            tempCross.innerHTML = "------ <br /> | + | <br />------";
 
             break;
 

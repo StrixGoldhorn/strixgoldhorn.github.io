@@ -3,6 +3,14 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
+v1.3.1a  [12 Apr 2022]
+ADDED:
+- Selection to show missile stats (speed and range)
+- Missile stats: Speed (ms-1) and Range (m) indication next to crosshair
+CHANGED:
+- Crosshair color
+- C130 radius max size in GUI
+
 v1.3a [30 Mar 2022]
 ADDED:
 - Altitude limit for missile
