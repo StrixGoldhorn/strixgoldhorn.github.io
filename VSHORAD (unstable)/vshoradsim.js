@@ -1,5 +1,5 @@
 /*
-v1.3.1a
+v1.4.0a
 */
 
 
@@ -38,12 +38,14 @@ scene.add(camera);
 const gui = new dat.GUI();
 const worldSettings = {
     c130: {
-        radius: 2000,
+        radius: 100,
         gndspeed: 0.001,
+        agl: 20,
     },
 
     missile: {
         proxFuse: 1.25,
+        'accel factor': 350,
     },
 
     operator:{
@@ -61,9 +63,11 @@ const worldSettings = {
 
 const c130Folder = gui.addFolder("c130");
 c130Folder.add(worldSettings.c130, "radius", 100, 5000);
-c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.01);
+c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.001);
+c130Folder.add(worldSettings.c130, "agl", 0, 500, 10);
 const missileFolder = gui.addFolder("missile");
 missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
+missileFolder.add(worldSettings.missile, "accel factor", 0, 500, 50);
 const operatorFolder = gui.addFolder("operator");
 operatorFolder.add(worldSettings.operator, "showStats");
 const zoomedFolder = operatorFolder.addFolder("zoomed");
@@ -133,22 +137,6 @@ properplane.position.y += wireplaneMeshArray[midnode + 2]
 
 scene.add(properplane)
 renderer.render(scene, camera);
-
-// add basic target mesh
-const targetMesh = new THREE.PlaneGeometry(10, 10);
-const targetMaterial = new THREE.MeshStandardMaterial({
-    color: 0xFF0000,
-    side: THREE.DoubleSide
-});
-const target = new THREE.Mesh(targetMesh, targetMaterial);
-target.position.set(-50, 0, 200);
-target.lookAt(camera);
-target.rotation.set(0, 0, Math.PI / 2);
-scene.add(target);
-
-const targetBB = new THREE.Box3();
-target.geometry.computeBoundingBox();
-targetBB.copy(target.geometry.boundingBox).applyMatrix4(target.matrixWorld);
 
 let controls;
 
@@ -263,6 +251,8 @@ function c130anim() {
     c130t += worldSettings.c130.gndspeed;
     c130Mesh.position.x = worldSettings.c130.radius * Math.cos(c130t) + 0;
     c130Mesh.position.z = worldSettings.c130.radius * Math.sin(c130t) + 0;
+    c130Mesh.position.y = worldSettings.c130.agl;
+
     // make c130 face properly (for circular movement)
     c130Mesh.lookAt(0, 0, 0);
     c130Mesh.rotateX(Math.PI / 8);
@@ -283,38 +273,19 @@ function c130hitcam(){
 }
 
 // add lighting to scene
-const ambLight = new THREE.AmbientLight(0x404040, 3.35);
+const ambLight = new THREE.AmbientLight(0x404040, 1);
 scene.add(ambLight);
 
-const ptLight = new THREE.PointLight(0xffffbb, 5, 0, 1);
-ptLight.position.set(2, 5, 5);
+const ptLight = new THREE.PointLight(0xffffbb, 1, 0, 1);
+ptLight.position.set(2, 2, 2);
 scene.add(ptLight);
 
-var targetMoveRight = true;
+const directionalLight = new THREE.DirectionalLight( 0xfff8e3, 5 );
+scene.add( directionalLight );
 
 function animate() {
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
-
-    // animate moving target
-    if (target.position.x > 100) {
-        targetMoveRight = true;
-    } else if (target.position.x < -100) {
-        targetMoveRight = false;
-    }
-    if (targetMoveRight) {
-        target.position.x -= 0.1;
-    } else {
-        target.position.x += 0.1;
-    }
-
-    // set proper rotation for target
-    target.lookAt(camera);
-    target.rotation.set(0, 0, Math.PI / 2);
-
-    // update bounding box for target
-    target.geometry.computeBoundingBox();
-    targetBB.copy(target.geometry.boundingBox).applyMatrix4(target.matrixWorld);
 
     if (controls === 0) {
         rotateWpn();
@@ -388,14 +359,14 @@ var TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
 
 var speedclock = new THREE.Clock(false)
 var currspeed = 50;
-var curraccel = 57;
+var curraccel = worldSettings.missile["accel factor"];
 var s, a, t;
 
 function missiledist(u){
     if(u > 686){
         curraccel = -10;
     }
-    a = curraccel;
+    a = worldSettings.missile["accel factor"];
     t = speedclock.getDelta();
     
     // suvat equations! woohoo!
@@ -446,23 +417,7 @@ function fire() {
         }
 
         // check for successful hit
-        const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
-        if(missileBox.intersectsBox(targetBB) || c130Mesh.userData.obb.intersectsBox3(missileBox)){
-            missileLight.intensity = 500;
-            missileLight.distance = 10;
-            shotend = true;
-            console.log("- - - SUCCESSFUL HIT - - -");
-            tempCross.innerHTML = "------ <br />| HIT | <br />------";
-
-            mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
-            TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
-            scene.add(TrackLine);
-        }
-
-        if(c130Mesh.userData.obb.intersectsBox3(missileBox)){
-            c130hit = true;
-            c130hitcam();
-        }
+        
 
         // animation + movement of missile
         var alignWpnVector = new THREE.Vector3();
@@ -481,7 +436,7 @@ function fire() {
 
         var missilePt = new THREE.Vector3();
         MissileMesh.getWorldPosition(missilePt);
-        MissileMesh.lookAt(longFocal.multiplyScalar(1000));
+        MissileMesh.lookAt(longFocal.multiplyScalar(10000));
 
         MissileMesh.rotateZ(rotateAnim * (Math.PI / 180));
         rotateAnim += 2;
@@ -490,14 +445,50 @@ function fire() {
         missileLight.position.set(MissileMesh.position.x - 0.5, MissileMesh.position.y, MissileMesh.position.z);
         MissileMesh.position.set(focalWpn.x, focalWpn.y, focalWpn.z);
 
+       
         // missile track line
-        if (mTLcount === 10) {
+        if (mTLcount === 5) {
             missileTrackLine.push(missilePt);
             mTLcount = 0;
         } else {
             mTLcount += 1;
         }
         
+
+        const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
+        if(c130Mesh.userData.obb.intersectsBox3(missileBox)){
+            missileLight.intensity = 500;
+            missileLight.distance = 10;
+            shotend = true;
+            console.log("- - - SUCCESSFUL HIT - - -");
+            tempCross.innerHTML = "------ <br />| HIT | <br />------";
+            
+            // update final trackline
+            missileTrackLine.push(missilePt);
+            mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
+            TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
+            scene.add(TrackLine);
+
+            // camera and controls target to c130
+            camera.position.set(c130Mesh.position.x, c130Mesh.position.y + 50, c130Mesh.position.z);
+            controls.target.set(c130Mesh.position.x, c130Mesh.position.y + 20, c130Mesh.position.z);
+
+            // unlock controls
+            controls.enablePan = true;
+            controls.enableZoom = true;
+
+            // update camera and controls
+            camera.setFocalLength(worldSettings.operator.normal.focalLength);
+            controls.dampingFactor = worldSettings.operator.normal.dampingFactor;
+
+            controls.update();
+        }
+
+        if(c130Mesh.userData.obb.intersectsBox3(missileBox)){
+            c130hit = true;
+            c130hitcam();
+        }
+
         // check for missile max range
         // intercept range of 9000m, altitude max of ~5000m
         if(Math.round(missilePt.length()) > 9000 || Math.round(MissileMesh.position.y) > 5500){
@@ -534,7 +525,7 @@ function fire() {
 renderer.render(scene, camera);
 
 document.addEventListener("contextmenu", () => {
-    if (!startSim) {
+    if (!startSim || c130hit) {
         return
     };
     rightClicked = !rightClicked;
@@ -577,7 +568,11 @@ document.addEventListener("keypress", (e) => {
             alertDoc.innerText = "";
             alertDoc.style.opacity = "0";
 
+
+            console.log("camera", camera.position);
+            console.log("controls", controls.target);
             document.getElementById("notifsbg").remove();
+
 
             break;
 
@@ -605,6 +600,7 @@ document.addEventListener("keypress", (e) => {
             currspeed = 50;
             curraccel = 57;
             speedclock.stop();
+            curraccel = worldSettings.missile["accel factor"];
 
             // restart c130 anim
             if(c130hit){
@@ -629,6 +625,17 @@ document.addEventListener("keypress", (e) => {
             loadIndicate.style.color = "white";
 
             tempCross.innerHTML = "------ <br /> | + | <br />------";
+
+            // reset camera
+            camera.position.set(0, 2, -2);
+
+            // reset controls
+            controls.enablePan = false;
+            controls.enableZoom = false;
+            controls.maxPolarAngle = 10 * (Math.PI / 12);
+            controls.minPolarAngle = 5 * (Math.PI / 12);
+            controls.target.set(0.5, 2.6, 0);
+            controls.update();
 
             break;
 

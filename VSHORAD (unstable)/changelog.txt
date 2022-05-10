@@ -3,6 +3,21 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
+v1.4.0a [10 May 2022]
+ADDED:
+- When C130 is hit, the following:
+    - Camera shifts to C130 position
+    - Controls defaults to orbiting around C130
+    - Controls unlocked, user able to pan and zoom
+    - Camera and controls reset to original status when "r" is pressed
+- Added missile acceleration variable to GUI
+- Added option to change c130 height
+CHANGED:
+- Lighting changes
+- C130 max speed selector reduced by 1 order of magnitude
+REMOVED:
+- Red target square removed
+
 v1.3.1a  [12 Apr 2022]
 ADDED:
 - Selection to show missile stats (speed and range)
