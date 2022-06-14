@@ -10,10 +10,14 @@ a_human_and_definitely_not_a_robot
 ```
 
 ## ToC
+- [Hello World](#hello-world)
+  - [whoami](#whoami)
+- [ToC](#toc)
   - [RBS 70 Simulator](#rbs-70-simulator)
     - [Background](#background)
     - [Features of simulator](#features-of-simulator)
   - [Fake Virus Site](#fake-virus-site)
+  - [pOOP Assistant - python OOP Assistant](#poop-assistant---python-oop-assistant)
 
 <br/><br/><br/>
 
@@ -48,6 +52,8 @@ Contains basic functions, such as:
 [visit this cool site where I create a fake virus popup](for_the_lolz/fakeviruspopup.html)
 
 This was to test out functionalities such as TTS. Purely for educational purposes only.
+
+<br/><br/><br/>
 
 ### pOOP Assistant - python OOP Assistant
 [This site](pOOP/index.html) helps to generate getter and setter methods for python objects.
