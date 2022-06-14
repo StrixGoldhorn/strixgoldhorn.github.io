@@ -40,8 +40,16 @@ Contains basic functions, such as:
   - Missile stops after being uncaged mid-flight
 - Tracks whether missile is Loaded / In-Flight / Empty
 - Displays missile flight path after target is hit
+- Range and altitude limit for missile based on open source info
 
 <br/><br/><br/>
 
 ### Fake Virus Site
 [visit this cool site where I create a fake virus popup](for_the_lolz/fakeviruspopup.html)
+
+This was to test out functionalities such as TTS. Purely for educational purposes only.
+
+### pOOP Assistant - python OOP Assistant
+[This site](pOOP/index.html) helps to generate getter and setter methods for python objects.
+
+Uses jQuery to actively read user input and update output.

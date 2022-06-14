@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="index.css">
+</head>
+<body>
+	
+	<div id="intro">
+		<div id="appName">pOOP assistant --- Python OOP assistant</div>
+	</div>
+	
+	<div id="responses">
+		<div id="defaultText">
+			<form><label for="attributes">Class attributes: </label><input type="text" id="attributes" name="attributes" placeholder="attr1, attr2, attr3"></form>
+			<p style="font-size:15px">Separate each attribute with a comma and a space, try not to use spaces in attribute name </p>
+		</div>
+		<p>DON'T TOUCH THE SPACE BELOW<br/>or else you won't get your code >:(</p>
+		<textarea id="result" rows="15" cols="70"></textarea><br/>
+        <p style="font-size:15px">Click to directly copy to clipboard, no need to ctrl+c</p>
+		<button id="copy" onclick="copyToClipboard()" style="font-size:30px;margin:15px;">Copy</button>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script>
+		
+		// i have no idea how this works, ripped it off this site: https://www.tutorialrepublic.com/faq/auto-update-div-content-while-typing-in-textarea-using-jquery.php
+		// looks horribly ineffecient and is most definitely trash code, but as long as it works, its good enough
+		$(document).ready(function(){
+			$("#attributes").keyup(function(){
+				var final = "";
+				var currentText = $(this).val();
+				var attributes = currentText.split(", ");
+				// console.log(attributes);
+				
+				// generate def init
+				final += `def __init__(self, ${currentText}):\n`;
+				for(i=0; i<attributes.length; i++){
+					var curr = attributes[i];
+					final += `\tself._${curr} = ${curr}\n`;
+				}
+				final += "\n"
+				
+				// generate getters and setters
+				for(i=0; i<attributes.length; i++){
+					var curr = attributes[i];
+					final += `def set_${curr}(self, ${curr}):\n\tself._${curr} = ${curr}\n\ndef get_${curr}(self):\n\treturn self._${curr}\n\n`;	
+					// console.log(final);
+				}
+				$("#result").text(final);
+			});
+		});
+		
+		// adapted from some stackoverflow code: https://stackoverflow.com/questions/33855641/copy-output-of-a-javascript-variable-to-the-clipboard
+		function copyToClipboard(text) {
+			var dummy = document.getElementById("result");
+			dummy.select();
+			document.execCommand("copy");
+		}
+	</script>
+</body>
+</html> 

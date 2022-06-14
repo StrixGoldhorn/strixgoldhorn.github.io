@@ -1,0 +1,87 @@
+/*CSS FOR LAPTOPS*/
+html{
+	background-color: #f3ffea;
+	font-size: 20px;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+#intro {
+  margin: auto auto 40px;
+  width: 100%;
+  text-align: center;
+}
+
+#appName{
+    margin: 20px;
+	font-family: Lucida Sans Unicode;
+	font-size: 30px;
+}
+
+#responses{
+  margin: auto auto 20px;
+  width: 40%;
+  text-align: center;
+  border: 2px solid #4ea13d;
+  border-radius: 5px;
+  background-color: #95dd7f;
+}
+
+#defaultText{
+  margin: 50px;
+}
+
+
+.iframe-container {
+  overflow: hidden;
+  /* 16:9 aspect ratio */
+  padding-top: 80%;
+  position: relative;
+}
+
+.iframe-container iframe {
+   border: 0;
+   height: 100%;
+   left: 0;
+   position: absolute;
+   top: 0;
+   width: 100%;
+}
+
+.card {
+  margin: auto auto 40px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  width: 75%;
+  border-radius: 5px;
+  text-align: left;
+  background-color: #eccfc8;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+img {
+  border-radius: 5px 5px 0 0;
+}
+
+.container {
+  padding: 2px 16px;
+}
+
+/*CSS FOR PHONES*/
+@media screen and (max-width: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+  #intro{margin-top: 20px;}
+  #appName {font-size: 40px;}
+  #usrName{font-size: 20px;}
+  #responses{
+  margin: auto auto 20px;
+  width: 90%;
+  text-align: center;
+}
+}
