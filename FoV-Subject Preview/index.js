@@ -17,29 +17,55 @@ function TargetCalc(FOVW, FOVH, TargW, TargH){
     var ratioH = TargH / FOVH;
     
     var dispW = $("#vizFrame").width();
-    $("#vizFrame").css("height", (dispW * (2/3)).toString()+"px");
+    var dispH = dispW * (2/3)
 
-    var dispH = $("#vizFrame").height();
+    $("#vizFrame").css("height", dispH+"px");
 
-    $("#vizTarget").css("width", (dispW * ratioW).toString()+"px");
-    $("#vizTarget").css("height", (dispH * ratioH).toString()+"px");
+    var targW = dispW * ratioW;
+    var targH = (dispH * ratioH) > dispH ? dispH : (dispH * ratioH);
+
+    $("#vizTarget").css("width", targW+"px");
+    $("#vizTarget").css("height", targH+"px");
     $("#vizTarget").css("line-height", $("#vizTarget").css("height"));
+}
+
+function update(){
+    console.log("update");
+
+    var inputFL = parseFloat($("#FLinput").val());
+    var inputDist = parseFloat($("#Distinput").val());
+    var res = FLmagic(inputFL*(10**-3), 23.6*(10**-3), 15.6*(10**-3), inputDist);
+
+    $("#AOVW").text(res[0].toFixed(2));
+    $("#AOVH").text(res[1].toFixed(2));
+    $("#FOVW").text(res[2].toFixed(2));
+    $("#FOVH").text(res[3].toFixed(2));
+    
+    TargetCalc(res[2], res[3], parseFloat($("#TargW").val()), parseFloat($("#TargH").val()));
 }
 
 $(document).ready(function(){
 
     TargetCalc(13.11, 8.67, parseFloat($("#TargW").val()), parseFloat($("#TargH").val()));
+    
+    $(window).resize(function(){
+        update();
+    });
 
-    $(".UsrIn").keyup(function(){
-        var inputFL = parseFloat($("#FLinput").val());
-        var inputDist = parseFloat($("#Distinput").val());
-        var res = FLmagic(inputFL*(10**-3), 23.6*(10**-3), 15.6*(10**-3), inputDist);
+    $('.UsrIn').on('input', function(){
+        update();
+    });
 
-        $("#AOVW").text(res[0].toFixed(2));
-        $("#AOVH").text(res[1].toFixed(2));
-        $("#FOVW").text(res[2].toFixed(2));
-        $("#FOVH").text(res[3].toFixed(2));
-        
-        TargetCalc(res[2], res[3], parseFloat($("#TargW").val()), parseFloat($("#TargH").val()));
+    $('#Apache').click(function(){
+        $('#TargW').val('17.73');
+        $('#TargH').val('4.95');
+        update();
+    });
+
+    $('#Chinook').click(function(){
+        $('#TargW').val('19.4');
+        $('#TargH').val('5.63');
+        update();
     });
 });
+

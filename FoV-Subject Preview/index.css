@@ -32,7 +32,19 @@ body {
 }
 
 #defaultText{
-  margin: 1em;
+  margin: 0.1em;
+  padding: 0.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#inTable{
+  text-align: right;
+}
+
+#inTable td{
+  padding: 0.1em;
 }
 
 #resTable {
