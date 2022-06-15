@@ -1,0 +1,76 @@
+html{
+	background-color: #1a252a;
+	font-size: 1.2em;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  color: rgb(130, 180, 196);
+}
+
+#intro {
+  margin: auto auto 1em;
+  width: 100%;
+  text-align: center;
+}
+
+#appName{
+  margin: 0.2em;
+  padding: 0.2em;
+	font-family: Lucida Sans Unicode;
+	font-size: 1.5em;
+}
+
+#responses{
+  margin: auto auto 0.2em;
+  width: 80%;
+  text-align: center;
+  border: 0.1em solid #2a4f60;
+  border-radius: 0.5em;
+  background-color: #111d27;
+  font-size: 1em;
+}
+
+#defaultText{
+  margin: 1em;
+}
+
+#resTable {
+  margin: auto auto 2em;
+  font-size: 0.7em;
+  padding: 1em;
+}
+
+#resTable th, td{
+  padding: 1em;
+}
+
+#resTable td{
+  font-size: 2em;
+}
+
+img {
+  border-radius: 5px 5px 0 0;
+}
+
+input[type="text"]{
+  padding: 0.2em;
+  margin: 0.5em;
+  font-size: 0.8em;
+}
+
+#vizFrame{
+  width: 50%;
+  margin: auto auto 1em;
+  border: 0.1em solid #39c249;
+  background-color: #1d4261;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#vizTarget{
+  background-color: #4295d8;
+  color: white;
+  text-align: center;
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="index.css">
+</head>
+<body>
+	
+	<div id="intro">
+		<div id="appName">FoV-Subject Preview</div>
+	</div>
+	
+	<div id="responses">
+		<div id="defaultText">
+			<form><label for="FLinput">Focal Length (in mm): </label><input type="text" class="UsrIn" id="FLinput" name="FLinput" value="18"></form>
+			<form><label for="Distinput">Distance to Target (in m): </label><input type="text" class="UsrIn" id="Distinput" name="Distinput" value="10"></form>
+			<form><label for="TargW">Target Width (in m): </label><input type="text" class="UsrIn" id="TargW" name="TargW" value="0.41"></form>
+			<form><label for="TargH">Target Height (in m): </label><input type="text" class="UsrIn" id="TargH" name="TargH" value="1.75"></form>
+		</div>
+
+		<div>Preview</div>
+		<div id="vizFrame">
+			<div id="vizTarget">
+				+
+			</div>
+		</div>
+
+		<table id="resTable">
+			<tr>
+				<th>Angle of View (Width) / °</th>
+				<th>Angle of View (Height) / °</th>
+				<th>Field of View (Width) / m</th>
+				<th>Field of View (Height) / m</th>
+			</tr>
+			<tr>
+				<td id="AOVW">-</td>
+				<td id="AOVH">-</td>
+				<td id="FOVW">-</td>
+				<td id="FOVH">-</td>
+			</tr>
+		</table>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="./index.js"></script>
+
+</body>
+</html> 
