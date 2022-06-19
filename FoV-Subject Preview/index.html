@@ -16,35 +16,67 @@
 	<div id="responses">
 		<div id="defaultText">
 			<table id="inTable">
+
+				<tr>
+					<th>Camera</th>
+					<th>Target</th>
+					<th colspan="2">Quick Select</th>
+				</tr>
+
 				<tr>
 					<td>
-						<form><label for="FLinput">Focal Length (in mm): </label><input type="text" class="UsrIn" id="FLinput" name="FLinput" value="18"></form>
+						<form><label for="FLinput">Focal Length (mm): </label><br/><input type="text" class="UsrIn" id="FLinput" name="FLinput" value="18"></form>
 					</td>
 					<td>
-						<form><label for="TargW">Target Width (in m): </label><input type="text" class="UsrIn" id="TargW" name="TargW" value="0.41"></form>
+						<form><label for="Distinput">Distance to Target (m): </label><br/><input type="text" class="UsrIn" id="Distinput" name="Distinput" value="10"></form>
+					</td>
+						
+					<td>
+						<form><button type="button" class="UsrInB" id="Apache" name="Apache">Apache (Side)</button></form>
 					</td>
 					<td>
-						<form><button type="button" class="UsrInB" id="Apache" name="Apache">Apache</button></form>
+						<form><button type="button" class="UsrInB" id="Chinook" name="Chinook">Chinook (Side)</button></form>
 					</td>
 				</tr>
+
 				<tr>
 					<td>
-						<form><label for="Distinput">Distance to Target (in m): </label><input type="text" class="UsrIn" id="Distinput" name="Distinput" value="10"></form>
+						<form><label for="SensorW">Sensor Width (mm): </label><br/><input type="text" class="UsrIn" id="SensorW" name="SensorW" value="23.6"></form>
 					</td>
 					<td>
-						<form><label for="TargH">Target Height (in m): </label><input type="text" class="UsrIn" id="TargH" name="TargH" value="1.75"></form>
+						<form><label for="TargW">Target Width (m): </label><br/><input type="text" class="UsrIn" id="TargW" name="TargW" value="0.41"></form>
+					</td>
+
+					<td>
+						<form><button type="button" class="UsrInB" id="H225M" name="H225M">H225M (Side)</button></form>
 					</td>
 					<td>
-						<form><button type="button" class="UsrInB" id="Chinook" name="Chinook">Chinook</button></form>
+						<form><button type="button" class="UsrInB" id="C-130" name="C-130">C-130 (Top)</button></form>
 					</td>
 				</tr>
+
+				<tr>
+					<td>
+						<form><label for="SensorH">Sensor Height (mm): </label><br/><input type="text" class="UsrIn" id="SensorH" name="SensorH" value="15.6"></form>
+					</td>
+					<td>
+						<form><label for="TargH">Target Height (m): </label><br/><input type="text" class="UsrIn" id="TargH" name="TargH" value="1.75"></form>
+					</td>
+					<td>
+						<form><button type="button" class="UsrInB" id="F-15" name="F-15">F-15 (Top)</button></form>
+					</td>
+					<td>
+						<form><button type="button" class="UsrInB" id="F-16" name="F-16">F-16 (Top)</button></form>
+					</td>
+				</tr>
+
 			</table>
 		</div>
 
 		<div>Preview</div>
 		<div id="vizFrame">
 			<div id="vizTarget">
-				+
+				
 			</div>
 		</div>
 

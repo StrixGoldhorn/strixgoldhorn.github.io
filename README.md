@@ -77,7 +77,11 @@ First (and probably only version) created in Early 2022.
 
 [This is a tool](FoV-Subject%20Preview/index.html) to allow photographers to preview the ratio of subject to fore/background, based on their input for the focal length of the lens, distance to the subject, and dimensions of subject.
 
-Note: The tool assumes camera sensor size to be 23.6 × 15.6mm (and thus image ratio of 3:2)
+Features:
+- Adjustable sensor width and height
+- Adjustable focal length
+- Adjustable distance to target, and target size
+- Pre-calculated target sizes for certain objects
 
 Uses jQuery to actively read user input and update element's HTML and CSS.
 

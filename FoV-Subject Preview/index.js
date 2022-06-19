@@ -26,15 +26,24 @@ function TargetCalc(FOVW, FOVH, TargW, TargH){
 
     $("#vizTarget").css("width", targW+"px");
     $("#vizTarget").css("height", targH+"px");
+
     $("#vizTarget").css("line-height", $("#vizTarget").css("height"));
+    if($("#vizTarget").height() < 20){
+        $("#vizTarget").text("")
+    }
+    else{
+        $("#vizTarget").text("+");
+    }
 }
 
 function update(){
-    console.log("update");
-
     var inputFL = parseFloat($("#FLinput").val());
     var inputDist = parseFloat($("#Distinput").val());
-    var res = FLmagic(inputFL*(10**-3), 23.6*(10**-3), 15.6*(10**-3), inputDist);
+
+    var sensor_width = parseFloat($("#SensorW").val());
+    var sensor_height = parseFloat($("#SensorH").val());
+
+    var res = FLmagic(inputFL*(10**-3), sensor_width*(10**-3), sensor_height*(10**-3), inputDist);
 
     $("#AOVW").text(res[0].toFixed(2));
     $("#AOVH").text(res[1].toFixed(2));
@@ -44,9 +53,47 @@ function update(){
     TargetCalc(res[2], res[3], parseFloat($("#TargW").val()), parseFloat($("#TargH").val()));
 }
 
+const wingedDB = {
+    // Rotary Wing
+    "Apache": {
+        "TargW": 17.73,
+        "TargH": 4.95
+    },
+    "Chinook": {
+        "TargW": 19.4,
+        "TargH": 5.63
+    },
+    "H225M": {
+        "TargW": 19.5,
+        "TargH": 4.97
+    },
+    "Seahawk": {
+        "TargW": 19.8,
+        "TargH": 5.23
+    },
+
+    // Fixed Wing
+    "C-130": {
+        "TargW": 30,
+        "TargH": 40
+    },
+    "A330": {
+        "TargW": 58.82,
+        "TargH": 60.3
+    },
+    "F-15": {
+        "TargW": 19.4,
+        "TargH": 13.0
+    },
+    "F-16": {
+        "TargW": 15,
+        "TargH": 9.96
+    }
+}
+
 $(document).ready(function(){
 
-    TargetCalc(13.11, 8.67, parseFloat($("#TargW").val()), parseFloat($("#TargH").val()));
+    update();
     
     $(window).resize(function(){
         update();
@@ -56,16 +103,10 @@ $(document).ready(function(){
         update();
     });
 
-    $('#Apache').click(function(){
-        $('#TargW').val('17.73');
-        $('#TargH').val('4.95');
+    $(".UsrInB").click(function(){
+        $('#TargW').val(wingedDB[this.id].TargW);
+        $('#TargH').val(wingedDB[this.id].TargH);
         update();
-    });
-
-    $('#Chinook').click(function(){
-        $('#TargW').val('19.4');
-        $('#TargH').val('5.63');
-        update();
-    });
+    })
 });
 
