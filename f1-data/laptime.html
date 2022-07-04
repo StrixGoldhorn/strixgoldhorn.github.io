@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>F1 Data</title>
+	<meta charset="utf-8">
+	<link rel="icon" href="Fav1con.png" type="png" sizes="32x32">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="./main.css">
+</head>
+<body>
+    <div id="errorText"></div>
+    <div id="wrapperLT">
+        <div id="menu">
+            <a href="./index.html" class="mbutton">Index</a>
+            <a href="./laptime.html" class="mbutton">Compare lap times</a>
+        </div>
+    
+        <div id="DRselect">
+            <p style="font-size:1.2em"><strong>Select 2 drivers and 1 race</strong></p>
+            Driver 1: <select id="dr1"></select><br/>
+            Driver 2: <select id="dr2"></select><br/>
+            Race: <select id="race"></select><br/>
+            Show timedelta instead of raw time: <input type="checkbox" id="timedelta"><br/>
+            <br/><br/><br/>
+            <button id="cmp"> > Compare! < </button>
+        </div>
+    
+        <div id="LTgraph">-</div>
+    </div>
+    
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script type="text/javascript" src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+	<script src="./main.js"></script>
+</body>
+</html>
