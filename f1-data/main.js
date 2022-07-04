@@ -138,7 +138,7 @@ function nextRace(){
 
 function currStandings(){
     $.ajax({
-        url: "http://ergast.com/api/f1/current/driverStandings.json",
+        url: "https://ergast.com/api/f1/current/driverStandings.json",
         type: "GET",
         success: function(result){
             let standings = result["MRData"]["StandingsTable"]["StandingsLists"][0]["DriverStandings"]
@@ -230,7 +230,7 @@ function generateDatapoints(a){
 
 function fillList(){
     $.ajax({
-        url: "http://ergast.com/api/f1/current/drivers.json",
+        url: "https://ergast.com/api/f1/current/drivers.json",
         type: "GET",
         success: function(result){
             var drivers = result["MRData"]["DriverTable"]["Drivers"]
@@ -376,7 +376,7 @@ $(document).ready(function(){
     var fname = href.substr(href.lastIndexOf('/') + 1);
 
 
-    if(fname === "index.html"){
+    if(fname === "index.html" || fname === ""){
         nextRace();
         currStandings();
     }
