@@ -24,7 +24,8 @@ var rightClicked = false;
 const scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 8000);
 const renderer = new THREE.WebGLRenderer({
-    alpha: true
+    alpha: true,
+    antialias: true
 });
 var clock = new THREE.Clock();
 
@@ -38,9 +39,9 @@ scene.add(camera);
 const gui = new dat.GUI();
 const worldSettings = {
     c130: {
-        radius: 100,
-        gndspeed: 0.001,
-        agl: 20,
+        radius: 500,
+        gndspeed: 0.0001,
+        agl: 250,
     },
 
     missile: {
@@ -62,8 +63,8 @@ const worldSettings = {
 };
 
 const c130Folder = gui.addFolder("c130");
-c130Folder.add(worldSettings.c130, "radius", 100, 5000);
-c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.001);
+c130Folder.add(worldSettings.c130, "radius", 100, 5000, 50);
+c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.005);
 c130Folder.add(worldSettings.c130, "agl", 0, 500, 10);
 const missileFolder = gui.addFolder("missile");
 missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
@@ -91,7 +92,7 @@ scene.background = sbTexture
 
 // add plane
 const planesize = 100
-const wireplaneMesh = new THREE.PlaneGeometry(1000, 1000, planesize, planesize);
+const wireplaneMesh = new THREE.PlaneGeometry(10000, 10000, planesize, planesize);
 const wireplaneMaterial = new THREE.MeshBasicMaterial({
     color: 0x008800,
     side: THREE.DoubleSide,
@@ -99,7 +100,7 @@ const wireplaneMaterial = new THREE.MeshBasicMaterial({
 });
 const wireplane = new THREE.Mesh(wireplaneMesh, wireplaneMaterial);
 wireplane.rotation.set(Math.PI / 2, 0, 0);
-wireplane.position.set(0, 0.05, 0);
+wireplane.position.set(0, 0.1, 0);
 scene.add(wireplane);
 
 const wireplaneMeshArray = wireplane.geometry.attributes.position.array;
@@ -110,9 +111,9 @@ for (let i = 0; i < wireplaneMeshArray.length; i += 3) {
 
     // noob way to smoothen plane
     var rdm = 0;
-    var weight = Math.random();
+    var weight = Math.random()*15;
     var posneg = Math.random();
-    if (posneg > 0.5) {
+    if (posneg > 0.2) {
         rdm = weight;
     } else {
         rdm = -weight;
@@ -159,7 +160,12 @@ setControls();
 // load 3d models
 const loader = new GLTFLoader();
 
-const missileLight = new THREE.PointLight(0xffbb11, 6, 1);
+const missileLight = new THREE.PointLight(0xcca412, 6, 1, 2.5);
+
+const sphereSize = 1;
+const pointLightHelper = new THREE.PointLightHelper( missileLight, sphereSize );
+scene.add( pointLightHelper );
+
 scene.add(missileLight);
 missileLight.position.set(0, -50, 0);
 
@@ -272,16 +278,13 @@ function c130hitcam(){
     c130pcam.position.set(c130Mesh.position.x, c130Mesh.position.y + 2, c130Mesh.position.z);
 }
 
-// add lighting to scene
-const ambLight = new THREE.AmbientLight(0x404040, 1);
-scene.add(ambLight);
-
-const ptLight = new THREE.PointLight(0xffffbb, 1, 0, 1);
-ptLight.position.set(2, 2, 2);
-scene.add(ptLight);
-
-const directionalLight = new THREE.DirectionalLight( 0xfff8e3, 5 );
+const directionalLight = new THREE.DirectionalLight( 0xfff8e3, 4 );
+directionalLight.position.set( 200, 1000, 500 );
 scene.add( directionalLight );
+
+const pointLight = new THREE.PointLight( 0xfff8e3, 3 );
+pointLight.position.set( 0, 1500, 0 );
+scene.add( pointLight );
 
 function animate() {
     renderer.render(scene, camera);
@@ -366,7 +369,7 @@ function missiledist(u){
     if(u > 686){
         curraccel = -10;
     }
-    a = worldSettings.missile["accel factor"];
+    a = curraccel;
     t = speedclock.getDelta();
     
     // suvat equations! woohoo!
@@ -461,6 +464,7 @@ function fire() {
             missileLight.distance = 10;
             shotend = true;
             console.log("- - - SUCCESSFUL HIT - - -");
+
             tempCross.innerHTML = "------ <br />| HIT | <br />------";
             
             // update final trackline
@@ -487,6 +491,7 @@ function fire() {
         if(c130Mesh.userData.obb.intersectsBox3(missileBox)){
             c130hit = true;
             c130hitcam();
+            return;
         }
 
         // check for missile max range
@@ -521,6 +526,7 @@ function fire() {
     }
 }
 
+
 // render when page loads
 renderer.render(scene, camera);
 
@@ -547,33 +553,32 @@ document.addEventListener("keypress", (e) => {
     switch (e.key) {
         // "start" actions
         case " ":
-            console.log("- - - START - - -")
+            if(fired === false){
+                console.log("- - - START - - -")
 
-            startSim = true;
-            controls.enableDamping = true;
+                startSim = true;
+                controls.enableDamping = true;
 
-            controls.dampingFactor = 0.05;
-            controls.rotateSpeed = 0.2;
+                controls.dampingFactor = 0.05;
+                controls.rotateSpeed = 0.2;
 
-            rotateWpn();
-            cageActions();
+                rotateWpn();
+                cageActions();
 
-            // update UI
-            loadIndicate.style.background = "#22cc55";
-            loadIndicate.innerText = "Loaded"
-            loadIndicate.style.color = "white";
+                // update UI
+                loadIndicate.style.background = "#22cc55";
+                loadIndicate.innerText = "Loaded"
+                loadIndicate.style.color = "white";
 
-            tempCross.innerHTML = "------ <br />| + | <br />------";
-            
-            alertDoc.innerText = "";
-            alertDoc.style.opacity = "0";
+                tempCross.innerHTML = "------ <br />| + | <br />------";
+                
+                alertDoc.innerText = "";
+                alertDoc.style.opacity = "0";
 
+                document.getElementById("notifsbg").remove();
 
-            console.log("camera", camera.position);
-            console.log("controls", controls.target);
-            document.getElementById("notifsbg").remove();
-
-
+                directionalLight.target = scene.children.find(obj => obj.name === "WeaponMesh").children[0];
+            }
             break;
 
             // fire weapon
