@@ -3,6 +3,13 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
+v1.4.1a [13 Jul 2022]
+ADDED:
+- Randomiser for starting radius and altitude for C130
+CHANGED:
+- Max and Min angles for camera after C130 is hit
+- Call animation frame for RBS70 after every frame instead of on mousemove event
+
 v1.4.0a [10 May 2022]
 ADDED:
 - When C130 is hit, the following:

@@ -1,5 +1,5 @@
 /*
-v1.4.0a
+v1.4.1a
 */
 
 
@@ -39,9 +39,9 @@ scene.add(camera);
 const gui = new dat.GUI();
 const worldSettings = {
     c130: {
-        radius: 500,
+        radius: Math.random() * 1000+500,
         gndspeed: 0.0001,
-        agl: 250,
+        agl: Math.random() * 300+100,
     },
 
     missile: {
@@ -319,6 +319,7 @@ function rotateWpn() {
     // update weapon and seat rotation
     WeaponMesh.lookAt(focalWpn);
     SeatMesh.lookAt(focalSeat);
+    requestAnimationFrame(rotateWpn);
 }
 
 var shiftDown = false;
@@ -484,6 +485,9 @@ function fire() {
             // update camera and controls
             camera.setFocalLength(worldSettings.operator.normal.focalLength);
             controls.dampingFactor = worldSettings.operator.normal.dampingFactor;
+            
+            controls.maxPolarAngle = Math.PI;
+            controls.minPolarAngle = 0;
 
             controls.update();
         }
@@ -683,10 +687,6 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "c") {
         cageActions();
     }
-})
-
-document.addEventListener("mousemove", (e) => {
-    rotateWpn();
 })
 
 function winresize(){
