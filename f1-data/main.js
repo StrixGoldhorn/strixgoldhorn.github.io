@@ -269,7 +269,7 @@ function fillList(){
     })
 }
 
-function compare(driver1, driver2, race, timedelta){
+function compare(driver1, driver2, race, timedelta, stacked){
     var dr1time = [];
     var dr2time = [];
 
@@ -292,15 +292,13 @@ function compare(driver1, driver2, race, timedelta){
                         dr2time.push(stringToFloat(timing["Timings"][0]["time"]));
                     }
 
-                    console.log(dr1time);
-                    console.log(dr2time);
-
                     if(timedelta){
                         var temp1 = [];
                         var temp2 = [];
-                        // if(dr1time.length() > dr2time){
-                        //     [dr1time, dr2time] = [dr2time, dr1time];
-                        // }
+                        if(dr1time.length > dr2time.length){
+                            [dr1time, dr2time] = [dr2time, dr1time];
+                            [driver1, driver2] = [driver2, driver1];
+                        }
                         for(var i=0; i<dr1time.length; i++){
                             temp1.push(0);
                             temp2.push(dr1time[i]-dr2time[i]);
@@ -308,42 +306,90 @@ function compare(driver1, driver2, race, timedelta){
                         dr1time = temp1;
                         dr2time = temp2;
                     }
-                    // draw graph
-                    var options = {
-                        zoomEnabled: true,
-                        animationEnabled: true,
-                        theme: "light2",
-                        title:{
-                            text: driver1 + " vs " + driver2
-                        },
-                        axisX:{
-                            labelFormatter: function(){return " ";}
-                        },
-                        axisY: {
-                            title: "Timing (s)"
-                        },
-                        toolTip:{
-                            shared:true
-                        },  
-                        legend:{
-                            cursor:"pointer",
-                            verticalAlign: "bottom",
-                            horizontalAlign: "left",
-                            dockInsidePlotArea: true
-                        },
-                        data: [{
-                            type: "line",
-                            showInLegend: true,
-                            name: driver1,
-                            dataPoints: generateDatapoints(dr1time)
-                        },
-                        {
-                            type: "line",
-                            showInLegend: true,
-                            name: driver2,
-                            dataPoints: generateDatapoints(dr2time)
-                        }]
-                    };
+
+                    if(stacked){
+                        if(dr1time.length > dr2time.length){
+                            [dr1time, dr2time] = [dr2time, dr1time];
+                            [driver1, driver2] = [driver2, driver1];
+                        }
+                        // var finalData = generateStacked(dr1time, dr2time, driver1, driver2);
+                        var options = {
+                            zoomEnabled: true,
+                            animationEnabled: true,
+                            theme: "light2",
+                            title:{
+                                text: driver1 + " vs " + driver2,
+                                fontWeight: "lighter"
+                            },
+                            axisX:{
+                                labelFormatter: function(){return " ";},
+
+                            },
+                            axisY: {
+                                title: "Timing (s)",
+                                minimum: 0
+                            },
+                            toolTip:{
+                                shared: true
+                            },  
+                            legend:{
+                                cursor:"pointer",
+                                verticalAlign: "bottom",
+                                horizontalAlign: "left",
+                                dockInsidePlotArea: true
+                            },
+                            data: [{
+                                type: "bar",
+                                showInLegend: true,
+                                name: driver1,
+                                dataPoints: generateDatapoints(dr1time)
+                            },
+                            {
+                                type: "bar",
+                                showInLegend: true,
+                                name: driver2,
+                                dataPoints: generateDatapoints(dr2time)
+                            }]
+                        };
+                    } else {
+                        var options = {
+                            zoomEnabled: true,
+                            animationEnabled: true,
+                            theme: "light2",
+                            title:{
+                                text: driver1 + " vs " + driver2,
+                                fontWeight: "lighter"
+                            },
+                            axisX:{
+                                labelFormatter: function(){return " ";}
+                            },
+                            axisY: {
+                                title: "Timing (s)"
+                            },
+                            toolTip:{
+                                shared:true
+                            },  
+                            legend:{
+                                cursor:"pointer",
+                                verticalAlign: "bottom",
+                                horizontalAlign: "left",
+                                dockInsidePlotArea: true
+                            },
+                            data: [{
+                                type: "line",
+                                showInLegend: true,
+                                name: driver1,
+                                dataPoints: generateDatapoints(dr1time)
+                            },
+                            {
+                                type: "line",
+                                showInLegend: true,
+                                name: driver2,
+                                dataPoints: generateDatapoints(dr2time)
+                            }]
+                        };
+                    }
+                    
                     console.log(options);
                     $("#LTgraph").CanvasJSChart(options);
                 },
@@ -361,12 +407,23 @@ function compare(driver1, driver2, race, timedelta){
 }
 
 $("#cmp").click(function(){
-    console.log($("#dr1").val())
-    console.log($("#dr2").val())
-    console.log($("#race").val())
-    console.log($("#timedelta").is(":checked"))
+    compare($("#dr1").val(), $("#dr2").val(), $("#race").val(), $("#timedelta").is(":checked"), $("#stacked").is(":checked"))
+});
 
-    compare($("#dr1").val(), $("#dr2").val(), $("#race").val(), $("#timedelta").is(":checked"))
+$("#stacked").change(function(){
+    if($(this).is(":checked")){
+        $("#timedelta").prop("disabled", true);
+    } else {
+        $("#timedelta").prop("disabled", false);
+    }
+});
+
+$("#timedelta").change(function(){
+    if($(this).is(":checked")){
+        $("#stacked").prop("disabled", true);
+    } else {
+        $("#stacked").prop("disabled", false);
+    }
 });
 
 $(document).ready(function(){
