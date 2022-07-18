@@ -3,6 +3,13 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
+v1.5.0a[18 Jul 2022]
+ADDED:
+- Squared sine wave for altitude change for c130, with corresponding params in GUI
+- C130 flight path can be shown, toggled with option in GUI
+CHANGED:
+- Path changed from circular path to eliptical path, with corresponding params in GUI
+
 v1.4.1a [13 Jul 2022]
 ADDED:
 - Randomiser for starting radius and altitude for C130

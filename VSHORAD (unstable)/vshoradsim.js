@@ -1,5 +1,5 @@
 /*
-v1.4.1a
+v1.5.0a
 */
 
 
@@ -39,9 +39,13 @@ scene.add(camera);
 const gui = new dat.GUI();
 const worldSettings = {
     c130: {
-        radius: Math.random() * 1000+500,
+        pathx: Math.random() * 1000+500,
+        pathy: Math.random() * 1000+500,
+        zamp: Math.random() * 500,
+        zperiod: Math.random(),
         gndspeed: 0.0001,
         agl: Math.random() * 300+100,
+        c130trackline: true,
     },
 
     missile: {
@@ -63,9 +67,13 @@ const worldSettings = {
 };
 
 const c130Folder = gui.addFolder("c130");
-c130Folder.add(worldSettings.c130, "radius", 100, 5000, 50);
+c130Folder.add(worldSettings.c130, "pathx", 100, 5000, 50);
+c130Folder.add(worldSettings.c130, "pathy", 100, 5000, 50);
+c130Folder.add(worldSettings.c130, "zamp", 0, 1000, 1);
+c130Folder.add(worldSettings.c130, "zperiod", 0, 10, 0.01);
 c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.005);
 c130Folder.add(worldSettings.c130, "agl", 0, 500, 10);
+c130Folder.add(worldSettings.c130, "c130trackline");
 const missileFolder = gui.addFolder("missile");
 missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
 missileFolder.add(worldSettings.missile, "accel factor", 0, 500, 50);
@@ -247,6 +255,8 @@ loader.load("assets/c130_(EXPORT).glb", (gltf) => {
 // c130 calcaulate bounding box + movement
 var c130t = 0;
 var c130hit = false;
+var c130TrackLine = [];
+let c130TLGeometry, cTrackLine;
 
 function c130anim() {
     if(c130hit){return}
@@ -255,11 +265,12 @@ function c130anim() {
 
     // circular movement using sine and cosine
     c130t += worldSettings.c130.gndspeed;
-    c130Mesh.position.x = worldSettings.c130.radius * Math.cos(c130t) + 0;
-    c130Mesh.position.z = worldSettings.c130.radius * Math.sin(c130t) + 0;
-    c130Mesh.position.y = worldSettings.c130.agl;
+    c130Mesh.position.x = worldSettings.c130.pathx * Math.cos(c130t);
+    c130Mesh.position.z = worldSettings.c130.pathy * Math.sin(c130t);
+    c130Mesh.position.y = worldSettings.c130.agl + worldSettings.c130.zamp * Math.sin(worldSettings.c130.zperiod * c130t) ** 2;
 
     // make c130 face properly (for circular movement)
+    // TODO: fix tilt of c130, crazy tilt makes it looks like c130 is about to stall any minute
     c130Mesh.lookAt(0, 0, 0);
     c130Mesh.rotateX(Math.PI / 8);
 
@@ -268,6 +279,28 @@ function c130anim() {
     c130Mesh.userData.obb.applyMatrix4(c130Mesh.matrixWorld);
     c130Mesh.userData.obb.halfSize = new THREE.Vector3(10, 10, 10);
     // --!-- without the above halfsize multiplier, it breaks, as you will need to hit in the direct center of the C-130 for it to register a hit
+
+    if(worldSettings.c130.c130trackline === true){
+        if(c130TrackLine.length > 500){
+            c130TrackLine.shift();
+        }
+        scene.remove(cTrackLine);
+        var c130Pt = new THREE.Vector3();
+        c130Mesh.getWorldPosition(c130Pt);
+        c130TrackLine.push(c130Pt);
+        c130TLGeometry = new THREE.BufferGeometry().setFromPoints(c130TrackLine);
+        const c130Material = new THREE.LineBasicMaterial({
+            color: 0xff00ff,
+            linewidth: 50
+        });
+        cTrackLine = new THREE.Line(c130TLGeometry, c130Material);
+        c130TLGeometry.dispose();
+        scene.add(cTrackLine);
+    }
+    else{
+        c130TrackLine = [];
+    }
+
 
     requestAnimationFrame(c130anim);
 }
