@@ -1,5 +1,5 @@
 /*
-v1.5.0a
+v2.0.0a
 */
 
 
@@ -12,7 +12,7 @@ import {
 } from "./modules/OrbitControls.js";
 import {
     GLTFLoader
-} from "./modules/GLTFLoader.js";
+} from "./modules/GLTFLoader.min.js";
 import {
     OBB
 } from "./modules/OBB.js"
@@ -22,10 +22,12 @@ var rightClicked = false;
 
 // initialize scene, camera, renderer, and controls
 const scene = new THREE.Scene();
+document.getElementById("threeCanvas").scene = scene;
 var camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 8000);
 const renderer = new THREE.WebGLRenderer({
     alpha: true,
-    antialias: true
+    antialias: true,
+    canvas: threeCanvas
 });
 var clock = new THREE.Clock();
 
@@ -46,6 +48,7 @@ const worldSettings = {
         gndspeed: 0.0001,
         agl: Math.random() * 300+100,
         c130trackline: true,
+        tracklineAutoLength: false,
     },
 
     missile: {
@@ -74,6 +77,7 @@ c130Folder.add(worldSettings.c130, "zperiod", 0, 10, 0.01);
 c130Folder.add(worldSettings.c130, "gndspeed", 0.0001, 0.005);
 c130Folder.add(worldSettings.c130, "agl", 0, 500, 10);
 c130Folder.add(worldSettings.c130, "c130trackline");
+c130Folder.add(worldSettings.c130, "tracklineAutoLength");
 const missileFolder = gui.addFolder("missile");
 missileFolder.add(worldSettings.missile, "proxFuse", 1.25, 5);
 missileFolder.add(worldSettings.missile, "accel factor", 0, 500, 50);
@@ -88,14 +92,26 @@ normalFolder.add(worldSettings.operator.normal, "dampingFactor", 0.01, 0.1);
 
 // create skybox
 const sbLoad = new THREE.CubeTextureLoader();
-const sbTexture = sbLoad.load([
-    "./assets/skybox/bg.png",
-    "./assets/skybox/bg.png",
-    "./assets/skybox/top.png",
-    "./assets/skybox/top.png",
-    "./assets/skybox/bg.png",
-    "./assets/skybox/bg.png"
-]);
+let sbTexture;
+if(window.innerWidth <=1000){
+    sbTexture = sbLoad.load([
+        "./assets/skybox/bg.min.png",
+        "./assets/skybox/bg.min.png",
+        "./assets/skybox/top.min.png",
+        "./assets/skybox/top.min.png",
+        "./assets/skybox/bg.min.png",
+        "./assets/skybox/bg.min.png"
+    ]);
+} else {
+    sbTexture = sbLoad.load([
+        "./assets/skybox/bg.png",
+        "./assets/skybox/bg.png",
+        "./assets/skybox/top.png",
+        "./assets/skybox/top.png",
+        "./assets/skybox/bg.png",
+        "./assets/skybox/bg.png"
+    ]);
+}
 scene.background = sbTexture
 
 // add plane
@@ -110,6 +126,9 @@ const wireplane = new THREE.Mesh(wireplaneMesh, wireplaneMaterial);
 wireplane.rotation.set(Math.PI / 2, 0, 0);
 wireplane.position.set(0, 0.1, 0);
 scene.add(wireplane);
+
+console.log(wireplane.geometry.attributes)
+console.log(THREE.PlaneGeometry)
 
 const wireplaneMeshArray = wireplane.geometry.attributes.position.array;
 
@@ -168,7 +187,7 @@ setControls();
 // load 3d models
 const loader = new GLTFLoader();
 
-const missileLight = new THREE.PointLight(0xcca412, 6, 1, 2.5);
+const missileLight = new THREE.PointLight(0xcca412, 6, 1, 1);
 
 const sphereSize = 1;
 const pointLightHelper = new THREE.PointLightHelper( missileLight, sphereSize );
@@ -258,6 +277,11 @@ var c130hit = false;
 var c130TrackLine = [];
 let c130TLGeometry, cTrackLine;
 
+const c130Material = new THREE.LineBasicMaterial({
+    color: 0xff00ff,
+    linewidth: 1
+});
+
 function c130anim() {
     if(c130hit){return}
     const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
@@ -281,7 +305,7 @@ function c130anim() {
     // --!-- without the above halfsize multiplier, it breaks, as you will need to hit in the direct center of the C-130 for it to register a hit
 
     if(worldSettings.c130.c130trackline === true){
-        if(c130TrackLine.length > 500){
+        if(c130TrackLine.length > 500 && worldSettings.c130.tracklineAutoLength === true){
             c130TrackLine.shift();
         }
         scene.remove(cTrackLine);
@@ -289,10 +313,6 @@ function c130anim() {
         c130Mesh.getWorldPosition(c130Pt);
         c130TrackLine.push(c130Pt);
         c130TLGeometry = new THREE.BufferGeometry().setFromPoints(c130TrackLine);
-        const c130Material = new THREE.LineBasicMaterial({
-            color: 0xff00ff,
-            linewidth: 50
-        });
         cTrackLine = new THREE.Line(c130TLGeometry, c130Material);
         c130TLGeometry.dispose();
         scene.add(cTrackLine);
@@ -311,11 +331,11 @@ function c130hitcam(){
     c130pcam.position.set(c130Mesh.position.x, c130Mesh.position.y + 2, c130Mesh.position.z);
 }
 
-const directionalLight = new THREE.DirectionalLight( 0xfff8e3, 4 );
+const directionalLight = new THREE.DirectionalLight( 0xfff8e3, 3 );
 directionalLight.position.set( 200, 1000, 500 );
 scene.add( directionalLight );
 
-const pointLight = new THREE.PointLight( 0xfff8e3, 3 );
+const pointLight = new THREE.PointLight( 0xfff8e3, 2 );
 pointLight.position.set( 0, 1500, 0 );
 scene.add( pointLight );
 
@@ -359,7 +379,7 @@ var shiftDown = false;
 const cageNotify = document.getElementById("cage");
 
 function cageActions() {
-    if (!shiftDown) {
+    if (!shiftDown || (window.innerWidth <=1000 && !tpCache.includes("mobileCage"))) {
         // caged
         cageNotify.innerText = "-CAGED-";
         cageNotify.style.background = "#dd2222";
@@ -389,7 +409,7 @@ missileTrackLine.push(new THREE.Vector3(0, 2, 0));
 var mTLcount = 0;
 const mTLMaterial = new THREE.LineBasicMaterial({
     color: 0x0000ff,
-    linewidth: 50
+    linewidth: 1
 });
 var mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
 var TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
@@ -494,7 +514,7 @@ function fire() {
 
         const c130Mesh = scene.children.find(obj => obj.name === "c130Mesh").children[0];
         if(c130Mesh.userData.obb.intersectsBox3(missileBox)){
-            missileLight.intensity = 500;
+            missileLight.intensity = 10;
             missileLight.distance = 10;
             shotend = true;
             console.log("- - - SUCCESSFUL HIT - - -");
@@ -586,99 +606,110 @@ document.addEventListener("contextmenu", () => {
     camera.updateProjectionMatrix();
 });
 
+function startActions(){
+    if(fired === false){
+        console.log("- - - START - - -")
+
+        startSim = true;
+        controls.enableDamping = true;
+
+        controls.dampingFactor = 0.05;
+        controls.rotateSpeed = 0.2;
+
+        rotateWpn();
+        cageActions();
+
+        // update UI
+        loadIndicate.style.background = "#22cc55";
+        loadIndicate.innerText = "Loaded"
+        loadIndicate.style.color = "white";
+
+        tempCross.innerHTML = "------ <br />| + | <br />------";
+        
+        alertDoc.innerText = "";
+        alertDoc.style.opacity = "0";
+
+        document.getElementById("notifsbg").remove();
+
+        directionalLight.target = scene.children.find(obj => obj.name === "WeaponMesh").children[0];
+    }
+}
+
+function fireActions(){
+    if (!startSim) {
+        return
+    };
+    alertDoc.innerText = "";
+    alertDoc.style.opacity = "0";
+    fire();
+}
+
+function reloadActions(){
+    if (!startSim) {
+        return
+    };
+
+    // reset vars for firing
+    shotout = false;
+    fired = false;
+    shotend = false;
+    currdist = 0;
+    currspeed = 50;
+    curraccel = 57;
+    speedclock.stop();
+    curraccel = worldSettings.missile["accel factor"];
+
+    // restart c130 anim
+    if(c130hit){
+        c130hit = false;
+        c130anim();
+    }
+
+    // reset missile
+    missileTrackLine.length = 0;
+    missileTrackLine.push(new THREE.Vector3(0, 2, 0));
+    scene.remove(TrackLine);
+
+    const WeaponMesh = scene.children.find(obj => obj.name === "MissileMesh");
+
+    scene.remove(missileLight);
+    scene.remove(WeaponMesh);
+    console.log("--- Missile reset ---")
+
+    // update UI
+    loadIndicate.style.background = "#22cc55";
+    loadIndicate.innerText = "Loaded"
+    loadIndicate.style.color = "white";
+
+    tempCross.innerHTML = "------ <br /> | + | <br />------";
+
+    // reset camera
+    camera.position.set(0, 2, -2);
+
+    // reset controls
+    controls.enablePan = false;
+    controls.enableZoom = false;
+    controls.maxPolarAngle = 10 * (Math.PI / 12);
+    controls.minPolarAngle = 5 * (Math.PI / 12);
+    controls.target.set(0.5, 2.6, 0);
+    controls.update();
+}
+
 document.addEventListener("keypress", (e) => {
     switch (e.key) {
         // "start" actions
         case " ":
-            if(fired === false){
-                console.log("- - - START - - -")
-
-                startSim = true;
-                controls.enableDamping = true;
-
-                controls.dampingFactor = 0.05;
-                controls.rotateSpeed = 0.2;
-
-                rotateWpn();
-                cageActions();
-
-                // update UI
-                loadIndicate.style.background = "#22cc55";
-                loadIndicate.innerText = "Loaded"
-                loadIndicate.style.color = "white";
-
-                tempCross.innerHTML = "------ <br />| + | <br />------";
-                
-                alertDoc.innerText = "";
-                alertDoc.style.opacity = "0";
-
-                document.getElementById("notifsbg").remove();
-
-                directionalLight.target = scene.children.find(obj => obj.name === "WeaponMesh").children[0];
-            }
+            startActions();
             break;
 
             // fire weapon
         case "c":
-            if (!startSim) {
-                return
-            };
-            alertDoc.innerText = "";
-            alertDoc.style.opacity = "0";
-            fire();
+            fireActions();
             break;
-
+            
             // reload weapon
         case "r":
-            if (!startSim) {
-                return
-            };
-
-            // reset vars for firing
-            shotout = false;
-            fired = false;
-            shotend = false;
-            currdist = 0;
-            currspeed = 50;
-            curraccel = 57;
-            speedclock.stop();
-            curraccel = worldSettings.missile["accel factor"];
-
-            // restart c130 anim
-            if(c130hit){
-                c130hit = false;
-                c130anim();
-            }
-
-            // reset missile
-            missileTrackLine.length = 0;
-            missileTrackLine.push(new THREE.Vector3(0, 2, 0));
-            scene.remove(TrackLine);
-
-            const WeaponMesh = scene.children.find(obj => obj.name === "MissileMesh");
-
-            scene.remove(missileLight);
-            scene.remove(WeaponMesh);
-            console.log("--- Missile reset ---")
-
-            // update UI
-            loadIndicate.style.background = "#22cc55";
-            loadIndicate.innerText = "Loaded"
-            loadIndicate.style.color = "white";
-
-            tempCross.innerHTML = "------ <br /> | + | <br />------";
-
-            // reset camera
-            camera.position.set(0, 2, -2);
-
-            // reset controls
-            controls.enablePan = false;
-            controls.enableZoom = false;
-            controls.maxPolarAngle = 10 * (Math.PI / 12);
-            controls.minPolarAngle = 5 * (Math.PI / 12);
-            controls.target.set(0.5, 2.6, 0);
-            controls.update();
-
+            reloadActions();
             break;
 
     }
@@ -697,7 +728,6 @@ document.addEventListener("keydown", (e) => {
         shiftDown = true;
         cageActions();
     }
-
     if (e.key === "C") {
         if (shotout || fired) {
             console.log("- ! - No munition")
@@ -736,3 +766,35 @@ window.addEventListener('resize', (e) => {
 
 // fps display
 (function(){var script=document.createElement('script');script.onload=function(){var stats=new Stats();document.body.appendChild(stats.dom);requestAnimationFrame(function loop(){stats.update();requestAnimationFrame(loop)});};script.src='//mrdoob.github.io/stats.js/build/stats.min.js';document.head.appendChild(script);})()
+
+// mobile functionality
+const tpCache = [];
+
+document.getElementById("mobileCage").ontouchstart = function(){
+    if(startSim){
+        tpCache.push("mobileCage");
+        shiftDown = true;
+        cageActions();
+    }
+}
+
+document.getElementById("mobileCage").ontouchend = function(){
+    if(startSim){
+        tpCache.splice(tpCache.indexOf("mobileCage"), 1);
+        shiftDown = false;
+        cageActions();
+    }
+}
+
+document.getElementById("mobileFire").ontouchstart = function(){
+    fireActions();
+}
+
+document.getElementById("mobileReload").ontouchstart = function(){
+    reloadActions();
+}
+
+document.getElementById("mobileStart").ontouchstart = function(){
+    document.getElementById('mobileStart').style.display = 'none';
+    startActions();
+}
