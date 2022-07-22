@@ -3,7 +3,11 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
-v2.0.0a[20 Jul 2022]
+v2.0.1a [22 Jul 2020]
+ADDED:
+- Different .glb files loaded for mobile vs PC
+
+v2.0.0a [20 Jul 2022]
 ADDED:
 - Mobile-specific controls, CSS, skybox
 - Minified JS file for simulator
@@ -11,7 +15,7 @@ ADDED:
 CHANGED:
 - Lowered intensity of lights
 
-v1.5.0a[18 Jul 2022]
+v1.5.0a [18 Jul 2022]
 ADDED:
 - Squared sine wave for altitude change for c130, with corresponding params in GUI
 - C130 flight path can be shown, toggled with option in GUI

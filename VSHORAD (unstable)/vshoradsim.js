@@ -1,5 +1,5 @@
 /*
-v2.0.0a
+v2.0.1a
 */
 
 
@@ -127,9 +127,6 @@ wireplane.rotation.set(Math.PI / 2, 0, 0);
 wireplane.position.set(0, 0.1, 0);
 scene.add(wireplane);
 
-console.log(wireplane.geometry.attributes)
-console.log(THREE.PlaneGeometry)
-
 const wireplaneMeshArray = wireplane.geometry.attributes.position.array;
 
 var prev = 0;
@@ -198,40 +195,56 @@ missileLight.position.set(0, -50, 0);
 
 // missile
 function loadMissile() {
-    loader.load("assets/rbs70missile_scaled_1_5_(EXPORT).glb", (gltf) => {
+    let path;
+    if(window.innerWidth <=1000){
+        path = "assets/rbs70missile_scaled_1_5 (MIN).glb";
+    } else {
+        path = "assets/rbs70missile_scaled_1_5_(EXPORT).glb";
+    }
+    loader.load(path, (gltf) => {
         const missileMesh = gltf.scene;
         missileMesh.scale.set(missileMesh.scale.x * 0.1, missileMesh.scale.y * 0.1, missileMesh.scale.z * 0.1);
         missileMesh.position.set(0, 2, 0);
         missileMesh.name = "MissileMesh";
         scene.add(missileMesh);
         renderer.render(scene, camera);
-        const clips = gltf.animations;
-        const missileMixer = new THREE.AnimationMixer(gltf.scene);
 
-        // get clip for unfolding fins
-        clips.forEach((iclip) => {
-            const clip = gltf.animations.find((clip) => clip.name === iclip.name);
-            const finDeploy = missileMixer.clipAction(clip);
-            finDeploy.clampWhenFinished = true;
-            finDeploy.loop = THREE.LoopOnce;
-            finDeploy.play();
-            renderer.render(scene, camera)
-        });
+        if(window.innerWidth > 1000){
+            const clips = gltf.animations;
+            const missileMixer = new THREE.AnimationMixer(gltf.scene);
 
-        // animate fins
-        function missileAnim() {
-            missileMixer.timeScale = 10;
-            missileMixer.update(clock.getDelta());
-            requestAnimationFrame(missileAnim);
+            // get clip for unfolding fins
+            clips.forEach((iclip) => {
+                const clip = gltf.animations.find((clip) => clip.name === iclip.name);
+                const finDeploy = missileMixer.clipAction(clip);
+                finDeploy.clampWhenFinished = true;
+                finDeploy.loop = THREE.LoopOnce;
+                finDeploy.play();
+                renderer.render(scene, camera)
+            });
+
+            // animate fins
+            function missileAnim() {
+                missileMixer.timeScale = 10;
+                missileMixer.update(clock.getDelta());
+                requestAnimationFrame(missileAnim);
+            }
+            missileAnim();
         }
-        missileAnim();
+        
 
         renderer.render(scene, camera);
     });
 }
 
 // weapon
-loader.load("assets/rbs70_WEAPON_scaled_1_5_(EXPORT).glb", (gltf) => {
+let wpnpath;
+if(window.innerWidth <=1000){
+    wpnpath = "assets/rbs70_WEAPON_scaled_1_5_(MIN).glb";
+} else {
+    wpnpath = "assets/rbs70_WEAPON_scaled_1_5_(EXPORT).glb";
+}
+loader.load(wpnpath, (gltf) => {
     const weaponMesh = gltf.scene;
     weaponMesh.scale.set(weaponMesh.scale.x * 0.2, weaponMesh.scale.y * 0.2, weaponMesh.scale.z * 0.2);
     weaponMesh.position.set(0, 1.8, 0);
@@ -241,7 +254,13 @@ loader.load("assets/rbs70_WEAPON_scaled_1_5_(EXPORT).glb", (gltf) => {
 });
 
 // stand
-loader.load("assets/rbs70_STAND_scaled_1_5_(EXPORT).glb", (gltf) => {
+let standpath;
+if(window.innerWidth <=1000){
+    standpath = "assets/rbs70_STAND_scaled_1_5_(MIN).glb";
+} else {
+    standpath = "assets/rbs70_STAND_scaled_1_5_(EXPORT).glb";
+}
+loader.load(standpath, (gltf) => {
     const standMesh = gltf.scene;
     standMesh.scale.set(standMesh.scale.x * 0.2, standMesh.scale.y * 0.2, standMesh.scale.z * 0.2);
     standMesh.name = "StandMesh";
@@ -259,7 +278,13 @@ loader.load("assets/rbs70_SEAT_scaled_1_5_(EXPORT).glb", (gltf) => {
 });
 
 // c130
-loader.load("assets/c130_(EXPORT).glb", (gltf) => {
+let c130path;
+if(window.innerWidth <=1000){
+    c130path = "assets/c130_(EXPORT MIN).glb";
+} else {
+    c130path = "assets/c130_(EXPORT).glb";
+}
+loader.load(c130path, (gltf) => {
     const c130Mesh = gltf.scene;
 
     c130Mesh.name = "c130Mesh";
