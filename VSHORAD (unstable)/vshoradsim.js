@@ -1,5 +1,5 @@
 /*
-v2.0.1a
+v2.0.2a
 */
 
 
@@ -40,6 +40,13 @@ scene.add(camera);
 
 const gui = new dat.GUI();
 const worldSettings = {
+    scene:{
+        randomise:function(){
+            scene.remove(properplane);
+            scene.remove(wireplane);
+            generatePlane();
+        }
+    },
     c130: {
         pathx: Math.random() * 1000+500,
         pathy: Math.random() * 1000+500,
@@ -69,6 +76,9 @@ const worldSettings = {
     }
 };
 
+
+const sceneFolder = gui.addFolder("scene");
+sceneFolder.add(worldSettings.scene,"randomise");
 const c130Folder = gui.addFolder("c130");
 c130Folder.add(worldSettings.c130, "pathx", 100, 5000, 50);
 c130Folder.add(worldSettings.c130, "pathy", 100, 5000, 50);
@@ -92,75 +102,74 @@ normalFolder.add(worldSettings.operator.normal, "dampingFactor", 0.01, 0.1);
 
 // create skybox
 const sbLoad = new THREE.CubeTextureLoader();
-let sbTexture;
+let sbTexture, sbTop, sbBg;
 if(window.innerWidth <=1000){
-    sbTexture = sbLoad.load([
-        "./assets/skybox/bg.min.png",
-        "./assets/skybox/bg.min.png",
-        "./assets/skybox/top.min.png",
-        "./assets/skybox/top.min.png",
-        "./assets/skybox/bg.min.png",
-        "./assets/skybox/bg.min.png"
-    ]);
+    sbBg = "./assets/skybox/bg.min.png";
+    sbTop = "./assets/skybox/top.min.png";
 } else {
-    sbTexture = sbLoad.load([
-        "./assets/skybox/bg.png",
-        "./assets/skybox/bg.png",
-        "./assets/skybox/top.png",
-        "./assets/skybox/top.png",
-        "./assets/skybox/bg.png",
-        "./assets/skybox/bg.png"
-    ]);
+    sbBg = "./assets/skybox/bg.png";
+    sbTop = "./assets/skybox/top.png";
 }
+
+sbTexture = sbLoad.load([
+    sbBg, sbBg, sbTop, sbTop, sbBg, sbBg
+]);
+
 scene.background = sbTexture
 
-// add plane
-const planesize = 100
-const wireplaneMesh = new THREE.PlaneGeometry(10000, 10000, planesize, planesize);
-const wireplaneMaterial = new THREE.MeshBasicMaterial({
-    color: 0x008800,
-    side: THREE.DoubleSide,
-    wireframe: true,
-});
-const wireplane = new THREE.Mesh(wireplaneMesh, wireplaneMaterial);
-wireplane.rotation.set(Math.PI / 2, 0, 0);
-wireplane.position.set(0, 0.1, 0);
-scene.add(wireplane);
+let properplane, wireplane;
+function generatePlane(){
+    // add plane
+    const planesize = 100
+    const wireplaneMesh = new THREE.PlaneGeometry(10000, 10000, planesize, planesize);
+    const wireplaneMaterial = new THREE.MeshBasicMaterial({
+        color: 0x008800,
+        side: THREE.DoubleSide,
+        wireframe: true,
+    });
+    wireplane = new THREE.Mesh(wireplaneMesh, wireplaneMaterial);
+    wireplane.rotation.set(Math.PI / 2, 0, 0);
+    wireplane.position.set(0, 0.1, 0);
+    scene.add(wireplane);
 
-const wireplaneMeshArray = wireplane.geometry.attributes.position.array;
+    const wireplaneMeshArray = wireplane.geometry.attributes.position.array;
 
-var prev = 0;
-for (let i = 0; i < wireplaneMeshArray.length; i += 3) {
-    const z = wireplaneMeshArray[i + 2];
+    var prev = 0;
+    for (let i = 0; i < wireplaneMeshArray.length; i += 3) {
+        const z = wireplaneMeshArray[i + 2];
 
-    // noob way to smoothen plane
-    var rdm = 0;
-    var weight = Math.random()*15;
-    var posneg = Math.random();
-    if (posneg > 0.2) {
-        rdm = weight;
-    } else {
-        rdm = -weight;
+        // noob way to smoothen plane
+        var rdm = 0;
+        var weight = Math.random()*15;
+        var posneg = Math.random();
+        if (posneg > 0.2) {
+            rdm = weight;
+        } else {
+            rdm = -weight;
+        }
+        wireplaneMeshArray[i + 2] = z + prev + rdm;
+        prev = rdm;
     }
-    wireplaneMeshArray[i + 2] = z + prev + rdm;
-    prev = rdm;
+
+    // magic calculation to find index of node at 0, 0 given that planesize is even number
+    var midnode = (((planesize + 1) * (planesize / 2)) + (planesize / 2)) * 3;
+
+    const properplaneMesh = wireplaneMesh.clone()
+    const properplaneMaterial = new THREE.MeshBasicMaterial({
+        color: 0x74B06A,
+        side: THREE.DoubleSide,
+    })
+    properplane = new THREE.Mesh(properplaneMesh, properplaneMaterial);
+    properplane.rotation.set(Math.PI / 2, 0, 0);
+
+    wireplane.position.y += wireplaneMeshArray[midnode + 2];
+    properplane.position.y += wireplaneMeshArray[midnode + 2];
+
+    scene.add(properplane);
 }
 
-// magic calculation to find index of node at 0, 0 given that planesize is even number
-var midnode = (((planesize + 1) * (planesize / 2)) + (planesize / 2)) * 3;
+generatePlane();
 
-const properplaneMesh = wireplaneMesh.clone()
-const properplaneMaterial = new THREE.MeshBasicMaterial({
-    color: 0x74B06A,
-    side: THREE.DoubleSide,
-})
-const properplane = new THREE.Mesh(properplaneMesh, properplaneMaterial);
-properplane.rotation.set(Math.PI / 2, 0, 0);
-
-wireplane.position.y += wireplaneMeshArray[midnode + 2]
-properplane.position.y += wireplaneMeshArray[midnode + 2]
-
-scene.add(properplane)
 renderer.render(scene, camera);
 
 let controls;
