@@ -20,6 +20,7 @@ noob at programming
   - [Fake Virus Site](#fake-virus-site)
   - [pOOP Assistant - python OOP Assistant](#poop-assistant---python-oop-assistant)
   - [FoV-Subject Preview](#fov-subject-preview)
+  - [F1-Data](#f1-data)
 
 <br/><br/><br/>
 
@@ -41,6 +42,10 @@ RBS 70 is a MANPADS for VSHORAD / MSHORAD.
 
 It is produced by Saab Bofors Dynamics, and is SACLOS using laser beam-riding missiles.
 
+Laser needs to be uncaged, to allow it to be pointed at where the user points it to. Missile follows the laser beam.
+
+Compared with other weapon systems that rely on radar or infrared guidance, this SACLOS system is invulnerable to countermeasures such as chaff or flares.
+
 ### Features of simulator
 
 Contains basic functions, such as:
@@ -49,7 +54,10 @@ Contains basic functions, such as:
   - Missile stops after being uncaged mid-flight
 - Tracks whether missile is Loaded / In-Flight / Empty
 - Displays missile flight path after target is hit
+- Displays C130 (target) flight path
 - Range and altitude limit for missile based on open source info
+- Randomisable landscape
+- Basic support for mobile devices
 
 <br/><br/><br/>
 
@@ -86,3 +94,18 @@ Features:
 Uses jQuery to actively read user input and update element's HTML and CSS.
 
 First version created in June 2022.
+
+## F1-Data
+
+[This site](f1-data/index.html) provides users with a timetable of upcoming race, and a page for comparing laptimes of drivers.
+
+Features:
+- Timetable for upcoming races, color coded to show events that have been completed
+- Table to display current standings of driver championship
+- Page to compare lap times of 2 drivers throughout a chosen race. Is able to compare:
+  - Raw timing
+  - Timedelta with respect to first driver
+
+Uses the [Ergast Developer Api](http://ergast.com/mrd/) for data of upcoming races, current driverstandings, and laptimes of drivers.
+
+First version created in July 2022.
