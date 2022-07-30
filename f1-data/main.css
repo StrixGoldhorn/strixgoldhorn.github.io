@@ -201,3 +201,160 @@ body {
     margin: auto auto 2em;
   }
 }
+
+@media (orientation: portrait){
+  #menu{
+    height: 1.2em;
+    vertical-align: middle;
+  }
+
+  #menu a{
+    font-size: 1.2em;
+    padding: 0.1em 1em;
+    vertical-align: middle;
+    height: 100%;
+  }
+
+  #menu a:hover{
+    background-color: #8c9da4;
+    padding: 0.1em 2em;
+    vertical-align: middle;
+  }
+
+  #DRselect{
+    margin: 0.3em;
+    padding: 0.5em;
+    text-align: left;
+    line-height: 1.2em;
+    border: solid;
+    border-radius: 0.5em;
+  }
+
+  #DRselect select{
+    margin: 0.3em;
+    font-size: 0.8em;
+    padding: 1em, 1em;
+    vertical-align: middle;
+  }
+
+  #DRselect input[type=checkbox]{
+    height: 1.2em;
+    width: 1.2em;
+    vertical-align: middle;
+  }
+
+  #LTgraph{
+    margin: 0.5em;
+    font-size: 1em;
+    padding: 1em, 2em;
+    color: #e7f0f5;
+  }
+
+  #intro {
+    margin: auto auto 0.8em;
+    width: 100%;
+    text-align: center;
+  }
+  
+  #appName{
+    margin: 0.1em;
+    padding: 0.1em;
+    font-family: Lucida Sans Unicode;
+    font-size: 1em;
+    font-weight: bolder;
+  }
+  
+  #sideBar{
+    margin: 0em 0.5em;
+  }
+
+  a:link{
+    color:#242628;
+    text-decoration: none;
+  }
+
+  a:visited{
+    color:#5b6066;
+    text-decoration: none;
+  }
+
+  #responses{
+    width: 90%;
+    text-align: center;
+    margin: auto;
+    margin-top: 0em;
+    border-radius: 0.5em;
+    background-color: #e7f0f5;
+    font-size: 0.8em;
+  }
+  
+  #defaultText{
+    margin: 0.1em;
+    padding: 0.2em;
+    display: flex;
+    align-items: center;
+    border: none;
+    justify-content: center;
+  }
+
+  table{
+    width: 100%;
+    margin: auto auto 2em;
+    padding: 0.2em;
+    border: solid;
+    border-collapse: collapse;
+  }
+
+  #driverStandings{
+    padding: 0.1em;
+    font-size: 0.7em;
+    text-align: center;
+  }
+
+  #driverStandings td{
+    padding: 0.2em;
+    border: none;
+  }
+
+  #nextTable {
+    align-content: flex-start;
+    width: 100%;
+    padding: 0.2em;
+    border: solid;
+    border-collapse: collapse;
+  }
+  
+  #nextTable th{
+    padding: 0.4em;
+    border: solid;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  #nextTable td{
+    padding: 0.4em;
+    border: solid;
+    font-size: 1em;
+  }
+
+  #nextTable tr{
+    padding: 0.4em;
+    border: solid;
+  }
+
+  #mapBox{
+    display: none;
+  }
+  
+  button{
+    background-color: #a0cdf2;
+    font-size: 1em;
+    border-radius: 10%;
+    padding: 0.5em;
+  }
+  
+  #pitstopTimings{
+    width: 80%;
+    margin: auto auto 2em;
+  }
+}

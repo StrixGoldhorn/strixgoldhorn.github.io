@@ -112,17 +112,17 @@ function nextRace(){
 
             $("#nextTable").append(`
                 <tr id="${events[0][0]}">
-                    <td>${events[0][0]}</td>
-                    <td>${events[0][1].toLocaleString('en-SG', dtoptions)}</td>
-                    <td rowspan="5" colspan="2" id="mapBox"><img src="${url}${mapimg}" style="max-width: 90%"></td>
+                    <td ${(screen.orientation.type === "portrait-primary") ? 'colspan="2"' : ''}>${events[0][0]}</td>
+                    <td ${(screen.orientation.type === "portrait-primary") ? 'colspan="2"' : ''} style='background-color: ${(events[0][1] > new Date()) ? "#7d8" : "#e76"}'>${events[0][1].toLocaleString('en-SG', dtoptions)}</td>
+                    ${(screen.orientation.type === "portrait-primary") ? '' : '<td rowspan="5" colspan="2" id="mapBox"><img src="'+url+mapimg+'" style="max-width: 90%"></td>'}
                 </tr>
             `);
 
             for(var i=1; i<events.length; i++){
                 $("#nextTable").append(`
                 <tr id="${events[i][0]}">
-                    <td>${events[i][0]}</td>
-                    <td>${events[i][1].toLocaleString('en-SG', dtoptions)}</td>
+                    <td ${(screen.orientation.type === "portrait-primary") ? 'colspan="2"' : ''}>${events[i][0]}</td>
+                    <td ${(screen.orientation.type === "portrait-primary") ? 'colspan="2"' : ''} style='background-color: ${(events[i][1] > new Date()) ? "#7d8" : "#e76"}'>${events[i][1].toLocaleString('en-SG', dtoptions)}</td>
                 </tr>
                 `);
             }
