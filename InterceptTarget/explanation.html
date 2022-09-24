@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        #mt {
+            width: 90vw;
+            margin: auto;
+        }
+        tr{
+            margin:auto;
+        }
+        body{
+            font-size: 1.4em;
+            line-height: 1.5em;
+        }
+        #vt{
+            border: 1px solid;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        #vt td, #vt th{
+            border: 1px solid;
+            padding: 0.5em, 1em;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <table id="mt">
+            <tr>
+                <td style="width: 45vw">
+                    Let the target be at point A, with velocity Va<br/>
+                    Let the chaser be at point B, with velocity Vb<br/>
+                    Let D be vector from point A to point B, with magnitude d<br/>
+                    Let θ be angle BAI<br/>
+                    Let the point of interception be at point I, and time taken to intercept be t<br/><br/>
+
+                    <table id="vt">
+                        <thead>
+                            <th>Known</th>
+                            <th>Unknown</th>
+                        </thead>
+                        <tr>
+                            <td>A</td>
+                            <td>I</td>
+                        </tr>
+                        <tr>
+                            <td>Va</td>
+                            <td>θ</td>
+                        </tr>
+                        <tr>
+                            <td>Sa</td>
+                            <td>Vb</td>
+                        </tr>
+                        <tr>
+                            <td>B</td>
+                            <td>t</td>
+                        </tr>
+                        <tr>
+                            <td>Sb</td>
+                        </tr>
+                        <tr>
+                            <td>D</td>
+                        </tr>
+                        <tr>
+                            <td>d</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <img src="./interceptVector.png" width="70%" height="70%"><br />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <br/><br/>
+                    Using cosine rule, |Vb|² = |D|² + |Va|² - 2|D||Va|cosθ<br/>
+                    ((Sb)(t))² = d² + ((Sa)(t))² - 2|D||Va|cosθ<br/>
+                    (Sb - Sa)t² + 2(d)(Sa)(cosθ)t - d² = 0<br/><br/>
+
+                    Using the definition of dot product, D ⋅ Va = |D||Va|cosθ = (d)(Sa)(cosθ)<br/><br/>
+
+                    Hence, (Sb - Sa)t² + 2(D ⋅ Va)t - d² = 0, giving us a quadratic formula with unknown term t<br/><br/>
+
+                    Solving with the quadratic formula can give us t, time taken to intercept.<br/><br/>
+
+                    With this, intercept position can be found using the position of the target and its speed and normalised velocity (to give direction).<br/><br/>
+
+                    I = A + (Sa)(t)(normalised(Va))<br/><br/><br/>
+
+                    As promised, all solveable with concepts taught in H2 Mathematics   :)<br/><br/>
+                    
+                    <br/><br/><br/><br/><br/><br/>
+
+                </td>
+            </tr>
+        </table>
+    </main>
+</body>
+
+</html>

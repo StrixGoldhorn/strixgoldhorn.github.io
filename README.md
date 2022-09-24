@@ -21,6 +21,7 @@ noob at programming
   - [pOOP Assistant - python OOP Assistant](#poop-assistant---python-oop-assistant)
   - [FoV-Subject Preview](#fov-subject-preview)
   - [F1-Data](#f1-data)
+  - [InterceptTarget](#intercepttarget)
 
 <br/><br/><br/>
 
@@ -109,3 +110,17 @@ Features:
 Uses the [Ergast Developer Api](http://ergast.com/mrd/) for data of upcoming races, current driverstandings, and laptimes of drivers.
 
 First version created in July 2022.
+
+## InterceptTarget
+
+[Simple visualisation of one of the simplest target interception method.](InterceptTarget/index.html)
+
+[Can be derived just from H2 Mathematics using vectors.](InterceptTarget/explanation.html)
+
+Buggy mess when trying to prioritise multiple target.
+
+No action taken to chase target of opportunity, though it will eliminate them if it comes within range.
+
+Made with p5.js
+
+First version created in September 2022.
