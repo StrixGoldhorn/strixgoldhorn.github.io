@@ -4,8 +4,7 @@ class Target {
     this.displacementLog = [];
   }
 
-  extrapolatePath(chasePos, chaseSpeed, predtarget) {
-    let predicted;
+  extrapolatePath(chasePos, chaseSpeed) {
 
     if (this.displacementLog.length >= 2) {
       let curr = this.displacementLog[this.displacementLog.length - 1];
@@ -33,14 +32,14 @@ class Target {
 
       fill(color(255, 51, 51, 255));
 
-      if(p5.Vector.dist(curr, I1) > p5.Vector.dist(curr, I2)){
+      if (p5.Vector.dist(curr, I1) > p5.Vector.dist(curr, I2)) {
         line(curr.x, curr.y, I1.x, I1.y);
         line(chasePos.x, chasePos.y, I2.x, I2.y);
         circle(I1.x, I1.y, 10);
         circle(I2.x, I2.y, 15);
         return I2;
       }
-      else{
+      else {
         line(curr.x, curr.y, I2.x, I2.y);
         line(chasePos.x, chasePos.y, I1.x, I1.y);
         circle(I1.x, I1.y, 15);
@@ -51,10 +50,10 @@ class Target {
     }
 
     else {
-      predicted = this.displacementLog[this.displacementLog.length - 1]
+      let predicted = this.displacementLog[this.displacementLog.length - 1]
       return predicted;
     }
   }
-  
+
 
 }

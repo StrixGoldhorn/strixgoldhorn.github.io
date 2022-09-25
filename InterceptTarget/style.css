@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
 }
@@ -7,13 +8,21 @@ canvas {
   display: block;
 }
 
-button{
+button {
   width: 2em;
   height: 2em;
   border-radius: 10%;
   background-color: gainsboro;
 }
 
-button:hover{
+button:hover {
   background-color: ghostwhite;
+}
+
+#instr {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  font-family: sans-serif;
+
 }

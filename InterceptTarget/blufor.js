@@ -1,5 +1,5 @@
 class BLUFOR extends Ship {
-  constructor(x, y, id, predtarget) {
+  constructor(x, y, id) {
     super(x, y, id);
     this.maxspeed = 0.5;
     this.maxaccel = 0.5;
@@ -8,7 +8,6 @@ class BLUFOR extends Ship {
     this.color = color(51, 102, 255, 80);
     this.wpnRange = 15;
     this.target = null;
-    this.predtarget = predtarget;
   }
 
   render() {
@@ -39,8 +38,8 @@ class BLUFOR extends Ship {
         circle(predictedVector.x, predictedVector.y, 15);
         this.steer(predictedVector);
       }
-      
-      if(d <= this.wpnRange && this.constructor.name != ships[i].constructor.name){
+
+      if (d <= this.wpnRange && this.constructor.name != ships[i].constructor.name) {
         this.checkKill(i);
       }
     }

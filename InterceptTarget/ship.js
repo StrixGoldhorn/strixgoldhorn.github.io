@@ -22,9 +22,9 @@ class Ship {
     if (ships[i].constructor.name != this.constructor.name) {
       console.log(ships[i].constructor.name, ships[i].id, "killed");
       OPFORcnt -= 1;
-      ships[0].target = null;
-      ships[0].targetViaComms = false;
-      ships[0].targetPath = [];
+      if (ships[i].id == ships[0].target.id) {
+        ships[0].target = null;
+      }
       ships.splice(i, 1);
     }
   }
@@ -50,7 +50,7 @@ class Ship {
       this.acceleration.x = -this.acceleration.x;
     }
 
-    if ((this.displacement.y > width) ||
+    if ((this.displacement.y > height) ||
       (this.displacement.y < 0)) {
       this.velocity.y = -this.velocity.y;
       this.acceleration.y = -this.acceleration.y;
