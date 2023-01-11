@@ -22,7 +22,7 @@ noob at programming
   - [FoV-Subject Preview](#fov-subject-preview)
   - [F1-Data](#f1-data)
   - [InterceptTarget](#intercepttarget)
-  - [Not-A-Flight-Sim](#Not-A-Flight-Sim)
+  - [Not-A-Flight-Sim](#not-a-flight-sim)
 
 <br/><br/><br/>
 
