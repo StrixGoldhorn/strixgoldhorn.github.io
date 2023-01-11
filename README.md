@@ -22,6 +22,7 @@ noob at programming
   - [FoV-Subject Preview](#fov-subject-preview)
   - [F1-Data](#f1-data)
   - [InterceptTarget](#intercepttarget)
+  - [Not-A-Flight-Sim](#Not-A-Flight-Sim)
 
 <br/><br/><br/>
 
@@ -96,6 +97,8 @@ Uses jQuery to actively read user input and update element's HTML and CSS.
 
 First version created in June 2022.
 
+<br/><br/><br/>
+
 ## F1-Data
 
 [This site](f1-data/index.html) provides users with a timetable of upcoming race, and a page for comparing laptimes of drivers.
@@ -111,6 +114,8 @@ Uses the [Ergast Developer Api](http://ergast.com/mrd/) for data of upcoming rac
 
 First version created in July 2022.
 
+<br/><br/><br/>
+
 ## InterceptTarget
 
 [Simple visualisation of one of the simplest target interception method.](InterceptTarget/index.html)
@@ -124,3 +129,17 @@ No action taken to chase target of opportunity, though it will eliminate them if
 Made with p5.js
 
 First version created in September 2022.
+
+<br/><br/><br/>
+
+## Not-A-Flight-Sim
+
+[NOT A FLIGHT SIM](Not-A-Flight-Sim/index.html), please do not go to the site with the expectation of it being a DCS-esque flight sim.
+
+No physics engine used. Barely added barebones acceleration and velocity. No air drag, lift, etc.
+
+Written with ThreeJS. Terrain generated from perlin noise.
+
+Created to learn global vs local positioning, matrixes, euler transforms, quaternions, dealing with object collisions.
+
+First version created in Early January 2023.

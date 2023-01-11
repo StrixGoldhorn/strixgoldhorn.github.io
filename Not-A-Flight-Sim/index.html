@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Not-A-Flight-Sim</title>
+  <style>
+    body {
+      font-family: "Lucida Console";
+      margin: 0;
+      overflow: hidden;
+    }
+
+    main{
+      display: none;
+    }
+
+    #throttleIndicator{
+      transform: rotate(-90deg);
+      position: absolute;
+      top: 15%
+    }
+
+    #instructions{
+      position: absolute;
+      bottom: 5%;
+      left: 5%
+    }
+    
+    #vers{
+      font-size: 0.5em;
+      position: absolute;
+      bottom: 2%;
+      left: 5%
+    }
+  </style>
+</head>
+
+<body>
+  <progress id="throttleIndicator" max="200" value="100"></progress>
+  <div id="instructions">WS for pitch, AS for roll, QE for yaw.<br/>PgUp and PgDn for throttle controls. Space to set throttle to zero.<br/>Home for instant stop.<br/>R to teleport upwards if crashed into terrain.</div>
+  <div id="vers">v0.1</div>
+  <span id="canvas"></span>
+</body>
+
+<!-- ThreeJS -->
+<script type="module" src="./main.js"></script>
+
+</html>
