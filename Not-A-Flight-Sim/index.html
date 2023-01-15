@@ -11,38 +11,55 @@
       overflow: hidden;
     }
 
-    main{
+    main {
       display: none;
     }
 
-    #throttleIndicator{
+    #throttleIndicator {
       transform: rotate(-90deg);
       position: absolute;
       top: 15%
     }
 
-    #instructions{
+    #instructions {
       position: absolute;
       bottom: 5%;
       left: 5%
     }
-    
-    #vers{
-      font-size: 0.5em;
+
+    #distdiff {
+      position: absolute;
+      top: 1em;
+      right: 1em;
+    }
+
+    #speed {
+      position: absolute;
+      top: 1em;
+      left: 1em;
+    }
+
+    #vers {
+      font-size: 0.8em;
       position: absolute;
       bottom: 2%;
       left: 5%
     }
   </style>
+  <link rel="icon" href="NAFS-Favicon.png" type="png" sizes="32x32">
 </head>
 
 <body>
+  <div id="distdiff">[-missing info-]</div>
+  <div id="speed">[-missing info-]</div>
   <progress id="throttleIndicator" max="200" value="100"></progress>
-  <div id="instructions">WS for pitch, AS for roll, QE for yaw.<br/>PgUp and PgDn for throttle controls. Space to set throttle to zero.<br/>Home for instant stop.<br/>R to teleport upwards if crashed into terrain.</div>
-  <div id="vers">v0.1</div>
+  <div id="instructions">WS for pitch, AS for roll, QE for yaw.<br />PgUp and PgDn for throttle controls. Space to set
+    throttle to zero.<br />Home for instant stop.<br />R to teleport upwards if crashed into terrain.</div>
+  <div id="vers">v0.2</div>
   <span id="canvas"></span>
 </body>
 
+<script type="module" src="./sam.js"></script>
 <!-- ThreeJS -->
 <script type="module" src="./main.js"></script>
 

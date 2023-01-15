@@ -136,10 +136,14 @@ First version created in September 2022.
 
 [NOT A FLIGHT SIM](Not-A-Flight-Sim/index.html), please do not go to the site with the expectation of it being a DCS-esque flight sim.
 
+It does, however, feature SAM sites to intercept the player.
+
 No physics engine used. Barely added barebones acceleration and velocity. No air drag, lift, etc.
 
 Written with ThreeJS. Terrain generated from perlin noise.
 
 Created to learn global vs local positioning, matrixes, euler transforms, quaternions, dealing with object collisions.
+
+Also to learn proportional navigation.
 
 First version created in Early January 2023.

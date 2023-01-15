@@ -2,6 +2,19 @@
 Changelog for Not-A-Flight-Sim
 */
 
+v0.2 [15 Jan 2023]
+Added:
+- Simple SAM sites (1 SAM each), 3 SAM sites added to random coordinates on map
+      - SAMs have top speed barely above aircraft top speed
+      - SAMs have simple model to decay speed after certain amont of time
+      - Uses proportional navigation to determine intercept
+- Indicator for range of aircraft to SAM
+- Shadow for aircraft
+- Speed indicator for aircraft (GSI, there is no air speed in this simplistic program)
+
+Changed:
+- Aircraft top speed
+
 v0.1 [11 Jan 2023]
 First barebones, basic version of Not-A-Flight-Sim released
 
