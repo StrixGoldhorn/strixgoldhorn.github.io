@@ -309,12 +309,18 @@ loader.load(c130path, (gltf) => {
 var c130t = 0;
 var c130hit = false;
 var c130TrackLine = [];
-let c130TLGeometry, cTrackLine;
+let cTrackLine;
 
 const c130Material = new THREE.LineBasicMaterial({
     color: 0xff00ff,
     linewidth: 1
 });
+
+
+
+var c130halfSize = new THREE.Vector3(10, 10, 10),
+    c130Pt = new THREE.Vector3(),
+    c130TLGeometry = new THREE.BufferGeometry();
 
 function c130anim() {
     if(c130hit){return}
@@ -333,9 +339,9 @@ function c130anim() {
     c130Mesh.rotateX(Math.PI / 8);
 
     // use obb for hitbox
-    c130Mesh.userData.obb = new OBB();
+    c130Mesh.userData.obb = new OBB(); // IDK why but if you don't intialise this every single time, it BREAKS.
     c130Mesh.userData.obb.applyMatrix4(c130Mesh.matrixWorld);
-    c130Mesh.userData.obb.halfSize = new THREE.Vector3(10, 10, 10);
+    c130Mesh.userData.obb.halfSize = c130halfSize;
     // --!-- without the above halfsize multiplier, it breaks, as you will need to hit in the direct center of the C-130 for it to register a hit
 
     if(worldSettings.c130.c130trackline === true){
@@ -343,11 +349,10 @@ function c130anim() {
             c130TrackLine.shift();
         }
         scene.remove(cTrackLine);
-        var c130Pt = new THREE.Vector3();
         c130Mesh.getWorldPosition(c130Pt);
-        c130TrackLine.push(c130Pt);
-        c130TLGeometry = new THREE.BufferGeometry().setFromPoints(c130TrackLine);
-        cTrackLine = new THREE.Line(c130TLGeometry, c130Material);
+        c130TrackLine.push(c130Pt.clone());
+        c130TLGeometry.setFromPoints(c130TrackLine);
+        cTrackLine = new THREE.Line(c130TLGeometry, c130Material); // Can't find a way to reuse a THREE.Line
         c130TLGeometry.dispose();
         scene.add(cTrackLine);
     }
@@ -384,6 +389,10 @@ function animate() {
 }
 animate();
 
+var alignWpnVector = new THREE.Vector3(),
+    focalWpn = new THREE.Vector3(),
+    focalSeat = new THREE.Vector3();
+
 // rbs70 weapon animation
 function rotateWpn() {
     // select appropriate meshes
@@ -391,13 +400,12 @@ function rotateWpn() {
     const SeatMesh = scene.children.find(obj => obj.name === "SeatMesh");
 
     // create vectors, align to camera (where player looks)
-    var alignWpnVector = new THREE.Vector3();
-    var focalWpn = new THREE.Vector3(
+    focalWpn.set(
         WeaponMesh.position.x + camera.getWorldDirection(alignWpnVector).x,
         WeaponMesh.position.y + camera.getWorldDirection(alignWpnVector).y,
         WeaponMesh.position.z + camera.getWorldDirection(alignWpnVector).z,
     );
-    var focalSeat = new THREE.Vector3(
+    focalSeat.set(
         SeatMesh.position.x + camera.getWorldDirection(alignWpnVector).x,
         SeatMesh.position.y,
         SeatMesh.position.z + camera.getWorldDirection(alignWpnVector).z,
@@ -468,6 +476,12 @@ function missiledist(u){
     return s;
 }
 
+var alignWpnVector = new THREE.Vector3(),
+    longFocal = new THREE.Vector3(),
+    focalWpn = new THREE.Vector3,
+    missilePt = new THREE.Vector3(),
+    mTLGeometry = new THREE.BufferGeometry()
+
 function fire() {
     // logic checks
     if (!fired && shiftDown && !shotend) {
@@ -511,9 +525,7 @@ function fire() {
         
 
         // animation + movement of missile
-        var alignWpnVector = new THREE.Vector3();
-        var longFocal = new THREE.Vector3();
-        var focalWpn = new THREE.Vector3(
+        focalWpn.set(
             camera.getWorldDirection(alignWpnVector).x,
             camera.getWorldDirection(alignWpnVector).y,
             camera.getWorldDirection(alignWpnVector).z,
@@ -525,7 +537,6 @@ function fire() {
 
         currdist += missiledist(currspeed);
 
-        var missilePt = new THREE.Vector3();
         MissileMesh.getWorldPosition(missilePt);
         MissileMesh.lookAt(longFocal.multiplyScalar(10000));
 
@@ -557,7 +568,7 @@ function fire() {
             
             // update final trackline
             missileTrackLine.push(missilePt);
-            mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
+            mTLGeometry.setFromPoints(missileTrackLine);
             TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
             scene.add(TrackLine);
 
@@ -590,7 +601,7 @@ function fire() {
         if(Math.round(missilePt.length()) > 9000 || Math.round(MissileMesh.position.y) > 5500){
             shotend = true;
             console.log("- ! - Max Range Exceeded");
-            mTLGeometry = new THREE.BufferGeometry().setFromPoints(missileTrackLine);
+            mTLGeometry.setFromPoints(missileTrackLine);
             TrackLine = new THREE.Line(mTLGeometry, mTLMaterial);
 
             scene.add(TrackLine);
@@ -615,6 +626,9 @@ function fire() {
         alertDoc.style.opacity = "1";
         alertDoc.style.background = "#dd2222";
     }
+
+    
+    console.log(scene)
 }
 
 
@@ -675,6 +689,7 @@ function fireActions(){
     };
     alertDoc.innerText = "";
     alertDoc.style.opacity = "0";
+    
     fire();
 }
 

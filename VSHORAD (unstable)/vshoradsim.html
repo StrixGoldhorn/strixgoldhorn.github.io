@@ -70,7 +70,10 @@
             vertical-align: middle;
             color: rgba(0, 255, 0, 0.641);
             margin: auto;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             pointer-events: none;
             font-size: 1em;
             padding: 50%, 0;
@@ -102,30 +105,35 @@
             left: 2%;
         }
 
-        #mobile{
+        #mobile {
             display: none;
         }
 
-        #mobileControlTable{
-            display:none;
+        #mobileControlTable {
+            display: none;
         }
+
         @media screen and (max-width: 1000px) {
             #tempCross {
                 display: table-cell;
                 vertical-align: middle;
                 color: rgba(0, 255, 0, 0.641);
                 margin: auto;
-                top: 45%; left: 0; right: 0; bottom: 0;
+                top: 45%;
+                left: 0;
+                right: 0;
+                bottom: 0;
                 pointer-events: none;
                 position: absolute;
                 font-size: 1em;
                 width: 100%;
             }
 
-            #mobile{
+            #mobile {
                 display: block;
             }
-            #mobileControlTable{
+
+            #mobileControlTable {
                 display: block;
                 color: white;
                 bottom: 5em;
@@ -134,7 +142,8 @@
                 font-size: 1em;
                 border-radius: 5px;
             }
-            #mobileControlTable tr td{
+
+            #mobileControlTable tr td {
                 padding: 1em;
                 margin: 2em;
                 height: 5em;
@@ -155,6 +164,7 @@
                 border-radius: 5px;
                 opacity: 0;
             }
+
             #cage {
                 margin: auto;
                 color: white;
@@ -180,9 +190,14 @@
                 font-size: 1.2em;
                 border-radius: 5px;
             }
+
+            #notifsbg {
+                opacity: 0;
+            }
+
         }
     </style>
-    <script src="./vshoradsim.min.js" type="module"></script>
+    <script src="./vshoradsim.js" type="module"></script>
 </head>
 
 <body oncontextmenu="return false">
@@ -190,7 +205,7 @@
         <div id="cage"></div>
         <div id="loadIndicate"></div>
         <div id="alert"></div>
-    
+
         <div id="tempCross">
         </div>
 
@@ -198,34 +213,36 @@
             <div id="notifs">
                 <h3 style="text-align: center; font-size: 30px">VSHORAD Simulator</h3>
                 <h4>Instructions:</h4>
-    
+
                 <p>To look around, HOLD LMB and drag (Note: deadzone in crosshair, do not click LMB there).</p>
                 <p>To zoom, CLICK RMB to toggle.</p>
-    
+
                 <br />
-    
-                <p>To uncage seeker, HOLD SHIFT. If SHIFT is lifted, seeker will be caged. (Note: HOLD LMB before uncaging)
+
+                <p>To uncage seeker, HOLD SHIFT. If SHIFT is lifted, seeker will be caged. (Note: HOLD LMB before
+                    uncaging)
                 </p>
                 <p>To fire, CLICK "C".</p>
                 <p>To reload and/or reset, CLICK "R".</p>
-    
+
                 <br />
-    
-                <p style="font-size: 22px;">When firing, ensure seeker is <b>UNCAGED</b> and missile is <b>LOADED. If not,
+
+                <p style="font-size: 22px;">When firing, ensure seeker is <b>UNCAGED</b> and missile is <b>LOADED. If
+                        not,
                         missile will not fire.</b></p>
                 <p>On the top-left, there will be 2 indicators, one for status of seeker (caged | uncaged), and one for
                     status of missile (loaded | in-flight | empty)</p>
                 <p>If target is hit, crosshair will indicate "HIT". No indication if miss.</p>
-    
+
                 <p style="text-align: center; font-size: 25px"><b>- - - PRESS SPACE TO START - - -</b></p>
-    
+
                 <p style="font-size: 10px">
                     Notes:<br />
                     C-130 hitbox is slightly off<br />
                     Terrain has no hitbox, can shoot through terrain<br />
                     Use GUI on top-right to change params of C-130, missile and operator (ie zoom and sensitivity)
                 </p>
-    
+
             </div>
         </div>
 
@@ -247,7 +264,8 @@
         </table>
     </div>
 
-    <div id="ver">v2.0.2a<p id="mobile">Mobile Ver</p></div>
+    <div id="ver">v2.0.2a<p id="mobile">Mobile Ver</p>
+    </div>
 
 </body>
 
