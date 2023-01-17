@@ -2,6 +2,11 @@
 Changelog for Not-A-Flight-Sim
 */
 
+v0.3 [17 Jan 2023]
+Added:
+- Simple mobile functionality
+      - Controls via on-screen touchpoints and device accelerometer
+
 v0.2 [15 Jan 2023]
 Added:
 - Simple SAM sites (1 SAM each), 3 SAM sites added to random coordinates on map

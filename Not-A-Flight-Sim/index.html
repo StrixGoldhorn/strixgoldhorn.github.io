@@ -9,6 +9,7 @@
       font-family: "Lucida Console";
       margin: 0;
       overflow: hidden;
+      touch-action: manipulation;
     }
 
     main {
@@ -45,22 +46,120 @@
       bottom: 2%;
       left: 5%
     }
+
+    #joyDiv {
+      position: absolute;
+      top: 45%;
+      left: 2%;
+      width: 200px;
+      height: 200px;
+      margin-bottom: 20px;
+      background-color: aqua;
+    }
+
+
+    #data {
+      background-color: aqua;
+      position: absolute;
+      top: 45%;
+      left: 2%;
+    }
+
+    #mobileCalibrate {
+      display: none;
+      position: absolute;
+      top: 60%;
+      left: 2%;
+      padding: 1em;
+      margin: 2em;
+      background-color: rgb(0, 217, 255);
+      opacity: 50%
+    }
+
+    #mobileReset {
+      display: none;
+      position: absolute;
+      top: 20%;
+      right: 2%;
+      padding: 1em;
+      margin: 2em;
+      background-color: rgb(0, 217, 255);
+      opacity: 50%
+    }
+
+    #mobileThrottle {
+      display: none;
+      transform: rotate(-90deg);
+      position: absolute;
+      top: 20%;
+    }
+
+    #mobileYaw {
+      display: none;
+      position: absolute;
+      bottom: 5%;
+      left: 70%;
+      width: 20%;
+    }
+
+    @media screen and (max-width: 1000px) {
+      #throttleIndicator {
+        display: none;
+      }
+
+      #instructions {
+        display: none;
+      }
+
+      #mobileCalibrate {
+        display: block;
+      }
+
+      #mobileReset {
+        display: block;
+      }
+
+      #mobileThrottle {
+        display: block;
+      }
+
+      #mobileYaw {
+        display: block;
+      }
+    }
   </style>
   <link rel="icon" href="NAFS-Favicon.png" type="png" sizes="32x32">
 </head>
 
 <body>
+  <!-- Mobile Stuff -->
+  <input type="range" min="0" max="100" value="50" class="slider" id="mobileYaw" list="mobileYawList">
+  <datalist id="mobileYawList">
+    <option value="50"></option>
+  </datalist>
+  <input type="range" min="1" max="200" value="100" class="slider" id="mobileThrottle" list="mobileThrottleList">
+  <datalist id="mobileThrottleList">
+    <option value="50"></option>
+    <option value="100"></option>
+    <option value="150"></option>
+  </datalist>
+  <div id="mobileCalibrate">Calibrate</div>
+  <div id="mobileReset">Reset</div>
+
+  <!-- HUD elements -->
   <div id="distdiff">[-missing info-]</div>
   <div id="speed">[-missing info-]</div>
   <progress id="throttleIndicator" max="200" value="100"></progress>
+
+  <!-- Misc -->
   <div id="instructions">WS for pitch, AS for roll, QE for yaw.<br />PgUp and PgDn for throttle controls. Space to set
     throttle to zero.<br />Home for instant stop.<br />R to teleport upwards if crashed into terrain.</div>
-  <div id="vers">v0.2</div>
+  <div id="vers">v0.3</div>
+
   <span id="canvas"></span>
 </body>
 
-<script type="module" src="./sam.js"></script>
-<!-- ThreeJS -->
+<!-- Main -->
 <script type="module" src="./main.js"></script>
 
 </html>

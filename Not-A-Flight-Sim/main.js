@@ -2,9 +2,12 @@ import { OrbitControls } from './OrbitControls.js';
 import * as THREE from './three.module.js';
 import { createNoise2D } from './simplex-noise.js';
 import { SAM } from './sam.js';
-import { Target } from './target.js';
+
+var calibrateClick = true;
+var calibrateDevice = [0, 0, 0];
 
 class Airplane {
+    // f-15
     constructor() {
         this.displacement = new THREE.Vector3(0, 0, 0);
         this.velocity = new THREE.Vector3(0, 0, 0);
@@ -72,7 +75,6 @@ setControls();
 
 let properGround, wireGround, planesize, planewh;
 var planeHeightCoords = [], wireGroundMeshArray;
-
 function generateGround() {
     // add plane
     planesize = 200
@@ -89,7 +91,6 @@ function generateGround() {
     scene.add(wireGround);
 
     wireGroundMeshArray = wireGround.geometry.attributes.position.array;
-
     const plane2dNoise = createNoise2D();
 
     for (let i = 0; i < wireGroundMeshArray.length; i += 3) {
@@ -98,10 +99,10 @@ function generateGround() {
         let z = wireGroundMeshArray[i + 2];
 
         wireGroundMeshArray[i + 2] = z + plane2dNoise(x / 2000, y / 2000) * 400;
-
         planeHeightCoords[[x, y]] = -wireGroundMeshArray[i + 2];
     }
 
+    
     const properGroundMesh = wireGroundMesh.clone()
     const properGroundMaterial = new THREE.MeshPhongMaterial({
         color: 0x74B06A,
@@ -123,9 +124,9 @@ function generateLights() {
     const directionalLightLimits = 32;
     directionalLight.castShadow = true;
     directionalLight.position.set(50, 800, 100);
-
-    directionalLight.shadow.mapSize.width = 512 / 2;
-    directionalLight.shadow.mapSize.height = 512 / 2;
+    
+    directionalLight.shadow.mapSize.width = 512/2;
+    directionalLight.shadow.mapSize.height = 512/2;
     directionalLight.shadowCameraLeft = -directionalLightLimits;
     directionalLight.shadowCameraRight = directionalLightLimits;
     directionalLight.shadowCameraTop = directionalLightLimits;
@@ -151,7 +152,7 @@ const aircraftTailGeom = new THREE.BoxGeometry(1, 4, 3);
 
 const material = new THREE.MeshPhongMaterial({
     color: 0xb3afaf,
-    reflectivity: 0.5
+    reflectivity: 0.5    
 });
 
 const aircraftBodyObj = new THREE.Mesh(aircraftBodyGeom, material);
@@ -181,8 +182,6 @@ directionalLight.target = aircraft;
 const aircraftBox3 = new THREE.Box3();
 aircraftBox3.setFromObject(aircraft);
 
-
-
 camera.position.set(0, 50, -70);
 aircraft.position.y = 20;
 controls.target = aircraft.position;
@@ -203,7 +202,6 @@ const keyUp = (e) => {
     delete KeyPressed[e.code];
 }
 
-
 setupKP();
 
 
@@ -214,7 +212,60 @@ const rollSpeed = 0.02;
 const yawSpeed = 0.02;
 const pitchSpeed = 0.02;
 
+
+
+// Mobile Functionality
+const mobileCalibrate = document.getElementById("mobileCalibrate");
+mobileCalibrate.ontouchstart = function(){
+    calibrateClick = true;
+}
+
+const mobileReset = document.getElementById("mobileReset");
+mobileReset.ontouchstart = function(){
+    if (crashed || plane.hit) {
+        let tempV = new THREE.Vector3(0, 0, 0);
+        aircraft.getWorldPosition(tempV);
+        tempV.add(new THREE.Vector3(0, 50, 0));
+        aircraft.position.copy(tempV);
+        camera.position.add(new THREE.Vector3(0, 50, 0));
+        crashed = false;
+        plane.hit = false;
+    }
+}
+
+let correctedAlpha, correctedBeta, correctedGamma;
+
+window.addEventListener('deviceorientation', (event) => {
+    if(calibrateClick){
+        calibrateClick = false;
+        calibrateDevice = [event.alpha, event.beta, event.gamma];
+    }
+
+    correctedAlpha = (event.alpha - calibrateDevice[0]) % 360;
+    correctedBeta = (event.beta - calibrateDevice[1]) % 180;
+    correctedGamma =(event.gamma - calibrateDevice[2]) % 90;
+
+    // Pitch
+    aircraft.rotateX(correctedGamma / 1500);
+
+    // Roll
+    aircraft.rotateZ(correctedBeta / 750);
+});
+
+const mobileYaw = document.getElementById("mobileYaw");
+let mobileYawSpeed;
+setInterval( ()=>{
+    mobileYawSpeed = - (mobileYaw.value - 50) / 2500;
+    aircraft.rotateY(mobileYawSpeed);
+}, 25)
+
 const throttleElem = document.getElementById("throttleIndicator");
+
+const mobileThrottle = document.getElementById("mobileThrottle");
+mobileThrottle.oninput = function(){
+    throttleElem.setAttribute('Value', this.value);
+}
+
 function checkKP() {
     if ('KeyW' in KeyPressed) {
         aircraft.rotateX(pitchSpeed);
@@ -300,10 +351,10 @@ const c3o = new THREE.Mesh(c1, invisMaterial);
 // bottom right / southeast
 const c4o = new THREE.Mesh(c1, invisMaterial);
 
-scene.add(c1o);
-scene.add(c2o);
-scene.add(c3o);
-scene.add(c4o);
+scene.add( c1o );
+scene.add( c2o );
+scene.add( c3o );
+scene.add( c4o );
 
 
 function floor50(num) {
@@ -420,11 +471,11 @@ let bsphereArr = [],
 
 var samSiteX, samSiteZ, samSiteCoords;
 
-for (let i = 0; i < 3; i++) {
-    samSiteX = ceil50(Math.random() * 10000 - 5000);
-    samSiteZ = ceil50(Math.random() * 10000 - 5000);
-    samSiteCoords = [samSiteX - 1, planeHeightCoords[[samSiteX, samSiteZ]] + 10, samSiteZ - 1];
-
+for(let i = 0; i < 3; i++){
+    samSiteX = ceil50(Math.random()*10000 - 5000);
+    samSiteZ = ceil50(Math.random()*10000 - 5000);
+    samSiteCoords = [samSiteX-1, planeHeightCoords[[samSiteX, samSiteZ]]+10, samSiteZ-1];
+    
     ships.push(new SAM(samSiteCoords[0], samSiteCoords[1], samSiteCoords[2], crypto.randomUUID().toUpperCase()));
 
     let bsphere = new THREE.Mesh(bgeometry, bmaterial);
@@ -475,7 +526,7 @@ function animate() {
     camera.getWorldPosition(tempCam);
     tempCam.add(plane.velocity);
     camera.position.copy(tempCam);
-
+    
     camera.updateProjectionMatrix();
 
     aircraftBox3.copy(aircraft.geometry.boundingBox).applyMatrix4(aircraft.matrixWorld);
@@ -483,17 +534,17 @@ function animate() {
 
     // SAM
     let innerHTMLstr = "";
-    for (let i = 0; i < ships.length; i++) {
+    for(let i = 0; i < ships.length; i++){
         innerHTMLstr += ships[i].displacement.distanceTo(plane.displacement);
         innerHTMLstr += "<br/>";
-
+        
         // draw predicted sphere
         try {
             psphereArr[i].position.copy(predicted)
         }
         catch { }
 
-
+        
         let res = ships[i].radarGuide(plane);
 
         if (res === true && !plane.hit) {
@@ -519,7 +570,7 @@ function animate() {
 
     }
     distdiffe.innerHTML = innerHTMLstr;
-    speede.innerText = "Speed: " +plane.currspeed;
+    speede.innerText = plane.currspeed;
 
     terrainCollisionCheckAircraft();
 }
