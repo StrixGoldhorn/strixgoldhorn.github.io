@@ -22,6 +22,7 @@ noob at programming
   - [FoV-Subject Preview](#fov-subject-preview)
   - [F1-Data](#f1-data)
   - [InterceptTarget](#intercepttarget)
+  - [SwarmTest](#swarmtest)
   - [Not-A-Flight-Sim](#not-a-flight-sim)
 
 <br/><br/><br/>
@@ -129,6 +130,20 @@ No action taken to chase target of opportunity, though it will eliminate them if
 Made with p5.js
 
 First version created in September 2022.
+
+<br/><br/><br/>
+
+## SwarmTest
+
+[Swarm logic testing](SwarmTest/index.html)
+
+Swarm logic testing with a bunch of blue vs red ships.
+
+Featuring: detection range design; primitive "communication" between blue ships while in range; ships trying to catch/escape ships of another color while in "visual" range; interception of red ships by blue ships once within "radar" range
+
+Made with p5.js
+
+First version created in Mid 2022.
 
 <br/><br/><br/>
 
