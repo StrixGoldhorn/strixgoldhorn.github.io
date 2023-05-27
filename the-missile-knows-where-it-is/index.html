@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" href="favicon.png" type="png" sizes="32x32">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8" />
+
+</head>
+
+<body>
+  <div id="instr">
+    Use WASD to control your civillian aircraft!
+    <br />
+    Use space to pause the missile!
+    <br />
+    Press space to start!
+  </div>
+
+  <div id="quote">
+    The missile knows where it is at all times<br />
+    It knows this because it knows where it isn't<br />
+    By subtracting where it is from where it isn't,<br />
+    or where it isn't from where it is (whichever is greater),<br />
+    it obtains a difference, or deviation<br />
+    The guidance subsystem uses deviations to generate corrective commands to drive the missile from a position where
+    it is to a position where it isn't,<br />
+    and arriving at a position where it wasn't, it now is<br />
+    Consequently, the position where it is,<br />
+    is now the position that it wasn't,<br />
+    and it follows that the position that it was,<br />
+    is now the position that it isn't<br />
+    In the event that the position that it is in is not the position that it wasn't, the system has acquired a
+    variation,<br />
+    the variation being the difference between where the missile is, and where it wasn't<br />
+    If variation is considered to be a significant factor,<br />
+    it too may be corrected by the GEA<br />
+    However, the missile must also know where it was<br />
+    The missile guidance computer scenario works as follows<br />
+    Because a variation has modified some of the information the missile has obtained,<br />
+    it is not sure just where it is<br />
+    However, it is sure where it isn't, within reason, and it knows where it was<br />
+    It now subtracts where it should be from where it wasn't, or vice-versa,<br />
+    and by differentiating this from the algebraic sum of where it shouldn't be, and where it was,<br />
+    it is able to obtain the deviation and its variation, which is called error
+  </div>
+  <main>
+
+  </main>
+  <script src="sketch.js"></script>
+  <script>
+    document.onkeypress = () => {
+      let xhr = new XMLHttpRequest();
+      xhr.open('GET', "/script.txt", false);
+      xhr.send();
+      window.speechSynthesis.speak(new window.SpeechSynthesisUtterance(xhr.responseText));
+    }
+  </script>
+</body>
+
+</html>

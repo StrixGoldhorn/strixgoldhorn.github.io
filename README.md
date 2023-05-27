@@ -24,6 +24,7 @@ noob at programming
   - [InterceptTarget](#intercepttarget)
   - [SwarmTest](#swarmtest)
   - [Not-A-Flight-Sim](#not-a-flight-sim)
+  - [The missile knows where it is by knowing where it isn't](#the-missile-knows-where-it-is)
 
 <br/><br/><br/>
 
@@ -123,10 +124,6 @@ First version created in July 2022.
 
 [Can be derived just from H2 Mathematics using vectors.](InterceptTarget/explanation.html)
 
-Buggy mess when trying to prioritise multiple target.
-
-No action taken to chase target of opportunity, though it will eliminate them if it comes within range.
-
 Made with p5.js
 
 First version created in September 2022.
@@ -140,6 +137,8 @@ First version created in September 2022.
 Swarm logic testing with a bunch of blue vs red ships.
 
 Featuring: detection range design; primitive "communication" between blue ships while in range; ships trying to catch/escape ships of another color while in "visual" range; interception of red ships by blue ships once within "radar" range
+
+No action taken to chase target of opportunity, though it will eliminate them if it comes within range.
 
 Made with p5.js
 
@@ -162,3 +161,20 @@ Created to learn global vs local positioning, matrixes, euler transforms, quater
 Also to learn proportional navigation.
 
 First version created in Early January 2023.
+
+<br/><br/><br/>
+
+## the-missile-knows-where-it-is
+
+The missile knows where it is at all times. [Video](https://www.youtube.com/watch?v=bZe5J8SVCYQ&ab_channel=Jeff7181)
+
+Random 1-day weekend "project" for fun to practice coding before brain rot destroys whatever basic skills I have left.
+
+Literally the most basic of basic of basic pure pursuit algorithm, and would perform worse than the [InterceptTarget](#intercepttarget) algorithm.
+
+[CLICK HERE](the-missile-knows-where-it-is/index.html) to play around with it.
+
+Written with p5.js, "art" first in MS Paint then FireAlpaca to remove background.
+
+First and (probably) only version created on 27 May 2023.
+
