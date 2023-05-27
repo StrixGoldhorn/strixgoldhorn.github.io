@@ -53,7 +53,7 @@
   <script>
     document.onkeypress = () => {
       let xhr = new XMLHttpRequest();
-      xhr.open('GET', "/script.txt", false);
+      xhr.open('GET', "https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/main/the-missile-knows-where-it-is/script.txt", false);
       xhr.send();
       window.speechSynthesis.speak(new window.SpeechSynthesisUtterance(xhr.responseText));
     }
