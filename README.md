@@ -174,7 +174,9 @@ Literally the most basic of basic of basic pure pursuit algorithm, and would per
 
 [CLICK HERE](the-missile-knows-where-it-is/index.html) to play around with it.
 
+[Or click here](the-missile-knows-where-it-is/explanation.html) for a mock explanation.
+
 Written with p5.js, "art" first in MS Paint then FireAlpaca to remove background.
 
-First and (probably) only version created on 27 May 2023.
+First version created on 27 May 2023.
 
