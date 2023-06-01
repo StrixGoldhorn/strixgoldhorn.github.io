@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Code Explanation</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/themes/prism.css">
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.28.0/prism.js"></script>
+    <link rel="stylesheet" type="text/css" href="explanation.css">
+</head>
+
+<body>
+    <header>
+        <h1>Code Explanation</h1>
+    </header>
+
+    <main>
+        <section>
+            <h3>The missile knows where it is at all times</h3>
+        </section>
+        <section>
+            <h3>It knows this because it knows where it isn't</h3>
+            <div class="code">
+                <pre><code class="language-javascript">
+    function draw(){
+        ...
+        // Update target's position based on velocity
+        targetPosition.add(targetVelocity.mult(targetSpeed));
+        ...
+    }
+        </code></pre>
+            </div>
+            <p>The above line of code updates the missile with the current position of the target position, aka the
+                position where the missile isn't at.</p>
+        </section>
+
+
+
+        <section>
+            <h3>By subtracting where it is from where it isn't,<br />
+                or where it isn't from where it is (whichever is greater),<br />
+                it obtains a difference, or deviation</h3>
+            <div class="code">
+                <pre><code class="language-javascript">
+    function draw(){
+        ...
+        // Calculate difference, or deviation
+        const subtracted = p5.Vector.sub(targetPosition, missilePosition);
+        const deviation = deviation.mag();
+        ...
+    }
+        </code></pre>
+            </div>
+            <p>We now use a function to subtract where the missile is (missilePosition), from where it isn't
+                (targetPosition), to obtain a difference.</p>
+            <p>We take the absolute value of it, as it is a workaround that achieves the same result as subtracting
+                whichever is greater from whichever is smaller</p>
+        </section>
+
+
+
+        <section>
+            <h3>The guidance subsystem uses deviations to generate corrective commands to drive the missile from a
+                position where
+                it is to a position where it isn't,<br />
+                and arriving at a position where it wasn't, it now is<br /></h3>
+            <div class="code">
+                <pre><code class="language-javascript">
+    function draw(){
+        ...
+        if (!missilePaused) {
+            const direction = p5.Vector.sub(targetPosition, missilePosition);
+            missileAngle = direction.heading();
+            direction.normalize();
+            missilePosition.add(direction.mult(missileSpeed));
+          }
+        ...
+    }
+        </code></pre>
+            </div>
+            <p>This chunk of code corrects the angle of the missile to make it point from where it is to where it isn't,
+                and thereafter it pushes the missile towards the position where it wasn't such that it now is in the
+                position where it now is</p>
+        </section>
+
+
+
+        <section>
+            <h3>Consequently, the position where it is,<br />
+                is now the position that it wasn't,<br />
+                and it follows that the position that it was,<br />
+                is now the position that it isn't<br /></h3>
+            <div class="code">
+                <pre><code class="language-javascript">
+    function draw(){
+        ...
+        previousMissilePosition = missilePosition.copy();
+        ...
+    }
+        </code></pre>
+            </div>
+            <p>The position where it was (missilePosition), is now the position that it isn't (previousMissilePosition)
+            </p>
+        </section>
+
+
+
+        <section>
+            <h3>In the event that the position that it is in is not the position that it wasn't, the system has acquired a variation,<br />
+                the variation being the difference between where the missile is, and where it wasn't<br />
+                If variation is considered to be a significant factor,<br />
+                it too may be corrected by the GEA<br />
+                However, the missile must also know where it was<br />
+                The missile guidance computer scenario works as follows<br />
+                Because a variation has modified some of the information the missile has obtained,<br />
+                it is not sure just where it is<br />
+                However, it is sure where it isn't, within reason, and it knows where it was<br />
+                It now subtracts where it should be from where it wasn't, or vice-versa,<br />
+                and by differentiating this from the algebraic sum of where it shouldn't be, and where it was,<br />
+                it is able to obtain the deviation and its variation, which is called error</h3>
+
+            <p>The code required can be obtained from using straightforward application of knowledge of missile guidance and control systems<br />
+                A detailed proof of statement unfortunately exceeds the scope of this explanation.<br />
+                The derivation of the code required from the problem statement as given above is too long to present here, but it can be worked out using a symbolic computation system such as Mathematica.<br />
+                The code required follows from a straightforward application of the basic fundamentals of missile guidance and control systems; we refer the reader to existing literature on the topic for details of this.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 StrixGoldhorn</p>
+        <p style="font-size: smaller;">Template generated with the help of GPT-3</p>
+    </footer>
+
+    <script>
+        // Initialize Prism.js for syntax highlighting
+        Prism.highlightAll();
+    </script>
+</body>
+
+</html>

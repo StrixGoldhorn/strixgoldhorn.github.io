@@ -16,7 +16,7 @@ const missileImageMult = 0.15;
 // Movement variables
 let targetVelocity;
 const targetSpeed = 1;
-let missileSpeed = 0.75;
+let missileSpeed = 1;
 let missilePaused = true;
 
 // Preload function to load images
@@ -95,9 +95,9 @@ function draw() {
   targetPosition.x = constrain(targetPosition.x, 0, canvasWidth);
   targetPosition.y = constrain(targetPosition.y, 0, canvasHeight);
 
-  // Calculate deviation and distance
-  const deviation = p5.Vector.sub(targetPosition, missilePosition);
-  const distance = deviation.mag();
+  // Calculate difference, or subtracted
+  const subtracted = p5.Vector.sub(targetPosition, missilePosition);
+  const deviation = subtracted.mag();
 
   // Removed following since we now have updated hollywood level graphics :)
 
@@ -123,8 +123,8 @@ function draw() {
   text(`Position where it wasn't: (${previousMissilePosition.x.toFixed(2)}, ${previousMissilePosition.y.toFixed(2)})`, 10, 20);
   text(`Position where it is: (${missilePosition.x.toFixed(2)}, ${missilePosition.y.toFixed(2)})`, 10, 40);
   text(`Position where it isn't: (${targetPosition.x.toFixed(2)}, ${targetPosition.y.toFixed(2)})`, 10, 60);
-  text(`Deviation: (${deviation.x.toFixed(2)}, ${deviation.y.toFixed(2)})`, 10, 80);
-  text(`Distance: ${distance.toFixed(2)}`, 10, 100);
+  text(`Deviation: (${subtracted.x.toFixed(2)}, ${subtracted.y.toFixed(2)})`, 10, 80);
+  text(`Distance: ${deviation.toFixed(2)}`, 10, 100);
 
   previousMissilePosition = missilePosition.copy();
 }

@@ -1,0 +1,43 @@
+/* CSS for the code block */
+.code {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: Consolas, monospace;
+    margin-bottom: 10px;
+  }
+  
+  /* CSS for the page layout */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  header h1 {
+    margin: 0;
+  }
+  
+  main {
+    padding-top: 20px;
+    padding-inline: 150px;
+  }
+  
+  section {
+    margin-bottom: 50px;
+  }
+  
+  footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+  }
+  
