@@ -11,6 +11,8 @@ let targetSize;
 let previousMissilePosition;
 let previousTargetPosition;
 
+let soundPlaying = false;
+
 const missileImageMult = 0.15;
 
 // Movement variables
@@ -34,7 +36,7 @@ let arrowSize;
 let arrowAngle;
 
 // Setup function (runs once)
-function setup() {
+async function setup() {
   createCanvas(canvasWidth, canvasHeight);
 
   // Set initial missile position and target position
@@ -53,7 +55,7 @@ function setup() {
 }
 
 // Draw function (runs every frame)
-function draw() {
+async function draw() {
   // Set background color
   background(193, 211, 254);
 
@@ -70,7 +72,7 @@ function draw() {
   // Draw target
   push();
   translate(targetPosition.x, targetPosition.y);
-  rotate(targetAngle+Math.PI/2);
+  rotate(targetAngle + Math.PI / 2);
   image(targetImage, -targetImage.width / 2, -targetImage.height / 2);
 
   pop();
@@ -99,21 +101,24 @@ function draw() {
   const subtracted = p5.Vector.sub(targetPosition, missilePosition);
   const deviation = subtracted.mag();
 
-  // Removed following since we now have updated hollywood level graphics :)
+  // Play sound if none is playing
+  if (!soundPlaying) {
+    soundPlaying = true;
+    switch (true) {
+      case deviation < 200:
+        await missileLaunchWarning();
+        break;
 
-  // Draw target
-  // noStroke();
-  // fill(0, 255, 0);
-  // ellipse(targetPosition.x, targetPosition.y, targetSize, targetSize);
+      case 200 < deviation && deviation < 400:
+        await radarLockWarning();
+        break;
 
-  // Draw missile
-  // fill(255, 0, 0);
-  // push();
-  // translate(missilePosition.x, missilePosition.y);
-  // rotate(missileAngle);
-  // rectMode(CENTER);
-  // rect(0, 0, missileSize.x, missileSize.y);
-  // pop();
+      default:
+        break;
+    }
+    soundPlaying = false;
+  }
+
 
   // Display text
   noStroke();
@@ -130,7 +135,7 @@ function draw() {
 }
 
 // Event function when arrow keys or WASD keys are pressed
-function keyPressed() {
+async function keyPressed() {
   const stepSize = 1;
 
   // Update target velocity based on key press
@@ -159,7 +164,7 @@ function keyPressed() {
 }
 
 // Event function when arrow keys or WASD keys are released
-function keyReleased() {
+async function keyReleased() {
   // Update target velocity based on key release
   if (keyCode === UP_ARROW || key === "w") {
     keys.up = false;
@@ -183,3 +188,42 @@ function keyReleased() {
 
 // Call the setup function to initialize the canvas
 setup();
+
+function sleep(time) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('resolved');
+    }, time);
+  });
+}
+
+// Unused but left here so I can copy it for other projects
+async function newContact() {
+  generateSound("triangle", 430, 0.3, 0.05);
+}
+
+// Same as above
+async function specialContact() {
+  generateSound("triangle", 580, 0.12, 0.05);
+  await sleep(90);
+  generateSound("triangle", 550, 0.12, 0.05);
+  await sleep(90);
+  generateSound("triangle", 520, 0.12, 0.05);
+  await sleep(90);
+  generateSound("triangle", 490, 0.12, 0.05);
+  await sleep(90);
+}
+
+async function radarLockWarning() {
+  generateSound("triangle", 570, 0.25, 0.05);
+  await sleep(250);
+  generateSound("triangle", 380, 0.25, 0.05);
+  await sleep(250);
+}
+
+async function missileLaunchWarning() {
+  generateSound("triangle", 550, 0.1, 0.05);
+  await sleep(105);
+  generateSound("triangle", 400, 0.1, 0.05);
+  await sleep(105);
+}

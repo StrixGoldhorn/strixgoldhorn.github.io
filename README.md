@@ -176,7 +176,7 @@ Literally the most basic of basic of basic pure pursuit algorithm, and would per
 
 [Or click here](the-missile-knows-where-it-is/explanation.html) for a mock explanation.
 
-Written with p5.js, "art" first in MS Paint then FireAlpaca to remove background.
+Written with p5.js, "art" first in MS Paint then FireAlpaca to remove background. Annoying warning sounds generated with vanilla JS AudioContext.
 
 First version created on 27 May 2023.
 
