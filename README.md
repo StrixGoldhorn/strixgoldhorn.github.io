@@ -198,8 +198,10 @@ First version created June - October 2023.
 
 [Lorenz Beam simulation](LorenzBeam/index.html)
 
+Extremely basic "simulation" of the Lorenz beam approach system. Might revisit to improve the logic behind the amplitude of the sound generated.
+
 Done with p5js.
 
-First version created June - October 2023.
+First version created November 2023.
 
 <br/><br/><br/>

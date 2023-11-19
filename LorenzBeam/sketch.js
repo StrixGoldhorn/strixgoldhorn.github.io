@@ -2,23 +2,17 @@ let aircraft;
 let runway;
 let lorenzSignal;
 
-let top1, btm1, top2, btm2;
+let top1, btm1, top2, btm2, midtop, midbtm;
 
-let firstPlay = true;
+let ampDash, ampDot;
 
 let mute = false;
 
-let dotPlaying = false;
-let dashPlaying = false;
-
-let dotSound;
-let dashSound;
-dotSound = new p5.Oscillator();
-dashSound = new p5.Oscillator();
+let sound;
+sound = new p5.Oscillator();
 
 // Set initial properties for sound objects
-dotSound.setType("sine");
-dashSound.setType("sine");
+sound.setType("sine");
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -30,7 +24,6 @@ function setup() {
     windowWidth / 10,
     50
   );
-  lorenzSignal = createVector(width / 2, height / 4);
 }
 
 async function draw() {
@@ -41,50 +34,47 @@ async function draw() {
 
   // Display Lorenz signal 1
   fill(255, 0, 0, 50);
-  top1 = height / 6;
-  btm1 = height / 2 + height / 9;
+  top1 = height / 9;
+  btm1 = height / 2 + height / 15;
   triangle(0, btm1, 0, top1, width, height / 2);
-  line(0, (btm1 - top1) / 2 + top1, width, height / 2);
 
   // Display Lorenz signal 2
   fill(0, 0, 255, 50);
-  top2 = height / 2 - height / 9;
-  btm2 = 5 * (height / 6);
+  top2 = height / 2 - height / 15;
+  btm2 = 8 * (height / 9);
   triangle(0, btm2, 0, top2, width, height / 2);
-  line(0, (btm2 - top2) / 2 + top2, width, height / 2);
+  
+  midtop = (btm1 - top1) / 2 + top1;
+  midbtm = (btm2 - top2) / 2 + top2;
 
-  let midtop = (btm1 - top1) / 2 + top1;
-  let midbtm = (btm2 - top2) / 2 + top2;
+  [ampDot, ampDash] = normalizeRatio(
+    shortestDistance(aircraft.x, aircraft.y, width, height / 2, 0, midtop),
+    shortestDistance(aircraft.x, aircraft.y, width, height / 2, 0, midbtm)
+  );
 
   // Update and display aircraft
   aircraft.update();
   aircraft.display();
-
-  let offset = abs(aircraft.y - (height / 2));
-  
-  if (!mute) {
-    if ((!dotPlaying || !dashPlaying) && checkInBeam1(aircraft.x, aircraft.y) && checkInBeam2(aircraft.x, aircraft.y)){
-      
-      dotPlaying = true;
-      dashPlaying = true;
-      await dotAndDash(0.2);
-      dotPlaying = false;
-      dashPlaying = false;
-    }
-    
-    else if (!dotPlaying && checkInBeam1(aircraft.x, aircraft.y)) {
-      dotPlaying = true;
-      await dot(0.5-(1/(height/2) * offset));
-      dotPlaying = false;
-    }
-
-    else if (!dashPlaying && checkInBeam2(aircraft.x, aircraft.y)) {
-      dashPlaying = true;
-      await dash(0.5-(1/(height/2) * offset));
-      dashPlaying = false;
-    }
-  }
 }
+
+function shortestDistance(x0, y0, x1, y1, x2, y2) {
+  let numerator = abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1);
+  let denominator = sqrt(pow(y2 - y1, 2) + pow(x2 - x1, 2));
+  return numerator / denominator;
+}
+
+function normalizeRatio(value1, value2) {
+  if (value1 === 0 && value2 === 0) {
+    return [0, 0];
+  }
+
+  const total = Math.abs(value1) + Math.abs(value2);
+  const ratio1 = Math.abs(value1) / total;
+  const ratio2 = Math.abs(value2) / total;
+
+  return [Number((ratio1 / 8).toFixed(3)), Number((ratio2 / 8).toFixed(3))];
+}
+
 let keys = [];
 
 function keyPressed() {
@@ -198,62 +188,6 @@ function windowResized() {
   );
 }
 
-async function dot(amp) {
-  dotSound.freq(440); // Adjust frequency as needed
-  dotSound.amp(amp); // Adjust amplitude as needed
-  dotSound.start();
-  dotSound.stop(0.2);
-  await sleep(600);
-}
-
-async function dash(amp) {
-  dashSound.freq(440); // Adjust frequency as needed
-  dashSound.amp(amp); // Adjust amplitude as needed
-  dashSound.start();
-  dashSound.stop(0.4);
-  await sleep(600);
-}
-
-async function dotAndDash(amp) {
-  dotSound.freq(440); // Adjust frequency as needed
-  dotSound.amp(amp); // Adjust amplitude as needed
-  dotSound.start();
-  dotSound.stop(0.6);
-  await sleep(600);
-}
-
-async function generateSound(type, freq, duration, duration2) {
-  const context = new AudioContext();
-  const oscillator = context.createOscillator();
-  (oscillator.type = type), (oscillator.frequency.value = freq);
-  const gainNode = context.createGain();
-  oscillator.connect(gainNode);
-  gainNode.connect(context.destination);
-  oscillator.start(0);
-  gainNode.gain.value = gainNode.gain.defaultValue / 8;
-  gainNode.gain.linearRampToValueAtTime(
-    gainNode.gain.value,
-    context.currentTime + duration + duration2
-  );
-  gainNode.gain.linearRampToValueAtTime(
-    0.0001,
-    context.currentTime + duration + duration2 + duration2
-  );
-  oscillator.stop(context.currentTime + duration + duration2);
-
-  // wait for sound to play finish before closing AudioContext, since Chrome won't start new AudioContext after 50 are created
-  await sleep((duration + duration2 + duration2) * 1000);
-  context.close();
-}
-
-function sleep(time) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve("resolved");
-    }, time);
-  });
-}
-
 function area(x1, y1, x2, y2, x3, y3) {
   return Math.abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
 }
@@ -274,3 +208,34 @@ function checkInBeam1(x, y) {
 function checkInBeam2(x, y) {
   return isInside(0, top2, 0, btm2, width, height / 2, x, y);
 }
+
+let dotP = true;
+
+async function playSound() {
+  if (!mute) {
+    sound.start();
+    while (true) {
+      console.log(ampDot, ampDash);
+      if (dotP) {
+        sound.freq(440);
+        sound.amp(ampDot, 0.1);
+        await sleep(100);
+      } else {
+        sound.freq(440);
+        sound.amp(ampDash, 0.1);
+        await sleep(400);
+      }
+      dotP = !dotP;
+    }
+  }
+}
+
+function sleep(time) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("resolved");
+    }, time);
+  });
+}
+
+playSound();
