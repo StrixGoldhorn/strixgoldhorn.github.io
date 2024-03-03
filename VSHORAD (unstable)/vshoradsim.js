@@ -1,5 +1,5 @@
 /*
-v2.0.2a
+v2.0.3a
 */
 
 
@@ -100,10 +100,15 @@ const normalFolder = operatorFolder.addFolder("normal");
 normalFolder.add(worldSettings.operator.normal, "focalLength", 0, 50);
 normalFolder.add(worldSettings.operator.normal, "dampingFactor", 0.01, 0.1);
 
+function isMobile() {
+    const regex = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    return regex.test(navigator.userAgent);
+  }
+
 // create skybox
 const sbLoad = new THREE.CubeTextureLoader();
 let sbTexture, sbTop, sbBg;
-if(window.innerWidth <=1000){
+if(isMobile()){
     sbBg = "./assets/skybox/bg.min.png";
     sbTop = "./assets/skybox/top.min.png";
 } else {

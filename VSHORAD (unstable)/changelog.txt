@@ -3,11 +3,15 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
-v2.0.2a [16 Jan 2020]
+v2.0.2a [03 Mar 2024]
+CHANGED:
+- Detection of mobile vs desktop
+
+v2.0.2a [16 Jan 2023]
 CHANGED:
 - Slight optimisation by reducing number of new objects created
 
-v2.0.1a [22 Jul 2020]
+v2.0.1a [22 Jul 2022]
 ADDED:
 - Different .glb files loaded for mobile vs PC
 

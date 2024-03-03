@@ -20,7 +20,7 @@ noob at programming
   - [Fake Virus Site](#fake-virus-site)
   - [pOOP Assistant - python OOP Assistant](#poop-assistant---python-oop-assistant)
   - [FoV-Subject Preview](#fov-subject-preview)
-  - [F1-Data](#f1-data)
+  - [F1-Data (DEPRECATED!)](#f1-data)
   - [InterceptTarget](#intercepttarget)
   - [SwarmTest](#swarmtest)
   - [Not-A-Flight-Sim](#not-a-flight-sim)
@@ -104,6 +104,8 @@ First version created in June 2022.
 <br/><br/><br/>
 
 ## F1-Data
+
+### API is deprecated, hence webpage will not work
 
 [This site](f1-data/index.html) provides users with a timetable of upcoming race, and a page for comparing laptimes of drivers.
 

@@ -2,6 +2,10 @@
 Changelog for Not-A-Flight-Sim
 */
 
+v0.3 [03 Mar 2024]
+CHANGED:
+- Detection of mobile vs desktop
+
 v0.3 [17 Jan 2023]
 Added:
 - Simple mobile functionality
