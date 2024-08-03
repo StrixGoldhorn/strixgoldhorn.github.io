@@ -3,8 +3,8 @@ class BLUFOR extends Ship{
     super(x, y);
     this.maxspeed = 0.8;
     // this.maxspeed = 1.0;
-    this.maxaccel = 0.5;
-    this.maxforce = 0.2;
+    this.maxaccel = 0.1;
+    this.maxforce = 0.1;
     this.hdglen = 60;
     this.color = color(51, 102, 255);
     this.mainSensorRange = 50;
@@ -18,6 +18,7 @@ class BLUFOR extends Ship{
     this.commRange = 200;
     this.targetViaComms = false;
     this.groupLead = false;
+    this.target_ship_id = 0;
   }
  
   render() {
@@ -55,12 +56,14 @@ class BLUFOR extends Ship{
       (d > 0) && // check if self
       ((d < this.radarRange) || (this.target != null && this.targetViaComms == true)) && // check if within radar range or if target given via comms
       (ships[i].constructor.name == "OPFOR") && // check if is OPFOR
-      ((this.target == null) || (this.target == ships[i].id)) // track only if no target or if target is already tracked
+      ((this.target == null) || (this.target == ships[i].id) || (p5.Vector.dist(this.displacement, ships[this.target_ship_id].displacement) > d)) // track only if no target or if target is already tracked
       ){
-        if(this.target == null){
+        if((this.target == null) || (p5.Vector.dist(this.displacement, ships[this.target_ship_id].displacement) > d)){
           this.target = ships[i].id;
+          this.target_ship_id = i
+          this.targetPath = []
         }
-       
+        
         if(debug){
           let velVector = this.velocity.copy()
           velVector.normalize();
@@ -72,7 +75,7 @@ class BLUFOR extends Ship{
           circle(this.displacement.x, this.displacement.y, 10)
         }
 
-        if(this.targetPath.length > 99){
+        if(this.targetPath.length > 15){
           this.targetPath.shift();
         }
        

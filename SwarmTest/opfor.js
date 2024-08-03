@@ -4,7 +4,7 @@ class OPFOR extends Ship{
     this.maxspeed = 0.8;
     // this.maxspeed = 0.4;
     this.maxaccel = 0.2;
-    this.maxforce = 0.8;
+    this.maxforce = 0.4;
     this.hdglen = 80;
     this.color = color(255, 17, 85);
     this.mainSensorRange = 30;
