@@ -95,7 +95,6 @@ var s2 = function (sketch) {
 		sketch.clear();
 		sketch.background(100);
 		sectorppiDrawBase(sketch, canvas_size, lineSpacing);
-		
 		sectorppiDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z);
 	}
 };
@@ -119,10 +118,8 @@ var s3 = function (sketch) {
 		sketch.clear();
 		sketch.background(100);
 		ascopeDrawBase(sketch, canvas_size, lineSpacing);
-		//for canvas 3
-		// sketch.rotateX(sketch.frameCount * 0.02);
-		// sketch.rotateZ(sketch.frameCount * 0.01);
-		// sketch.cone(30, 50);
+		ascopeDrawLine(sketch, canvas_size, lineSpacing, r, theta);
+		ascopeDrawBorder(sketch, canvas_size, lineSpacing);
 	}
 };
 new p5(s3);
