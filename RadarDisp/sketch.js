@@ -49,6 +49,36 @@ function updateRTheta(x, y){
 	theta = Math.atan2(x, y);
 }
 
+// update variables when WASDQE is clicked, set according to max canvas size
+document.addEventListener('keydown', function(event) {
+    switch (event.key) {
+        case "w":
+			y+=1;
+			break;
+			
+        case "a":
+			x-=1;
+			break;
+			
+        case "s":
+			y-=1;
+			break;
+			
+		case "d":
+			x+=1;
+			break;
+
+		case "q":
+			z+=1;
+			break;
+			
+		case "e":
+			z-=1;
+			break;
+    }
+	
+	updateRTheta(x, y);
+});
 
 
 
