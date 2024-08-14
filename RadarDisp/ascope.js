@@ -4,7 +4,7 @@
 function ascopeDrawBase(sketch, canvas_size, lineSpacing) {
     sketch.stroke('LawnGreen');
     sketch.strokeWeight(3);
-    
+
     // find max grid div
     let cnt = 0;
     for (let j = 0; j < canvas_size / 2 - lineSpacing; j += lineSpacing) {
@@ -31,7 +31,7 @@ function ascopeDrawBase(sketch, canvas_size, lineSpacing) {
 function ascopeDrawLine(sketch, canvas_size, lineSpacing, r) {
     const spacing = 2;
     const noiseIntensity = 10;
-    const returnIntensity = canvas_size/10;
+    const returnIntensity = canvas_size / 10;
 
     sketch.stroke('PaleGreen');
     sketch.strokeWeight(5);
@@ -44,14 +44,15 @@ function ascopeDrawLine(sketch, canvas_size, lineSpacing, r) {
 
     sketch.translate(-cnt * lineSpacing, 0);
 
-    sketch.stroke('Red');
+    sketch.stroke('Tomato');
     sketch.strokeWeight(2);
     for (let i = 1; i < (lineSpacing * cnt * 2 + 1) / spacing; i += 1) {
-        if( ((i-1) * spacing < r && (i+1) * spacing > r) && (-Math.PI/6 < theta && Math.PI/6 > theta)){
-            sketch.line((i - 1) * spacing, (sketch.noise((i - 1), i) - 0.5) * noiseIntensity, i * spacing, -returnIntensity);
+        if (((i - 1) * spacing < r && i * spacing > r) && (-Math.PI / 6 < theta && Math.PI / 6 > theta)) {
+            sketch.line((i - 1) * spacing, (sketch.noise((i - 1), i, sketch.frameCount) - 0.5) * noiseIntensity, i * spacing, -returnIntensity + sketch.noise(x, sketch.frameCount) * 5);
+            sketch.line(i * spacing, -returnIntensity + sketch.noise(x, sketch.frameCount) * 5, i * spacing, (sketch.noise((i + 1), i, sketch.frameCount) - 0.5) * noiseIntensity);
         }
-        else{
-            sketch.line((i - 1) * spacing, (sketch.noise((i - 1), i) - 0.5) * noiseIntensity, i * spacing, (sketch.noise(i, (i + 1)) - 0.5) * noiseIntensity);
+        else {
+            sketch.line((i - 1) * spacing, (sketch.noise((i - 1), i, sketch.frameCount) - 0.5) * noiseIntensity, i * spacing, (sketch.noise(i, (i + 1), sketch.frameCount) - 0.5) * noiseIntensity);
         }
     }
 
@@ -60,7 +61,7 @@ function ascopeDrawLine(sketch, canvas_size, lineSpacing, r) {
 }
 
 
-function ascopeDrawBorder(sketch, canvas_size, lineSpacing){
+function ascopeDrawBorder(sketch, canvas_size, lineSpacing) {
     sketch.stroke('LawnGreen');
     sketch.strokeWeight(3);
     let cnt = 0;

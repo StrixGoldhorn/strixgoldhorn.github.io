@@ -142,6 +142,8 @@ var s4 = function (sketch) {
 		sketch.clear();
 		sketch.background(100);
 		bscopeDrawBase(sketch, canvas_size, lineSpacing);
+		bscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta);
+		bscopeDrawBorder(sketch, canvas_size, lineSpacing);
 	}
 };
 new p5(s4);
