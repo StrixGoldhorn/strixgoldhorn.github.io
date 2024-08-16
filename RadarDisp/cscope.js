@@ -26,7 +26,31 @@ function cscopeDrawBase(sketch, canvas_size, lineSpacing){
         sketch.line(i*lineSpacing, cnt*lineSpacing, i*lineSpacing, -cnt*lineSpacing);
         sketch.line(-i*lineSpacing, cnt*lineSpacing, -i*lineSpacing, -cnt*lineSpacing);
     }
+}
 
+function cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z) {
+
+    // total 60deg, 30deg on each side
+    let cnt = 0;
+    for (let j = 0; j < canvas_size / 2 - lineSpacing; j += lineSpacing) {
+        cnt += 1;
+    }
+
+    let x = (theta * 6 * cnt * lineSpacing) / Math.PI;
+    let y = z;
+
+    if (r <= cnt *2* lineSpacing && -Math.PI / 6 < theta && Math.PI / 6 > theta) {
+        sketch.stroke('Tomato');
+        sketch.strokeWeight(5);
+        sketch.line(x - 5, -y, x + 5, -y);
+}
+
+function cscopeDrawBorder(sketch, canvas_size, lineSpacing) {
+    sketch.stroke('LawnGreen');
     sketch.strokeWeight(3);
-    sketch.square(-cnt*lineSpacing, -cnt*lineSpacing, cnt*lineSpacing*2);
+    let cnt = 0;
+    for (let j = 0; j < canvas_size / 2 - lineSpacing; j += lineSpacing) {
+        cnt += 1;
+    }
+    sketch.square(-cnt * lineSpacing, -cnt * lineSpacing, cnt * lineSpacing * 2);
 }

@@ -196,6 +196,8 @@ var s5 = function (sketch) {
 		sketch.clear();
 		sketch.background(100);
 		cscopeDrawBase(sketch, canvas_size, lineSpacing);
+		cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z);
+		cscopeDrawBorder(sketch, canvas_size, lineSpacing);
 	}
 };
 new p5(s5);
