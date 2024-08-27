@@ -43,6 +43,7 @@ function cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z) {
         sketch.stroke('Tomato');
         sketch.strokeWeight(5);
         sketch.line(x - 5, -y, x + 5, -y);
+    }
 }
 
 function cscopeDrawBorder(sketch, canvas_size, lineSpacing) {

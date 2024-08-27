@@ -40,6 +40,7 @@ function editorDrawScene(sketch, canvas_size, lineSpacing, x, y, z) {
     sketch.stroke('LawnGreen');
     sketch.strokeWeight(2);
 
+    // draw 2 sectors to represent radar main lobe
     const ringSpacing = lineSpacing * 2;
     let i = ringSpacing;
 
@@ -52,6 +53,19 @@ function editorDrawScene(sketch, canvas_size, lineSpacing, x, y, z) {
 
 
     sketch.box(30)
+
+
+    sketch.rotateY(sketch.PI / 2);
+    i = ringSpacing;
+
+    for(; i <= max_grid_side*2; i+=ringSpacing){
+        sketch.arc(0, 0, i, i, (4/3) * sketch.PI, (5/3) * sketch.PI, sketch.OPEN);
+    }
+
+    i -= ringSpacing
+    sketch.arc(0, 0, i, i, (4/3) * sketch.PI, (5/3) * sketch.PI, sketch.PIE);
+    sketch.rotateY(-sketch.PI / 2);
+
 
 
 

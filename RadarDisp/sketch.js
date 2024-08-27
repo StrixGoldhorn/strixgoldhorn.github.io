@@ -10,8 +10,13 @@ var x = 0;
 var y = 0;
 var z = 0;
 
+// xy plane
 var r = 0;
 var theta = 0;
+
+// yz plane
+var eleR = 0;
+var eleTheta = 0;
 
 
 function setSize(elem) {
@@ -34,19 +39,27 @@ const max_grid_side = calcMaxGridHalfSide()*2
 document.getElementById("xCoord").oninput = function() {
 	x = this.value * (max_grid_side/200);
 	updateRTheta(x, y);
+	updateEleTheta(z, y);
 }
 document.getElementById("yCoord").oninput = function() {
 	y = 2 * this.value * (max_grid_side/200);
 	updateRTheta(x, y);
+	updateEleTheta(z, y);
 }
 document.getElementById("zCoord").oninput = function() {
 	z = this.value;
 	updateRTheta(x, y);
+	updateEleTheta(z, y);
 }
 
 function updateRTheta(x, y){
 	r = Math.sqrt(x*x + y*y);
 	theta = Math.atan2(x, y);
+}
+
+function updateEleTheta(z, y){
+	eleR = Math.sqrt(y*y + z*z);
+	eleTheta = Math.atan2(z, y);
 }
 
 // update variables when WASDQE is clicked, set according to max canvas size
@@ -78,9 +91,17 @@ document.addEventListener('keydown', function(event) {
     }
 	
 	updateRTheta(x, y);
+	updateEleTheta(z, y);
 });
 
 
+
+function cursor(sketch) {
+    sketch.stroke('LawnGreen');
+    sketch.strokeWeight(3);
+    sketch.line(sketch.mouseX - canvas_size/2 + 10, sketch.mouseY + 5 - canvas_size/2, sketch.mouseX - canvas_size/2 + 10, sketch.mouseY-5 - canvas_size/2);
+    sketch.line(sketch.mouseX - canvas_size/2 - 10, sketch.mouseY + 5 - canvas_size/2, sketch.mouseX - canvas_size/2 - 10, sketch.mouseY-5 - canvas_size/2);
+}
 
 
 
@@ -91,7 +112,7 @@ var s1 = function (sketch) {
 		sketch.frameRate(framerate);
 		let canvas1 = sketch.createCanvas(canvas_size, canvas_size, sketch.WEBGL);
 		canvas1.position(0, 0);
-		canvas1.parent("div5");
+		canvas1.parent("div14");
 		canvas1.style('position', 'relative');
 
 		sketch.noFill();
@@ -100,7 +121,9 @@ var s1 = function (sketch) {
 	sketch.draw = function () {
 		sketch.clear();
 		sketch.background(100);
-		ppiDrawBase(sketch, canvas_size);
+		escopeDrawBase(sketch, canvas_size, lineSpacing);
+		escopeDrawBogey(sketch, canvas_size, lineSpacing, eleR, eleTheta);
+		escopeDrawBorder(sketch, canvas_size, lineSpacing);
 	}
 };
 
@@ -126,6 +149,7 @@ var s2 = function (sketch) {
 		sketch.background(100);
 		sectorppiDrawBase(sketch, canvas_size, lineSpacing);
 		sectorppiDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z);
+		cursor(sketch);
 	}
 };
 new p5(s2);
@@ -138,7 +162,7 @@ var s3 = function (sketch) {
 		sketch.frameRate(framerate);
 		let canvas3 = sketch.createCanvas(canvas_size, canvas_size, sketch.WEBGL);
 		canvas3.position(0, 0);
-		canvas3.parent("div7");
+		canvas3.parent("div5");
 		canvas3.style('position', 'relative');
 
 		sketch.noFill();
@@ -174,6 +198,7 @@ var s4 = function (sketch) {
 		bscopeDrawBase(sketch, canvas_size, lineSpacing);
 		bscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta);
 		bscopeDrawBorder(sketch, canvas_size, lineSpacing);
+		cursor(sketch);
 	}
 };
 new p5(s4);
@@ -186,7 +211,7 @@ var s5 = function (sketch) {
 		sketch.frameRate(framerate);
 		let canvas5 = sketch.createCanvas(canvas_size, canvas_size, sketch.WEBGL);
 		canvas5.position(0, 0);
-		canvas5.parent("div14");
+		canvas5.parent("div15");
 		canvas5.style('position', 'relative');
 
 		sketch.noFill();
@@ -198,6 +223,7 @@ var s5 = function (sketch) {
 		cscopeDrawBase(sketch, canvas_size, lineSpacing);
 		cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z);
 		cscopeDrawBorder(sketch, canvas_size, lineSpacing);
+		cursor(sketch);
 	}
 };
 new p5(s5);
@@ -210,7 +236,7 @@ var s6 = function (sketch) {
 		sketch.frameRate(60);
 		let canvas6 = sketch.createCanvas(canvas_size, canvas_size, sketch.WEBGL);
 		canvas6.position(0, 0);
-		canvas6.parent("div15");
+		canvas6.parent("div7");
 		canvas6.style('position', 'relative');
 
 		

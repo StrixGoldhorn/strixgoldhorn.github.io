@@ -47,6 +47,7 @@ function sectorppiDrawBogey(sketch, canvas_size, lineSpacing, r, theta, altitude
         sketch.translate(0, canvas_size/2);
     
         sketch.line(xOnScope-5, yOnScope, xOnScope+5, yOnScope);
+        sketch.translate(0, -canvas_size/2);
 
     }
 
