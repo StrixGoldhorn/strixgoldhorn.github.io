@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <meta charset="utf-8" />
+
+</head>
+
+<body>
+  <div class="parent">
+    <div id="div1">
+      <p>A-scope (Signal amplitude | Range)</p>
+    </div>
+    <div id="div2">
+      <p>Sector PPI</p>
+    </div>
+    <div id="div3">
+      <p>EDITOR</p>
+    </div>
+    <div id="div4"></div>
+    <div id="div5"> </div>
+    <div id="div6"> </div>
+    <div id="div7"> </div>
+    <div id="div8">
+      <p>Set position of OPFOR</p>
+      <div class="slidecontainer">
+        <input type="range" step="1" min="-100" max="100" value="0" class="slider" id="xCoord"><br />
+        <input type="range" step="1" min="0" max="100" value="0" class="slider" id="yCoord" orient="vertical">
+        <input type="range" step="1" min="-100" max="100" value="0" class="slider" id="zCoord" orient="vertical"><p>Alternatively, use WASD and QE to move OPFOR</p>
+      </div>
+      
+    </div>
+    <div id="div9">
+      <p>B-scope (Range | Azimuth)</p>
+    </div>
+    <div id="div10">
+      <p>E-Scope (Range | Elevation)</p>
+    </div>
+    <div id="div11">
+      <p>C-Scope (Elevation | Azimuth)</p>
+    </div>
+    <div id="div12"> </div>
+    <div id="div13"> </div>
+    <div id="div14"> </div>
+    <div id="div15"> </div>
+    <div id="div16"> </div>
+  </div>
+  <div style="position: absolute; bottom: 0; right: 0; padding: 1em;">Ver 1.0</div>
+  <script src="sketch.js"></script>
+  <script src="ppi.js"></script>
+  <script src="sectorppi.js"></script>
+  <script src="ascope.js"></script>
+  <script src="bscope.js"></script>
+  <script src="escope.js"></script>
+  <script src="cscope.js"></script>
+  <script src="editor.js"></script>
+</body>
+
+</html>
