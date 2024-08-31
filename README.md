@@ -27,6 +27,8 @@ noob at programming
   - [The missile knows where it is by knowing where it isn't](#the-missile-knows-where-it-is)
   - [TicTacToe](#tictactoe)
   - [LorenzBeam](#lorenzbeam)
+  - [Radar Display Types Showcase](#radar-display-types-showcase)
+
 
 <br/><br/><br/>
 
