@@ -37,7 +37,12 @@ function sectorppiDrawBogey(sketch, canvas_size, lineSpacing, r, theta, altitude
 
     // only draw if within range
 
-    if (r <= cnt * lineSpacing && -Math.PI/6 < theta && Math.PI/6 > theta){
+    if (r <= cnt *2* lineSpacing &&
+        -Math.PI / 6 < theta &&
+        Math.PI / 6 > theta &&
+        eleR <= cnt *2* lineSpacing &&
+        -Math.PI / 6 < eleTheta &&
+        Math.PI / 6 > eleTheta) {
         let y = -r * Math.cos(theta);
         let x = r * Math.sin(theta);
         

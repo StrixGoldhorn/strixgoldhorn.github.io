@@ -124,6 +124,7 @@ var s1 = function (sketch) {
 		escopeDrawBase(sketch, canvas_size, lineSpacing);
 		escopeDrawBogey(sketch, canvas_size, lineSpacing, eleR, eleTheta);
 		escopeDrawBorder(sketch, canvas_size, lineSpacing);
+		cursor(sketch);
 	}
 };
 
@@ -221,7 +222,7 @@ var s5 = function (sketch) {
 		sketch.clear();
 		sketch.background(100);
 		cscopeDrawBase(sketch, canvas_size, lineSpacing);
-		cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z);
+		cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z, eleR, eleTheta);
 		cscopeDrawBorder(sketch, canvas_size, lineSpacing);
 		cursor(sketch);
 	}

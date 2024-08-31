@@ -207,3 +207,19 @@ Done with p5js.
 First version created November 2023.
 
 <br/><br/><br/>
+
+## Radar Display Types Showcase
+
+[Radar Display Types Showcase](RadarDisp/index.html)
+
+Extremely basic "showcase" of the different radar displays.
+
+Includes A, B, C, E scopes, and sector PPI.
+
+Simple logic to determine whether OPFOR is in radar's main lobe, modeled as a simple cone.
+
+Done with p5js.
+
+First version created August 2024.
+
+<br/><br/><br/>

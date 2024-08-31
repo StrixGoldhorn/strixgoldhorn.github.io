@@ -28,7 +28,7 @@ function cscopeDrawBase(sketch, canvas_size, lineSpacing){
     }
 }
 
-function cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z) {
+function cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z, eleR, eleTheta) {
 
     // total 60deg, 30deg on each side
     let cnt = 0;
@@ -39,7 +39,12 @@ function cscopeDrawBogey(sketch, canvas_size, lineSpacing, r, theta, z) {
     let x = (theta * 6 * cnt * lineSpacing) / Math.PI;
     let y = z;
 
-    if (r <= cnt *2* lineSpacing && -Math.PI / 6 < theta && Math.PI / 6 > theta) {
+    if (r <= cnt *2* lineSpacing &&
+        -Math.PI / 6 < theta &&
+        Math.PI / 6 > theta &&
+        eleR <= cnt *2* lineSpacing &&
+        -Math.PI / 6 < eleTheta &&
+        Math.PI / 6 > eleTheta) {
         sketch.stroke('Tomato');
         sketch.strokeWeight(5);
         sketch.line(x - 5, -y, x + 5, -y);

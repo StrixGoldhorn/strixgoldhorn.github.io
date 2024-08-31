@@ -29,7 +29,6 @@ function escopeDrawBase(sketch, canvas_size, lineSpacing) {
 
 function escopeDrawBogey(sketch, canvas_size, lineSpacing, eleR, eleTheta) {
 
-    console.log(eleR, eleTheta);
     // total 60deg, 30deg on each side
     let cnt = 0;
     for (let j = 0; j < canvas_size / 2 - lineSpacing; j += lineSpacing) {
@@ -40,7 +39,12 @@ function escopeDrawBogey(sketch, canvas_size, lineSpacing, eleR, eleTheta) {
     let y = eleR;
 
     sketch.translate(0, cnt * lineSpacing);
-    if (eleR <= cnt *2* lineSpacing && -Math.PI / 6 < eleTheta && Math.PI / 6 > theta) {
+    if (r <= cnt *2* lineSpacing &&
+        -Math.PI / 6 < theta &&
+        Math.PI / 6 > theta &&
+        eleR <= cnt *2* lineSpacing &&
+        -Math.PI / 6 < eleTheta &&
+        Math.PI / 6 > eleTheta) {
         sketch.stroke('Tomato');
         sketch.strokeWeight(5);
         sketch.line(x - 5, -y, x + 5, -y);
