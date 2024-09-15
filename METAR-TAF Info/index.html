@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>API test</title>
+	<meta charset="utf-8">
+	<link rel="icon" href="favicon.png" type="png" sizes="32x32">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+
+	<div id="intro">
+		<div id="appName">METAR/TAF Info</div>
+		<div class="topButton"><button id="#toggleThemeButton">Toggle Theme</button></div>
+		<div class="topButton"><button id="#toggleMETARTAFButton">Toggle METAR/TAF</button></div>
+	</div>
+
+	<div id="responses">
+
+		<div class="parent">
+			<div class="div1" id="div1">
+				<div id="apikeyAlert">
+					<p>Enter your API key below</p>
+					<form id="apikey"><label for="apikey">API key:</label><br /><input type="text" class="UsrIn"
+							id="apikeyIN" name="apikey">
+							<button type="button" id="apikeySubmit">Submit</button>
+						<p style="font-size: small;"><i> Don't have an API key? <a target="_blank" href="https://www.checkwxapi.com/auth/signup">Click here</a> to apply for an API key.</i>
+						</p>
+
+				</div>
+			</div>
+
+			<div class="div2">
+				<div class="vizFrame" id = "ICAO_codes_frame">
+					<label for="ICAO_codes_in">Add/Remove ICAO code:</label>  
+					<input type="text" id="ICAO_codes_in" name="ICAO_codes_in" value="">
+					<button type="button" id="ICAO_add">UPDATE</button>
+					<p id="ICAO_curr">a</p>
+				</div>
+			</div>
+
+			<div class="div3" id="TAF_TABLE_HERE">
+				
+			</div>
+
+			<div class="div3" id="METAR_TABLE_HERE" style="display:none">
+
+			</div>
+		</div>
+
+	</div>
+
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="./main.js"></script>
+</body>
+
+</html>

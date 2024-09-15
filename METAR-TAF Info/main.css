@@ -1,0 +1,117 @@
+:root{
+  --primary-color: #ee6352ff;
+  --secondary-color: #64be99;
+  --tertiary-color: #6cbeab;
+  --font-color: #3B3E39;
+  --bg-color: #95e6d3;
+  --bg-s-color: #89c1aa;
+
+  
+  --pos-color: #4ECF8E;
+  --neg-color: #ee6352ff;
+}
+
+:root.dark{
+  --primary-color: #5C8374;
+  --secondary-color: #527b6d;
+  --tertiary-color: #6c8f77;
+  --font-color: #a2c9d8;
+  --bg-s-color: #203b49;
+  --bg-color: #284c4c;
+}
+
+html {
+  /* background-color: #1a252a; */
+  background-color: var(--bg-color);
+  font-size: 1.2em;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+  color: var(--font-color);
+  padding: 0px;
+  margin: 0px;
+}
+
+#intro {
+  margin: auto auto 1em;
+  width: 100%;
+  text-align: center;
+}
+
+#appName {
+  margin: 0.2em;
+  padding: 0.2em;
+  font-family: Lucida Sans Unicode;
+  font-size: 1.5em;
+}
+
+.topButton{
+  margin: auto auto 0.2em;
+}
+
+#responses {
+  margin: auto auto 0.2em;
+  width: 80%;
+  text-align: center;
+  border: 0.1em solid var(--tertiary-color);
+  border-radius: 0.5em;
+  background-color: var(--bg-s-color);
+  font-size: 1em;
+}
+
+#responses div{
+  margin: 0.2em;
+  padding: 0.5em;
+}
+
+#defaultText {
+  margin: 0.1em;
+  padding: 0.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.resTable {
+  margin: auto auto 2em;
+  font-size: 0.8em;
+  padding: 0.2em;
+  color: var(--font-color);;
+}
+
+.resTable th, td {
+  padding: 0.5em;
+}
+
+.resTable tr:nth-child(odd) {
+  background-color: var(--secondary-color);
+}
+
+.resTable tr:nth-child(even) {
+  background-color: var(--tertiary-color);
+}
+
+img {
+  border-radius: 5px 5px 0 0;
+}
+
+input[type="text"] {
+  padding: 0.2em;
+  margin: 0.5em;
+  font-size: 0.8em;
+}
+
+button {
+  background-color: var(--tertiary-color);
+  font-size: 1em;
+}
+
+#trainServiceAlertInfo{
+  color: black;
+}
+
+#vizTarget {
+  background-color: #4295d8;
+  color: white;
+  text-align: center;
+}

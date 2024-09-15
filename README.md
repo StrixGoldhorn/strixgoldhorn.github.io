@@ -28,6 +28,7 @@ noob at programming
   - [TicTacToe](#tictactoe)
   - [LorenzBeam](#lorenzbeam)
   - [Radar Display Types Showcase](#radar-display-types-showcase)
+  - [METAR TAF Info](#metar-taf-info)
 
 
 <br/><br/><br/>
@@ -223,5 +224,19 @@ Simple logic to determine whether OPFOR is in radar's main lobe, modeled as a si
 Done with p5js.
 
 First version created August 2024.
+
+<br/><br/><br/>
+
+## METAR TAF Info
+
+[METAR/TAF Info](METAR-TAF%20Info/index.html)
+
+Displays METAR and TAF info for user-selected airports. 
+
+Uses [CheckWX API](www.checkwxapi.com) to retrieve METAR and TAF info.
+
+Saves API key, last theme selected, and ICAO codes to localstorage.
+
+First version created September 2024.
 
 <br/><br/><br/>
