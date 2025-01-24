@@ -29,6 +29,7 @@ noob at programming
   - [LorenzBeam](#lorenzbeam)
   - [Radar Display Types Showcase](#radar-display-types-showcase)
   - [METAR TAF Info](#metar-taf-info)
+  - [Emitter Location Multiple Distance Measurements](#emitter-location-multiple-distance-measurements)
 
 
 <br/><br/><br/>
@@ -238,5 +239,19 @@ Uses [CheckWX API](www.checkwxapi.com) to retrieve METAR and TAF info.
 Saves API key, last theme selected, and ICAO codes to localstorage.
 
 First version created September 2024.
+
+<br/><br/><br/>
+
+## Emitter Location Multiple Distance Measurements
+
+[Emitter Location Multiple Distance Measurements](Emitter%20Location%20Multiple%20Distance%20Measurements/index.html)
+
+Simple simulation of emitter location via multiple distance measurements
+
+This simulation assumes the only power lost is from distance, and that the hostile emitter's ERP is known.
+
+By taking 4 measurements of received power in different points in a 3D space, the position of the hostile emitter can be found.
+
+First version created January 2025.
 
 <br/><br/><br/>

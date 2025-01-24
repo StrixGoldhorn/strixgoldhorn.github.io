@@ -1,0 +1,7 @@
+/*
+Changelog for Emitter Location Multiple Distance Measurements
+*/
+
+v0.1 [24 Jan 2025]
+First barebones, basic version released
+
