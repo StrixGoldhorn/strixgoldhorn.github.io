@@ -1,9 +1,25 @@
 class Ship{
-  constructor(x, y){
+  constructor(x, y, maxspeed, maxaccel, maxforce, hdglen, color, mainSensorRange, secondarySensorRange, wpnRange, wpnMult, commRange){
     this.id = crypto.randomUUID().slice(0,4);
     this.displacement = createVector(x,y);
     this.velocity = createVector(0, 0);
     this.acceleration = createVector(0, 0);
+
+    // Max limits
+    this.maxspeed = maxspeed;
+    this.maxaccel  = maxaccel;
+    this.maxforce = maxforce;
+
+    // Display stuff
+    this.hdglen = hdglen
+    this.color = color;
+
+    // Sensor/Wpn/Comm ranges
+    this.mainSensorRange = mainSensorRange;
+    this.secondarySensorRange = secondarySensorRange;
+    this.wpnRange = wpnRange;
+    this.wpnMult = wpnMult;
+    this.commRange = commRange;
   }
   
   steer(target){
@@ -21,13 +37,12 @@ class Ship{
   avoid(){
     let steer = createVector(0, 0);
     let count = 0;
+
     for (let i = 0; i < ships.length; i++) {
       let d = p5.Vector.dist(this.displacement, ships[i].displacement);
       let diff = p5.Vector.sub(this.displacement, ships[i].displacement);
-     
       let hdgToShip = p5.Vector.sub(ships[i].displacement, this.displacement);
 
-     
       if(
       (d > 0) && // check if self
       (((d < this.mainSensorRange) && (abs(hdgToShip.angleBetween(this.velocity)) < PI/4)) || // check if within main sensor range
@@ -66,7 +81,7 @@ class Ship{
       steer.normalize();
       steer.mult(this.maxspeed);
       steer.sub(this.velocity);
-      steer.limit(this.maxforce * 0.1);
+      steer.limit(this.maxforce);
       this.acceleration.add(steer);
     }
   }
@@ -113,8 +128,10 @@ class Ship{
     circle(x, y, this.wpnRange * 2);
   }
  
+
+
 //   all sensors currently limited to Mk1 Eyball except radar on BLUFOR
-  seeMainSensor(){
+  seeMainSensorFront(){
     var x = this.displacement.x;
     var y = this.displacement.y;
     let hdg = this.velocity.heading();
@@ -124,7 +141,7 @@ class Ship{
     arc(x, y, this.mainSensorRange * 2, this.mainSensorRange * 2, hdg - PI/4, hdg + PI/4);
   }
  
-  seeSecondarySensor(){
+  seeMainSensorSide(){
     var x = this.displacement.x;
     var y = this.displacement.y;
     let hdg = this.velocity.heading();
@@ -134,19 +151,16 @@ class Ship{
     arc(x, y, this.secondarySensorRange * 2, this.secondarySensorRange * 2, hdg + PI/4, hdg - PI/4);
   }
  
+
+
   update(){
     this.avoid();
     this.acceleration.limit(this.maxaccel);
     this.velocity.add(this.acceleration);
     this.velocity.limit(this.maxspeed);
     this.displacement.add(this.velocity);
-   
-//     wrap around sides
-    // if(this.displacement.x > width) this.displacement.x = 0;
-    // else if(this.displacement.x < 0) this.displacement.x = width;
-    // if (this.displacement.y > height) this.displacement.y = 0;
-    // else if (this.displacement.y < 0) this.displacement.y = height;
     
+    // "reflect" off walls
     if((this.displacement.x > width) ||
       (this.displacement.x < 0)){
       this.velocity.x = -this.velocity.x;
@@ -161,5 +175,23 @@ class Ship{
       
    
     this.render();
+    this.seehdg();
+    this.seeMainSensorFront();
+    this.seeMainSensorSide();
+    this.seeWpn();
+  }
+
+  render() {
+    strokeWeight(1);
+    fill(this.color);
+    stroke(200);
+    circle(this.displacement.x, this.displacement.y, 8);
+    if(debug){
+      strokeWeight(0);
+      fill(0,0,0);
+      textSize(20);
+      text(this.id, this.displacement.x + 5, this.displacement.y);
+      strokeWeight(1);
+      }
   }
 }

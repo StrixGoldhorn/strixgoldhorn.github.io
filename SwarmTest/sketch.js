@@ -1,5 +1,5 @@
 let ships = [];
-let BLUFORcnt = 3;
+let BLUFORcnt = 1;
 let OPFORcnt = 10;
 let debug = false;
 

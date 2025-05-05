@@ -7,6 +7,7 @@ class Target{
   
   extrapolatePath(){
     let predicted;
+    console.log("ASDASD", this.displacementLog)
     if(this.displacementLog.length >= 10){
     }
     else if (this.displacementLog.length >= 2){
@@ -29,8 +30,6 @@ class Target{
     }
     else{
       predicted = this.displacementLog[this.displacementLog.length - 1]
-    }
-      
     }
    
     return ships.find(o => o.id == this.target).displacement;
