@@ -1,7 +1,7 @@
 class BLUFOR extends Ship {
   constructor(x, y) {
     super(x, y,
-      1, 0.05, 0.01,
+      1.1, 0.05, 0.01,
       60, color(51, 102, 255),
       50, 30, 20, 0.1, 500);
     // x, y,
@@ -9,17 +9,16 @@ class BLUFOR extends Ship {
     // hdglen, color,
     // mainSensorRange, secondarySensorRange, wpnRange, wpnMult, commRange
 
-    // extra sensors
+    // Extra sensors
     this.radarRange = 250;
 
-    // target
+    // Target
     this.target = null;
     this.targetPath = [];
     this.extrapolateMult = 0.5;
     this.targetViaComms = false;
-    this.target_ship_id = 0;
 
-    // grouping
+    // Grouping
     this.groupLead = false;
     this.groupID = null;
   }
@@ -27,15 +26,15 @@ class BLUFOR extends Ship {
   render() {
     super.render()
     if (debug) {
-      // if currently chasing target, show target ID
+      // If currently chasing target, show target ID
       if (this.target != null) {
         strokeWeight(0);
         textSize(15);
-        text("Tgt: " + this.target, this.displacement.x + 15, this.displacement.y + 20);
+        text("Tgt: " + this.target.id, this.displacement.x + 15, this.displacement.y + 20);
         strokeWeight(1);
       }
-      
-      // if currently in group, show group ID
+
+      // If currently in group, show group ID
       if (this.groupID != null) {
         strokeWeight(0);
         textSize(15);
@@ -55,6 +54,7 @@ class BLUFOR extends Ship {
   }
 
   radarGuide() {
+    // Iterate through each ship in list
     for (let i = 0; i < ships.length; i++) {
       let d = p5.Vector.dist(this.displacement, ships[i].displacement);
       let diff = p5.Vector.sub(this.displacement, ships[i].displacement);
@@ -62,23 +62,50 @@ class BLUFOR extends Ship {
       let hdgToShip = p5.Vector.sub(ships[i].displacement, this.displacement);
 
       if (
-        (d > 0) && // check if self
-        ((d < this.radarRange) || (this.target != null && this.targetViaComms == true)) && // check if within radar range or if target given via comms
-        (ships[i].constructor.name == "OPFOR") // check if is OPFOR
-        // ((this.target == null) || (this.target == ships[i].id)) // track only if no target or if target is the one already being tracked
+        // Track ship if:
+        // NOT self
+        // within range
+        // IS opfor
+
+        (d > 0) && // cCheck if self
+        ((d < this.radarRange) || (this.target != null && this.targetViaComms == true)) && // Check if within radar range or if target given via comms
+        (ships[i].constructor.name == "OPFOR") // Check if is OPFOR
+        // ((this.target == null) || (this.target == ships[i].id)) // Track only if no target or if target is the one already being tracked
       ) {
-        // if ship had no target, set it to the current one
+
+        // If ship had no target, set it to the current one
         if (this.target == null) {
-          this.target = ships[i].id;
-          this.target_ship_id = i
-          this.targetPath = []
+          this.target = new Target(ships[i].id);
         }
 
-        // else if current is closer than the one being tracked, set current as new target
-        else if (d < p5.Vector.dist(this.displacement, ships.find(o => o.id == this.target).displacement)) {
-          this.target = ships[i].id;
-          this.target_ship_id = i
-          this.targetPath = []
+        // Rlse if current is closer than the one being tracked, set current as new target
+        else if (d < p5.Vector.dist(this.displacement, ships.find(o => o.id == this.target.id).displacement)) {
+          this.target.id = ships[i].id;
+          this.target.displacementLog = []
+        }
+
+        if (this.target.id == ships[i].id) {
+          // Track current target path
+          if (this.target.displacementLog.length > 15) {
+            this.target.displacementLog.shift();
+          }
+
+          let choose = random(-1, 1);
+          if (choose > 0) {
+            this.target.displacementLog.push(ships[i].displacement.copy());
+          }
+
+
+          // If distance is furhter than mainSensorRange, use proportional navigation
+          if(d > this.mainSensorRange){
+            let track = this.target.extrapolatePath(this.displacement);
+            super.steer(track);
+          }
+          // Else directly chase it
+          else{
+            super.steer(ships[i].displacement.copy())
+          }
+
         }
 
         if (debug) {
@@ -88,21 +115,15 @@ class BLUFOR extends Ship {
           stroke(0, 255, 0);
           line(velVector.x + this.displacement.x, velVector.y + this.displacement.y, this.displacement.x, this.displacement.y);
 
+          // Show self
           fill("#9F6");
           circle(this.displacement.x, this.displacement.y, 10)
+
+          // Target's displacement log
+          this.target.drawDisplacementLog();
         }
 
-        if (this.targetPath.length > 15) {
-          this.targetPath.shift();
-        }
 
-        let choose = random(-1, 1);
-        if (choose > 0) {
-          this.targetPath.push(ships[i].displacement.copy());
-        }
-
-        let track = this.extrapolatePath(this.targetPath);
-        super.steer(track);
       }
     }
 
@@ -154,14 +175,14 @@ class BLUFOR extends Ship {
         (ships[i].constructor.name == "BLUFOR")// check if is BLUFOR
       ) {
         // check if in group already, else add to group
-        if(this.groupID == null){
+        if (this.groupID == null) {
           // if the other ship is also not in group, set self as group lead
-          if(ships[i].groupID == null){
+          if (ships[i].groupID == null) {
             this.groupLead = true;
             this.groupID = "g" + this.id;
             ships[i].groupID = "g" + this.id;
           }
-          else{
+          else {
             this.groupID = ships[i].groupID;
           }
         }

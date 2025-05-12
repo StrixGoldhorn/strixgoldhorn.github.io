@@ -1,22 +1,26 @@
 class Target{
   constructor(id, velocity = null){
     this.id = id;
-    this.velocity = velocity;
+    this.extrapolateMult = 0.8;
     this.displacementLog = [];
   }
-  
-  extrapolatePath(){
+
+  extrapolatePath(vesselDisplacement){
     let predicted;
-    console.log("ASDASD", this.displacementLog)
-    if(this.displacementLog.length >= 10){
+
+    // If enough data, extrapolate path
+    if(this.displacementLog.length >= 1000){
+    // TODO: Predict path
     }
+
+    // Else just take path as current velocity
     else if (this.displacementLog.length >= 2){
-      var curr = pathArr[pathArr.length - 1];
-      var prev = pathArr[0];
+      var curr = this.displacementLog[this.displacementLog.length - 1];
+      var prev = this.displacementLog[0];
      
       predicted = p5.Vector.sub(curr, prev);
-      let targetDisplacement = ships.find(o => o.id == this.target).displacement;
-      let d = p5.Vector.dist(this.displacement, targetDisplacement);
+      let targetDisplacement = ships.find(o => o.id == this.id).displacement;
+      let d = p5.Vector.dist(vesselDisplacement, targetDisplacement);
      
       predicted.normalize();
       predicted.mult(this.extrapolateMult * d);
@@ -28,10 +32,22 @@ class Target{
       circle(predicted.x + targetDisplacement.x, predicted.y + targetDisplacement.y, 8);
       return predictedDisplacement;
     }
+
+    // Else take as current point
     else{
       predicted = this.displacementLog[this.displacementLog.length - 1]
     }
    
-    return ships.find(o => o.id == this.target).displacement;
+    return ships.find(o => o.id == this.id).displacement;
+  }
+
+  drawDisplacementLog(){
+    noFill();
+    stroke(128, 0, 0);
+    beginShape();
+    this.displacementLog.forEach(element => {
+      vertex(element.x, element.y);
+    });
+    endShape();
   }
 }
