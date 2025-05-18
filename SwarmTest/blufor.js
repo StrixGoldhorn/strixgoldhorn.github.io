@@ -1,7 +1,7 @@
 class BLUFOR extends Ship {
   constructor(x, y) {
     super(x, y,
-      1.1, 0.05, 0.01,
+      1.1, 0.05, 0.1,
       60, color(51, 102, 255),
       50, 30, 20, 0.1, 500);
     // x, y,
@@ -104,6 +104,7 @@ class BLUFOR extends Ship {
           // Else directly chase it
           else{
             super.steer(ships[i].displacement.copy())
+            console.log(this.id, "direct chase", ships[i].id)
           }
 
         }
@@ -205,7 +206,12 @@ class BLUFOR extends Ship {
     this.render();
     this.seeComms();
     this.checkComms();
-    this.radarGuide();
+    if(userWaypoint === false){
+      this.radarGuide();
+    }
+    else{
+      super.steer(userWaypoint);
+    }
     this.seeRadar();
   }
 }

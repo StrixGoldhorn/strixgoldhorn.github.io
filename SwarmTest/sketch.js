@@ -1,7 +1,9 @@
 let ships = [];
-let BLUFORcnt = 1;
-let OPFORcnt = 10;
+let BLUFORcnt = 2;
+let OPFORcnt = 3;
 let debug = false;
+
+let userWaypoint = false;
 
 function updateBLUFOR(a){
   if(a == 1){
@@ -72,5 +74,25 @@ function draw() {
     ships[i].acceleration.x += (noise(ships[i].displacement.x + random(0,1)) - 0.5) * 0.1;
     ships[i].acceleration.y += (noise(ships[i].displacement.y + random(0,1)) - 0.5) * 0.1;
     ships[i].update();
+  }
+
+  if(userWaypoint !== false){
+    fill(29, 241, 238)
+    circle(userWaypoint.x, userWaypoint.y, 10);
+  }
+}
+
+function mouseClicked(){
+  if(keyIsDown(84) === true){
+    console.log("WAYPOINT SET", mouseX, mouseY)
+    userWaypoint = createVector(mouseX, mouseY);
+  }
+}
+
+function keyPressed(){
+  // If user clicks "t", reset if waypoint already exists
+  if(keyCode === 84 && userWaypoint !== false){
+    userWaypoint = false;
+    console.log("RESET WAYPOINT")
   }
 }
