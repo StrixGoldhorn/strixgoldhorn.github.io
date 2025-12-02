@@ -74,7 +74,7 @@ By taking 4 measurements of received power in different points in a 3D space, th
 
 First version created January 2025.
 
-![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/elmdm.png)
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/refs/heads/main/assets/img/elmdm.png)
 
 <br/><br/><br/>
 
@@ -106,7 +106,7 @@ Done with p5js.
 
 First version created August 2024.
 
-![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/radar_disp.png)
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/refs/heads/main/assets/img/radar_disp.png)
 
 <br/><br/><br/>
 
@@ -166,7 +166,7 @@ Also to learn proportional navigation.
 
 First version created in Early January 2023.
 
-![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/nafs.png)
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/refs/heads/main/assets/img/nafs.png)
 
 <br/><br/><br/>
 
@@ -184,7 +184,7 @@ Made with p5.js
 
 First version created in Mid 2022.
 
-![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/swarmtest.png)
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/refs/heads/main/assets/img/swarmtest.png)
 
 <br/><br/><br/>
 
@@ -268,7 +268,7 @@ Models created in Blender, skybox and favicon with FireAlpaca.
 
 **[click here for UNSTABLE version of simulator](./VSHORAD%20(unstable)/vshoradsim.html)**
 
-![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/rbssim.png)
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/refs/heads/main/assets/img/rbssim.png)
 
 ### Background
 
