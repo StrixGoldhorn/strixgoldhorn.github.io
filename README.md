@@ -13,6 +13,7 @@ noob at programming. BUT AMAZING AT DESTROYING THINGS!!! (unintentionally)
 # ToC
 - [Hello World](#hello-world)
 - [ToC](#toc)
+- [Preface/Intro](#prefaceintro)
 - [Mini-Projects Showcase](#mini-projects-showcase)
   - [Computer Vision in Arma 3](#computer-vision-in-arma-3)
   - [Emitter Location Multiple Distance Measurements](#emitter-location-multiple-distance-measurements)
@@ -20,17 +21,18 @@ noob at programming. BUT AMAZING AT DESTROYING THINGS!!! (unintentionally)
   - [Radar Display Types Showcase](#radar-display-types-showcase)
   - [LorenzBeam](#lorenzbeam)
   - [TicTacToe](#tictactoe)
-  - [The missile knows where it is by knowing where it isn't](#the-missile-knows-where-it-is)
+  - [the-missile-knows-where-it-is](#the-missile-knows-where-it-is)
   - [Not-A-Flight-Sim](#not-a-flight-sim)
   - [SwarmTest](#swarmtest)
   - [InterceptTarget](#intercepttarget)
-  - [F1-Data (DEPRECATED!)](#f1-data)
+  - [F1-Data](#f1-data)
+    - [API is deprecated, hence webpage will not work](#api-is-deprecated-hence-webpage-will-not-work)
   - [FoV-Subject Preview](#fov-subject-preview)
   - [pOOP Assistant - python OOP Assistant](#poop-assistant---python-oop-assistant)
   - [Fake Virus Site](#fake-virus-site)
   - [RBS 70 Simulator](#rbs-70-simulator)
-      - [Background](#background)
-      - [Features of simulator](#features-of-simulator)
+    - [Background](#background)
+    - [Features of simulator](#features-of-simulator)
 
 <br/><br/><br/>
 
@@ -55,6 +57,8 @@ Playing around with using YOLO trained on custom dataset of screenshots from Arm
 
 First version created June 2025.
 
+![](https://raw.githubusercontent.com/StrixGoldhorn/A3CV/refs/heads/main/_posts/assets/results-v3/with-game-data/Copy%20of%20DSCF2232_downsized.jpg)
+
 <br/><br/><br/>
 
 
@@ -69,6 +73,8 @@ This simulation assumes the only power lost is from distance, and that the hosti
 By taking 4 measurements of received power in different points in a 3D space, the position of the hostile emitter can be found.
 
 First version created January 2025.
+
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/elmdm.png)
 
 <br/><br/><br/>
 
@@ -99,6 +105,8 @@ Simple logic to determine whether OPFOR is in radar's main lobe, modeled as a si
 Done with p5js.
 
 First version created August 2024.
+
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/radar_disp.png)
 
 <br/><br/><br/>
 
@@ -158,6 +166,8 @@ Also to learn proportional navigation.
 
 First version created in Early January 2023.
 
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/nafs.png)
+
 <br/><br/><br/>
 
 ## SwarmTest
@@ -173,6 +183,8 @@ No action taken to chase target of opportunity, though it will eliminate them if
 Made with p5.js
 
 First version created in Mid 2022.
+
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/swarmtest.png)
 
 <br/><br/><br/>
 
@@ -255,6 +267,8 @@ Models created in Blender, skybox and favicon with FireAlpaca.
 **[click here for stable version of simulator](./VSHORAD%20(EXPORT)/vshoradsim.html)**
 
 **[click here for UNSTABLE version of simulator](./VSHORAD%20(unstable)/vshoradsim.html)**
+
+![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/assets/img/rbssim.png)
 
 ### Background
 
