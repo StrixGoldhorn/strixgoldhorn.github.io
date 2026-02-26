@@ -40,6 +40,7 @@ noob at programming. BUT AMAZING AT DESTROYING THINGS!!! (unintentionally)
 All of these are done based on whichever topic interests me at that time. There are no "main goals" in any of the mini-project, other to just have fun and learn.
 Some of the "cooler" projects, in my opinion, are listed below:
 
+- [Open Vehicle Map](https://github.com/StrixGoldhorn/ComputingFun/tree/main/OpenVehMap) <- In a different repo, not listed below
 - [Computer Vision in Arma 3](#computer-vision-in-arma-3)
 - [Emitter Location Multiple Distance Measurements](#emitter-location-multiple-distance-measurements)
 - [Not-A-Flight-Sim](#not-a-flight-sim)
