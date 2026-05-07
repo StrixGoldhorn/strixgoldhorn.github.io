@@ -136,7 +136,7 @@ function updateTAFTable(TAF_data){
         td21.innerText = airport["icao"];
         td22.innerText = airport["station"]["location"];
         td23.innerText = airport["station"]["name"];
-        td24.innerText = airport["station"]["type"];
+        // td24.innerText = airport["station"]["type"];
         tr2.appendChild(td21);
         tr2.appendChild(td22);
         tr2.appendChild(td23);
@@ -148,8 +148,8 @@ function updateTAFTable(TAF_data){
         var td32 = document.createElement("td");
         td31.setAttribute("colspan", "2");
         td32.setAttribute("colspan", "2");
-        td31.innerText = "Valid from " + airport["forecast"][0]["timestamp"]["from"];
-        td32.innerText = "Valid to " + airport["forecast"][0]["timestamp"]["to"];
+        td31.innerText = "Valid from " + airport["period"]["from"];
+        td32.innerText = "Valid to " + airport["period"]["to"];
         tr3.appendChild(td31);
         tr3.appendChild(td32);
         tblBody.appendChild(tr3);
@@ -160,7 +160,7 @@ function updateTAFTable(TAF_data){
         var td43 = document.createElement("td");
         var td44 = document.createElement("td");
         td41.innerText = "Visibility";
-        td42.innerText = airport["forecast"][0]["visibility"]["meters_float"] + "m";
+        td42.innerText = airport["forecast"][0]["visibility"]["miles"] + " miles";
         td43.innerText = "Wind";
         td44.innerText = airport["forecast"][0]["wind"]["degrees"] + "° / " + airport["forecast"][0]["wind"]["speed_kts"] + "kts";
         tr4.appendChild(td41);
@@ -182,7 +182,7 @@ function updateTAFTable(TAF_data){
             var tdc2 = document.createElement("td");
             tdc1.setAttribute("colspan", "2");
             tdc2.setAttribute("colspan", "2");
-            tdc1.innerText = cloudLayer["base_feet_agl"] + "ft";
+            tdc1.innerText = cloudLayer["feet"] + "ft";
             tdc2.innerText = cloudLayer["text"];
             trCloud.appendChild(tdc1);
             trCloud.appendChild(tdc2);
@@ -220,7 +220,7 @@ function updateMETARTable(METAR_data){
         td21.innerText = airport["icao"];
         td22.innerText = airport["station"]["location"];
         td23.innerText = airport["station"]["name"];
-        td24.innerText = airport["station"]["type"];
+        // td24.innerText = airport["station"]["type"];
         tr2.appendChild(td21);
         tr2.appendChild(td22);
         tr2.appendChild(td23);
@@ -240,8 +240,8 @@ function updateMETARTable(METAR_data){
         var td43 = document.createElement("td");
         var td44 = document.createElement("td");
         td41.innerText = "Flight Category: " + airport["flight_category"];
-        td42.innerText = "Visibility: " + airport["visibility"]["meters_float"];
-        td43.innerText = "Elevation: " + airport["elevation"]["feet"] + "ft / " + airport["elevation"]["meters"] + "m";
+        td42.innerText = "Visibility: " + airport["visibility"]["miles"] + " miles";
+        // td43.innerText = "Elevation: " + airport["elevation"]["feet"] + "ft / " + airport["elevation"]["meters"] + "m";
         td44.innerText = "Barometer: " + airport["barometer"]["hg"] + "hg";
         tr4.appendChild(td41);
         tr4.appendChild(td42);
@@ -255,7 +255,7 @@ function updateMETARTable(METAR_data){
         var td53 = document.createElement("td");
         var td54 = document.createElement("td");
         td51.innerText = "Wind deg/kts: " + airport["wind"]["degrees"] + "° / " + airport["wind"]["speed_kts"] + "kts";
-        td52.innerText = "Humidity: " + airport["humidity"]["percent"] + "%";
+        td52.innerText = "Humidity: " + airport["humidity"] + "%";
         td53.innerText = "Temp: " + airport["temperature"]["celsius"] + "°C";
         td54.innerText = "Dew point: " + airport["dewpoint"]["celsius"] + "°C";
         tr5.appendChild(td51);
@@ -277,7 +277,7 @@ function updateMETARTable(METAR_data){
             var tdc2 = document.createElement("td");
             tdc1.setAttribute("colspan", "2");
             tdc2.setAttribute("colspan", "2");
-            tdc1.innerText = cloudLayer["base_feet_agl"] + "ft";
+            tdc1.innerText = cloudLayer["feet"] + "ft";
             tdc2.innerText = cloudLayer["text"];
             trCloud.appendChild(tdc1);
             trCloud.appendChild(tdc2);
