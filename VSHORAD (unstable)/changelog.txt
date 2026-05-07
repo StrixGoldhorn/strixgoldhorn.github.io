@@ -3,7 +3,11 @@ Changelog specific to "unstable" version.
 All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
 */
 
-v2.0.2a [03 Mar 2024]
+v2.0.4a [07 May 2026]
+CHANGED:
+- Bugfix: Missile track line now correctly shows missile path
+
+v2.0.3a [03 Mar 2024]
 CHANGED:
 - Detection of mobile vs desktop
 

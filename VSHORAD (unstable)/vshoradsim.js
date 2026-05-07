@@ -1,5 +1,5 @@
 /*
-v2.0.3a
+v2.0.4a
 */
 
 
@@ -555,7 +555,7 @@ function fire() {
        
         // missile track line
         if (mTLcount === 5) {
-            missileTrackLine.push(missilePt);
+            missileTrackLine.push(missilePt.clone());
             mTLcount = 0;
         } else {
             mTLcount += 1;
@@ -632,8 +632,6 @@ function fire() {
         alertDoc.style.background = "#dd2222";
     }
 
-    
-    console.log(scene)
 }
 
 
