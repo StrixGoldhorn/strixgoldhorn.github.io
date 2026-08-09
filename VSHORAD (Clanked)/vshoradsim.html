@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="./assets/favicon32px.png" sizes="32x32">
+    <title>VSHORAD Sim</title>
+    <style>
+        body {
+            font-family: "Lucida Console";
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        #cage {
+            margin: auto;
+            color: white;
+            top: 10px;
+            left: 10px;
+            position: absolute;
+            padding: 5px;
+            width: 200px;
+            height: 40px;
+            font-size: 40px;
+            border-radius: 5px;
+        }
+
+        #loadIndicate {
+            margin: auto;
+            color: white;
+            top: 70px;
+            left: 10px;
+            position: absolute;
+            padding: 5px;
+            width: 200px;
+            height: 30px;
+            font-size: 30px;
+            border-radius: 5px;
+        }
+
+        #alert {
+            margin: auto;
+            color: white;
+            top: 120px;
+            left: 10px;
+            position: absolute;
+            padding: 5px;
+            width: 200px;
+            height: 60px;
+            font-size: 30px;
+            border-radius: 5px;
+            opacity: 0;
+        }
+
+        #parent {
+            display: table;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            position: absolute;
+            pointer-events: none;
+        }
+
+        #tempCross {
+            display: table-cell;
+            vertical-align: middle;
+            color: rgba(0, 255, 0, 0.641);
+            margin: auto;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            font-size: 1em;
+            padding: 50%, 0;
+            width: 100%;
+        }
+
+        #notifsbg {
+            opacity: 0.8;
+            background: rgb(71, 70, 70);
+            position: absolute;
+            top: 6%;
+            left: 25%;
+            width: 50%;
+            height: 88%;
+            border-radius: 0.2em;
+        }
+
+        #notifs {
+            margin: 1em;
+            color: lime;
+            font-size: 15px;
+            text-align: left;
+        }
+
+        #ver {
+            font-size: 0.6em;
+            position: absolute;
+            bottom: 2%;
+            left: 2%;
+        }
+
+        #mobile {
+            display: none;
+        }
+
+        #mobileControlTable {
+            display: none;
+        }
+
+        @media only screen and (hover: none) and (pointer: coarse){
+            #tempCross {
+                display: table-cell;
+                vertical-align: middle;
+                color: rgba(0, 255, 0, 0.641);
+                margin: auto;
+                top: 45%;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                pointer-events: none;
+                position: absolute;
+                font-size: 1em;
+                width: 100%;
+            }
+
+            #mobile {
+                display: block;
+            }
+
+            #mobileControlTable {
+                display: block;
+                color: white;
+                bottom: 5em;
+                left: 0.5em;
+                position: absolute;
+                font-size: 1em;
+                border-radius: 5px;
+            }
+
+            #mobileControlTable tr td {
+                padding: 1em;
+                margin: 2em;
+                height: 5em;
+                background-color: rgb(0, 217, 255);
+                opacity: 50%
+            }
+
+            #alert {
+                margin: auto;
+                color: white;
+                top: 8em;
+                left: 10px;
+                position: absolute;
+                padding: 5px;
+                width: 10em;
+                height: 1em;
+                font-size: 0.8em;
+                border-radius: 5px;
+                opacity: 0;
+            }
+
+            #cage {
+                margin: auto;
+                color: white;
+                top: 2em;
+                left: 0.5em;
+                position: absolute;
+                padding: 5px;
+                width: 8em;
+                height: 1em;
+                font-size: 1.2em;
+                border-radius: 5px;
+            }
+
+            #loadIndicate {
+                margin: auto;
+                color: white;
+                top: 3.5em;
+                left: 0.5em;
+                position: absolute;
+                padding: 5px;
+                width: 8em;
+                height: 1em;
+                font-size: 1.2em;
+                border-radius: 5px;
+            }
+
+            #notifsbg {
+                opacity: 0;
+            }
+
+        }
+    </style>
+    <script src="./vshoradsim.js" type="module"></script>
+</head>
+
+<body oncontextmenu="return false">
+    <div id="parent">
+        <div id="cage"></div>
+        <div id="loadIndicate"></div>
+        <div id="alert"></div>
+
+        <div id="tempCross">
+        </div>
+
+        <div id="notifsbg">
+            <div id="notifs">
+                <h3 style="text-align: center; font-size: 30px">VSHORAD Simulator</h3>
+                <h4>Instructions:</h4>
+
+                <p>To look around, HOLD LMB and drag (Note: deadzone in crosshair, do not click LMB there).</p>
+                <p>To zoom, CLICK RMB to toggle.</p>
+
+                <br />
+
+                <p>To uncage seeker, HOLD SHIFT. If SHIFT is lifted, seeker will be caged. (Note: HOLD LMB before
+                    uncaging)
+                </p>
+                <p>To fire, CLICK "C".</p>
+                <p>To reload and/or reset, CLICK "R".</p>
+
+                <br />
+
+                <p style="font-size: 22px;">When firing, ensure seeker is <b>UNCAGED</b> and missile is <b>LOADED. If
+                        not,
+                        missile will not fire.</b></p>
+                <p>On the top-left, there will be 2 indicators, one for status of seeker (caged | uncaged), and one for
+                    status of missile (loaded | in-flight | empty)</p>
+                <p>If target is hit, crosshair will indicate "HIT". No indication if miss.</p>
+
+                <p style="text-align: center; font-size: 25px"><b>- - - PRESS SPACE TO START - - -</b></p>
+
+                <p style="font-size: 10px">
+                    Notes:<br />
+                    C-130 hitbox is slightly off<br />
+                    Terrain has no hitbox, can shoot through terrain<br />
+                    Use GUI on top-right to change params of C-130, missile and operator (ie zoom and sensitivity)
+                </p>
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <canvas id="threeCanvas"></canvas>
+
+    <div id="mobileControlTable" oncontextmenu="return true">
+        <table>
+            <tr>
+                <td id="mobileCage">cage/uncage</td>
+                <td id="mobileReload">reload</td>
+            </tr>
+            <tr>
+                <td id="mobileFire">fire</td>
+                <td id="mobileStart">START</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="ver">v2.0.4a<p id="mobile">Mobile Ver</p>
+    </div>
+
+</body>
+
+</html>

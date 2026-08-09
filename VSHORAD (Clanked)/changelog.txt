@@ -1,0 +1,101 @@
+/*
+Changelog specific to "unstable" version.
+All "unstable" versions have "a" tagged to it, "a" removed only after it is deployed in "EXPORT" version.
+*/
+
+v2.0.4a [07 May 2026]
+CHANGED:
+- Bugfix: Missile track line now correctly shows missile path
+
+v2.0.3a [03 Mar 2024]
+CHANGED:
+- Detection of mobile vs desktop
+
+v2.0.2a [16 Jan 2023]
+CHANGED:
+- Slight optimisation by reducing number of new objects created
+
+v2.0.1a [22 Jul 2022]
+ADDED:
+- Different .glb files loaded for mobile vs PC
+
+v2.0.0a [20 Jul 2022]
+ADDED:
+- Mobile-specific controls, CSS, skybox
+- Minified JS file for simulator
+- Option to auto shorten recorded and shown c130 flight path
+CHANGED:
+- Lowered intensity of lights
+
+v1.5.0a [18 Jul 2022]
+ADDED:
+- Squared sine wave for altitude change for c130, with corresponding params in GUI
+- C130 flight path can be shown, toggled with option in GUI
+CHANGED:
+- Path changed from circular path to eliptical path, with corresponding params in GUI
+
+v1.4.1a [13 Jul 2022]
+ADDED:
+- Randomiser for starting radius and altitude for C130
+CHANGED:
+- Max and Min angles for camera after C130 is hit
+- Call animation frame for RBS70 after every frame instead of on mousemove event
+
+v1.4.0a [10 May 2022]
+ADDED:
+- When C130 is hit, the following:
+    - Camera shifts to C130 position
+    - Controls defaults to orbiting around C130
+    - Controls unlocked, user able to pan and zoom
+    - Camera and controls reset to original status when "r" is pressed
+- Added missile acceleration variable to GUI
+- Added option to change c130 height
+CHANGED:
+- Lighting changes
+- C130 max speed selector reduced by 1 order of magnitude
+REMOVED:
+- Red target square removed
+
+v1.3.1a  [12 Apr 2022]
+ADDED:
+- Selection to show missile stats (speed and range)
+- Missile stats: Speed (ms-1) and Range (m) indication next to crosshair
+CHANGED:
+- Crosshair color
+- C130 radius max size in GUI
+
+v1.3a [30 Mar 2022]
+ADDED:
+- Altitude limit for missile
+CHANGED:
+- Increased gimbal limit of camera/controls
+- Changed calculation of missile distance and speed, now calculates with constant acceleration instead of constant speed
+
+v1.2.1a [29 Mar 2022]
+ADDED:
+- FPS counter
+CHANGED:
+- Calling of animation for seat + weapon in code is now done only when mousemove event is detected
+
+v1.2a [27 Mar 2022]
+ADDED:
+- Added changelog
+- Added version numbers to index.js and index.html
+- Missile stops when it reaches max range of 9000 units (aka 9000 meters)
+- Warning box to warn user if:
+    - User tries to fire missile while caged
+    - Missile reaches max range
+- Additional GUI settings related to camera and controls
+CHANGED:
+- C130 hitbox changed from AABB to OBB
+FIXED:
+- Automatically resize render when window is resized
+- Missile flight path starts from launcher
+
+
+v1.1a [25 Mar 2022]
+ADDED:
+- Pause C130 animation when C130 is hit
+
+v1.0a [19 Mar 2022]
+First version of VSHORAD sim released

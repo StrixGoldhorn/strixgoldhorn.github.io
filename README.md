@@ -269,6 +269,8 @@ Models created in Blender, skybox and favicon with FireAlpaca.
 
 **[click here for UNSTABLE version of simulator](./VSHORAD%20(unstable)/vshoradsim.html)**
 
+**[click here for clanked, refactored version of simulator](./VSHORAD%20(Clanked)/vshoradsim.html)**
+
 ![](https://raw.githubusercontent.com/StrixGoldhorn/strixgoldhorn.github.io/refs/heads/main/assets/img/rbssim.png)
 
 ### Background
