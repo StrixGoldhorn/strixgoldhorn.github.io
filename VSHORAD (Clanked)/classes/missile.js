@@ -54,7 +54,7 @@ export class Missile {
             this.mesh.scale.set(this.mesh.scale.x * 0.1, this.mesh.scale.y * 0.1, this.mesh.scale.z * 0.1);
             this.mesh.position.set(0, 2, 0);
             this.mesh.name = "MissileMesh";
-            this.mesh.visible = false;
+            this.mesh.visible = this.inFlight;
             this.scene.add(this.mesh);
 
             this.fuseMesh = this.mesh.getObjectByName("Fuse") || (this.mesh.children && this.mesh.children.find(obj => obj.name === "Fuse"));
@@ -102,6 +102,7 @@ export class Missile {
         }
 
         if (!this.shotend) {
+            this.fired = true;
             if (this.mesh) {
                 this.mesh.position.set(0, 2, 0);
                 this.mesh.rotation.set(0, 0, 0);
@@ -140,20 +141,12 @@ export class Missile {
         }
 
         const MissileMesh = this.mesh;
-        if (this.fuseMesh && this.fuseMesh.geometry && this.fuseMesh.geometry.boundingBox) {
-            this.box.copy(this.fuseMesh.geometry.boundingBox).applyMatrix4(this.fuseMesh.matrixWorld);
-            this.box.expandByScalar(this.worldSettings.missile.proxFuse);
-        }
 
         if (this.worldSettings.operator.showStats) {
             this.uiElements.tempCross.innerHTML = "------ <br /> " + ("000" + Math.round(this.currSpeed)).slice(-4) + " | + | " + ("000" + Math.round(parseFloat(this.currDist / 10).toFixed(4))).slice(-3) + "0<br />------";
         }
 
-        this.focalVec.set(
-            this.camera.getWorldDirection(this.alignVec).x,
-            this.camera.getWorldDirection(this.alignVec).y,
-            this.camera.getWorldDirection(this.alignVec).z,
-        );
+        this.camera.getWorldDirection(this.focalVec);
         this.longFocal.copy(this.focalVec);
         this.focalVec.normalize();
         this.focalVec.multiplyScalar(this.currDist);
@@ -161,14 +154,22 @@ export class Missile {
 
         this.currDist += this.getDistance(this.currSpeed);
 
+        MissileMesh.position.set(this.focalVec.x, this.focalVec.y, this.focalVec.z);
         MissileMesh.getWorldPosition(this.missilePt);
         MissileMesh.lookAt(this.longFocal.multiplyScalar(10000));
 
         MissileMesh.rotateZ(this.rotateAnim * (Math.PI / 180));
         this.rotateAnim += 2;
+        MissileMesh.updateMatrixWorld();
 
-        this.light.position.set(MissileMesh.position.x - 0.5, MissileMesh.position.y, MissileMesh.position.z);
-        MissileMesh.position.set(this.focalVec.x, this.focalVec.y, this.focalVec.z);
+        this.light.position.set(this.focalVec.x - 0.5, this.focalVec.y, this.focalVec.z);
+
+        if (this.fuseMesh && this.fuseMesh.geometry && this.fuseMesh.geometry.boundingBox) {
+            this.box.copy(this.fuseMesh.geometry.boundingBox).applyMatrix4(this.fuseMesh.matrixWorld);
+        } else {
+            this.box.setFromCenterAndSize(this.missilePt, new THREE.Vector3(1, 1, 1));
+        }
+        this.box.expandByScalar(this.worldSettings.missile.proxFuse);
 
         if (this.tlCount === 5) {
             this.trackLine.push(this.missilePt.clone());
@@ -189,8 +190,9 @@ export class Missile {
             
             this.trackLine.push(this.missilePt.clone());
             this.tlGeometry.setFromPoints(this.trackLine);
-            this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
-            this.scene.add(this.tlMesh);
+            if (!this.tlMesh.parent) {
+                this.scene.add(this.tlMesh);
+            }
 
             this.aircraft.hit = true;
             this.aircraft.hitcam(this.camera, this.controls);
@@ -213,8 +215,9 @@ export class Missile {
             this.inFlight = false;
             console.log("- ! - Max Range Exceeded");
             this.tlGeometry.setFromPoints(this.trackLine);
-            this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
-            this.scene.add(this.tlMesh);
+            if (!this.tlMesh.parent) {
+                this.scene.add(this.tlMesh);
+            }
             
             this.uiElements.tempCross.innerHTML = "------ <br />|-=!=-|<br />------";
             this.uiElements.alertDoc.innerText = "Max Range";
@@ -236,7 +239,8 @@ export class Missile {
 
         this.trackLine.length = 0;
         this.trackLine.push(new THREE.Vector3(0, 2, 0));
-        if (this.tlMesh) this.scene.remove(this.tlMesh);
+        this.tlGeometry.setFromPoints(this.trackLine);
+        if (this.tlMesh && this.tlMesh.parent) this.scene.remove(this.tlMesh);
 
         if (this.mesh) {
             this.mesh.visible = false;

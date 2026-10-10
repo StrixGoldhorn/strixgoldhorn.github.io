@@ -24,6 +24,7 @@ export class Aircraft {
         this.tlMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 1 });
         this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
         this.scene.add(this.tlMesh);
+        this.trackLine = [];
         
         this.fuseLocalCenter = new THREE.Vector3(-0.75, 1.5, 0);
         this.fuseLocalHalfSize = new THREE.Vector3(10.1, 3.9, 1.5);
@@ -31,6 +32,7 @@ export class Aircraft {
         this.wingLocalHalfSize = new THREE.Vector3(6.5, 0.8, 13.8);
         this.overallLocalCenter = new THREE.Vector3(-0.75, 1.5, 0);
         this.overallLocalHalfSize = new THREE.Vector3(10.1, 3.9, 13.8);
+        this.halfSize = this.overallLocalHalfSize;
         
         this.pt = new THREE.Vector3();
         this.mesh = null;
@@ -174,8 +176,10 @@ export class Aircraft {
             this.tlGeometry.setFromPoints(this.trackLine);
             this.tlMesh.visible = true;
         } else {
-            this.trackLine = [];
-            this.tlGeometry.setFromPoints(this.trackLine);
+            if (this.trackLine.length > 0) {
+                this.trackLine = [];
+                this.tlGeometry.setFromPoints(this.trackLine);
+            }
             this.tlMesh.visible = false;
         }
     }
@@ -183,11 +187,11 @@ export class Aircraft {
     hitcam(camera, controls) {
         if (!this.aircraftMesh) return;
         const c130Mesh = this.aircraftMesh;
-        const c130pcam = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 5000);
-        c130pcam.position.set(c130Mesh.position.x, c130Mesh.position.y + 2, c130Mesh.position.z);
-        
-        camera.position.set(c130Mesh.position.x, c130Mesh.position.y + 50, c130Mesh.position.z);
-        controls.target.set(c130Mesh.position.x, c130Mesh.position.y + 20, c130Mesh.position.z);
+        c130Mesh.getWorldPosition(this.pt);
+        camera.position.set(this.pt.x, this.pt.y + 50, this.pt.z);
+        if (controls && controls.target) {
+            controls.target.set(this.pt.x, this.pt.y + 20, this.pt.z);
+        }
     }
 
     reset() {

@@ -56,15 +56,16 @@ export class Launcher {
     update(delta) {
         if (!this.isAiming || !this.weaponMesh || !this.seatMesh) return;
         
+        this.camera.getWorldDirection(this.alignVec);
         this.focalWpn.set(
-            this.weaponMesh.position.x + this.camera.getWorldDirection(this.alignVec).x,
-            this.weaponMesh.position.y + this.camera.getWorldDirection(this.alignVec).y,
-            this.weaponMesh.position.z + this.camera.getWorldDirection(this.alignVec).z,
+            this.weaponMesh.position.x + this.alignVec.x,
+            this.weaponMesh.position.y + this.alignVec.y,
+            this.weaponMesh.position.z + this.alignVec.z,
         );
         this.focalSeat.set(
-            this.seatMesh.position.x + this.camera.getWorldDirection(this.alignVec).x,
+            this.seatMesh.position.x + this.alignVec.x,
             this.seatMesh.position.y,
-            this.seatMesh.position.z + this.camera.getWorldDirection(this.alignVec).z,
+            this.seatMesh.position.z + this.alignVec.z,
         );
         
         this.weaponMesh.lookAt(this.focalWpn);

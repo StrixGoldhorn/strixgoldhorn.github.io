@@ -241,7 +241,10 @@ class VSHORADSimulator {
             if (notifsbg) notifsbg.remove();
 
             if (this.launcher.weaponMesh) {
-                this.directionalLight.target = this.launcher.weaponMesh.children[0];
+                const targetObj = (this.launcher.weaponMesh.children && this.launcher.weaponMesh.children[0]) || this.launcher.weaponMesh;
+                if (targetObj) {
+                    this.directionalLight.target = targetObj;
+                }
             }
         }
     }
@@ -259,12 +262,16 @@ class VSHORADSimulator {
         if (this.aircraft.hit) {
             this.aircraft.reset();
         }
+        this.rightClicked = false;
+        this.camera.setFocalLength(this.worldSettings.operator.normal.focalLength);
+        this.camera.updateProjectionMatrix();
         this.camera.position.set(0, 2, -2);
         this.controls.enablePan = false;
         this.controls.enableZoom = false;
         this.controls.maxPolarAngle = 10 * (Math.PI / 12);
         this.controls.minPolarAngle = 5 * (Math.PI / 12);
         this.controls.target.set(0.5, 2.6, 0);
+        this.controls.dampingFactor = this.worldSettings.operator.normal.dampingFactor;
         this.controls.update();
     }
 
