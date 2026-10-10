@@ -30,18 +30,19 @@ export class Aircraft {
             this.mesh.name = "c130Mesh";
             this.scene.add(this.mesh);
             this.mesh.position.set(0, 20, 0);
-            this.animate();
         });
     }
 
-    animate() {
+    update(delta) {
         if (this.hit) return;
 
-        const c130Mesh = this.scene.children.find(obj => obj.name === "c130Mesh").children[0];
-        if (!c130Mesh) return;
+        const c130MeshObj = this.scene.children.find(obj => obj.name === "c130Mesh");
+        if (!c130MeshObj || !c130MeshObj.children[0]) return;
+        const c130Mesh = c130MeshObj.children[0];
         c130Mesh.geometry.computeBoundingBox();
 
-        this.t += this.worldSettings.c130.gndspeed;
+        const step = (delta !== undefined && delta > 0) ? this.worldSettings.c130.gndspeed * (delta * 60) : this.worldSettings.c130.gndspeed;
+        this.t += step;
         c130Mesh.position.x = this.worldSettings.c130.pathx * Math.cos(this.t);
         c130Mesh.position.z = this.worldSettings.c130.pathy * Math.sin(this.t);
         c130Mesh.position.y = this.worldSettings.c130.agl + this.worldSettings.c130.zamp * Math.sin(this.worldSettings.c130.zperiod * this.t) ** 2;
@@ -67,13 +68,13 @@ export class Aircraft {
         } else {
             this.trackLine = [];
         }
-
-        requestAnimationFrame(() => this.animate());
     }
 
     hitcam(camera, controls) {
         const c130pcam = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 5000);
-        const c130Mesh = this.scene.children.find(obj => obj.name === "c130Mesh").children[0];
+        const c130MeshObj = this.scene.children.find(obj => obj.name === "c130Mesh");
+        const c130Mesh = c130MeshObj && c130MeshObj.children[0];
+        if (!c130Mesh) return;
         c130pcam.position.set(c130Mesh.position.x, c130Mesh.position.y + 2, c130Mesh.position.z);
         
         camera.position.set(c130Mesh.position.x, c130Mesh.position.y + 50, c130Mesh.position.z);
@@ -84,6 +85,5 @@ export class Aircraft {
         this.hit = false;
         this.t = 0;
         this.trackLine = [];
-        this.animate();
     }
 }

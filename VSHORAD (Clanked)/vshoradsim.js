@@ -46,7 +46,7 @@ class VSHORADSimulator {
         this.scene = new THREE.Scene();
         document.getElementById("threeCanvas").scene = this.scene;
         
-        this.camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 8000);
+        this.camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 10000);
         this.renderer = new THREE.WebGLRenderer({
             alpha: true,
             antialias: true,
@@ -65,12 +65,7 @@ class VSHORADSimulator {
     }
 
     setControls() {
-        this.camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 5000);
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.addEventListener('change', () => {
-            this.renderer.render(this.scene, this.camera);
-        });
-
         this.controls.target.set(0.5, 2.6, 0);
         this.controls.enablePan = false;
         this.controls.enableZoom = false;
@@ -213,9 +208,13 @@ class VSHORADSimulator {
     }
 
     animateLoop() {
-        this.renderer.render(this.scene, this.camera);
+        const delta = this.clock.getDelta();
         requestAnimationFrame(() => this.animateLoop());
         if (this.controls) this.controls.update();
+        if (this.launcher) this.launcher.update(delta);
+        if (this.aircraft) this.aircraft.update(delta);
+        if (this.missile) this.missile.update(delta);
+        this.renderer.render(this.scene, this.camera);
     }
 
     startActions() {

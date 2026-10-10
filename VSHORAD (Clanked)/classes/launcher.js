@@ -13,6 +13,8 @@ export class Launcher {
         this.seatMesh = null;
         this.caged = true;
         
+        this.isAiming = false;
+        
         this.alignVec = new THREE.Vector3();
         this.focalWpn = new THREE.Vector3();
         this.focalSeat = new THREE.Vector3();
@@ -48,7 +50,11 @@ export class Launcher {
     }
 
     rotate() {
-        if (!this.weaponMesh || !this.seatMesh) return;
+        this.isAiming = true;
+    }
+
+    update(delta) {
+        if (!this.isAiming || !this.weaponMesh || !this.seatMesh) return;
         
         this.focalWpn.set(
             this.weaponMesh.position.x + this.camera.getWorldDirection(this.alignVec).x,
@@ -63,7 +69,6 @@ export class Launcher {
         
         this.weaponMesh.lookAt(this.focalWpn);
         this.seatMesh.lookAt(this.focalSeat);
-        requestAnimationFrame(() => this.rotate());
     }
 
     setCaged(caged) {

@@ -27,6 +27,7 @@ export class Missile {
         this.fired = false;
         this.shotout = false;
         this.shotend = false;
+        this.inFlight = false;
         
         this.currDist = 0;
         this.currSpeed = 50;
@@ -79,123 +80,133 @@ export class Missile {
     }
 
     fire() {
-        if (!this.fired && !this.launcher.caged && !this.shotend) {
-            requestAnimationFrame(() => this.fire());
-
-            if (!this.shotout) {
-                this.load();
-                this.scene.add(this.light);
-                this.light.intensity = 10;
-                this.shotout = true;
-                console.log("- ^ - Missile fired");
-
-                this.uiElements.loadIndicate.style.background = "yellow";
-                this.uiElements.loadIndicate.innerText = "In-Flight";
-                this.uiElements.loadIndicate.style.color = "black";
-                
-                this.uiElements.alertDoc.innerText = "";
-                this.uiElements.alertDoc.style.opacity = "0";
-                this.speedClock.start();
-            }
-
-            if (!this.mesh) return;
-
-            const MissileMesh = this.scene.children.find(obj => obj.name === "MissileMesh");
-            const MissileFuse = MissileMesh.children.find(obj => obj.name === "Fuse");
-            if (!MissileFuse) return;
-            MissileFuse.geometry.computeBoundingBox();
-            this.box.copy(MissileFuse.geometry.boundingBox).applyMatrix4(MissileFuse.matrixWorld);
-            this.box.expandByScalar(this.worldSettings.missile.proxFuse);
-
-            if (this.worldSettings.operator.showStats) {
-                this.uiElements.tempCross.innerHTML = "------ <br /> " + ("000" + Math.round(this.currSpeed)).slice(-4) + " | + | " + ("000" + Math.round(parseFloat(this.currDist / 10).toFixed(4))).slice(-3) + "0<br />------";
-            }
-
-            this.focalVec.set(
-                this.camera.getWorldDirection(this.alignVec).x,
-                this.camera.getWorldDirection(this.alignVec).y,
-                this.camera.getWorldDirection(this.alignVec).z,
-            );
-            this.longFocal.copy(this.focalVec);
-            this.focalVec.normalize();
-            this.focalVec.multiplyScalar(this.currDist);
-            this.focalVec.setY(this.focalVec.y + 2);
-
-            this.currDist += this.getDistance(this.currSpeed);
-
-            MissileMesh.getWorldPosition(this.missilePt);
-            MissileMesh.lookAt(this.longFocal.multiplyScalar(10000));
-
-            MissileMesh.rotateZ(this.rotateAnim * (Math.PI / 180));
-            this.rotateAnim += 2;
-
-            this.light.position.set(MissileMesh.position.x - 0.5, MissileMesh.position.y, MissileMesh.position.z);
-            MissileMesh.position.set(this.focalVec.x, this.focalVec.y, this.focalVec.z);
-
-            if (this.tlCount === 5) {
-                this.trackLine.push(this.missilePt.clone());
-                this.tlCount = 0;
-            } else {
-                this.tlCount += 1;
-            }
-
-            const c130Mesh = this.aircraft.scene.children.find(obj => obj.name === "c130Mesh").children[0];
-            if (c130Mesh && c130Mesh.userData.obb && c130Mesh.userData.obb.intersectsBox3(this.box)) {
-                this.light.intensity = 10;
-                this.light.distance = 10;
-                this.shotend = true;
-                console.log("- - - SUCCESSFUL HIT - - -");
-
-                this.uiElements.tempCross.innerHTML = "------ <br />| HIT | <br />------";
-                
-                this.trackLine.push(this.missilePt);
-                this.tlGeometry.setFromPoints(this.trackLine);
-                this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
-                this.scene.add(this.tlMesh);
-
-                this.aircraft.hit = true;
-                this.aircraft.hitcam(this.camera, this.controls);
-                
-                this.controls.enablePan = true;
-                this.controls.enableZoom = true;
-
-                this.camera.setFocalLength(this.worldSettings.operator.normal.focalLength);
-                this.controls.dampingFactor = this.worldSettings.operator.normal.dampingFactor;
-                
-                this.controls.maxPolarAngle = Math.PI;
-                this.controls.minPolarAngle = 0;
-
-                this.controls.update();
-                return;
-            }
-
-            if (Math.round(this.missilePt.length()) > 9000 || Math.round(MissileMesh.position.y) > 5500) {
-                this.shotend = true;
-                console.log("- ! - Max Range Exceeded");
-                this.tlGeometry.setFromPoints(this.trackLine);
-                this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
-                this.scene.add(this.tlMesh);
-                
-                this.uiElements.tempCross.innerHTML = "------ <br />|-=!=-|<br />------";
-                this.uiElements.alertDoc.innerText = "Max Range";
-                this.uiElements.alertDoc.style.opacity = "1";
-                this.uiElements.alertDoc.style.background = "#dd2222";
-            }
-
-        } else if (this.fired || this.shotout) {
+        if (this.fired || this.shotout) {
             console.log("- ! - No munition");
             this.uiElements.loadIndicate.style.background = "#dd2222";
             this.uiElements.loadIndicate.innerText = "Empty";
             this.uiElements.loadIndicate.style.color = "white";
-        } else {
+            return;
+        }
+
+        if (this.launcher.caged) {
             console.log("- ! - CAGED, Cannot fire");
             this.uiElements.alertDoc.innerText = "Uncage to fire!";
+            this.uiElements.alertDoc.style.opacity = "1";
+            this.uiElements.alertDoc.style.background = "#dd2222";
+            return;
+        }
+
+        if (!this.shotend) {
+            this.load();
+            this.scene.add(this.light);
+            this.light.intensity = 10;
+            this.shotout = true;
+            this.inFlight = true;
+            console.log("- ^ - Missile fired");
+
+            this.uiElements.loadIndicate.style.background = "yellow";
+            this.uiElements.loadIndicate.innerText = "In-Flight";
+            this.uiElements.loadIndicate.style.color = "black";
+            
+            this.uiElements.alertDoc.innerText = "";
+            this.uiElements.alertDoc.style.opacity = "0";
+            this.speedClock.start();
+        }
+    }
+
+    update(delta) {
+        if (!this.inFlight || this.shotend) return;
+        if (!this.mesh) return;
+
+        const MissileMesh = this.scene.children.find(obj => obj.name === "MissileMesh");
+        if (!MissileMesh) return;
+        const MissileFuse = MissileMesh.children.find(obj => obj.name === "Fuse");
+        if (!MissileFuse) return;
+        MissileFuse.geometry.computeBoundingBox();
+        this.box.copy(MissileFuse.geometry.boundingBox).applyMatrix4(MissileFuse.matrixWorld);
+        this.box.expandByScalar(this.worldSettings.missile.proxFuse);
+
+        if (this.worldSettings.operator.showStats) {
+            this.uiElements.tempCross.innerHTML = "------ <br /> " + ("000" + Math.round(this.currSpeed)).slice(-4) + " | + | " + ("000" + Math.round(parseFloat(this.currDist / 10).toFixed(4))).slice(-3) + "0<br />------";
+        }
+
+        this.focalVec.set(
+            this.camera.getWorldDirection(this.alignVec).x,
+            this.camera.getWorldDirection(this.alignVec).y,
+            this.camera.getWorldDirection(this.alignVec).z,
+        );
+        this.longFocal.copy(this.focalVec);
+        this.focalVec.normalize();
+        this.focalVec.multiplyScalar(this.currDist);
+        this.focalVec.setY(this.focalVec.y + 2);
+
+        this.currDist += this.getDistance(this.currSpeed);
+
+        MissileMesh.getWorldPosition(this.missilePt);
+        MissileMesh.lookAt(this.longFocal.multiplyScalar(10000));
+
+        MissileMesh.rotateZ(this.rotateAnim * (Math.PI / 180));
+        this.rotateAnim += 2;
+
+        this.light.position.set(MissileMesh.position.x - 0.5, MissileMesh.position.y, MissileMesh.position.z);
+        MissileMesh.position.set(this.focalVec.x, this.focalVec.y, this.focalVec.z);
+
+        if (this.tlCount === 5) {
+            this.trackLine.push(this.missilePt.clone());
+            this.tlCount = 0;
+        } else {
+            this.tlCount += 1;
+        }
+
+        const c130MeshObj = this.aircraft.scene.children.find(obj => obj.name === "c130Mesh");
+        const c130Mesh = c130MeshObj && c130MeshObj.children[0];
+        if (c130Mesh && c130Mesh.userData.obb && c130Mesh.userData.obb.intersectsBox3(this.box)) {
+            this.light.intensity = 10;
+            this.light.distance = 10;
+            this.shotend = true;
+            this.inFlight = false;
+            console.log("- - - SUCCESSFUL HIT - - -");
+
+            this.uiElements.tempCross.innerHTML = "------ <br />| HIT | <br />------";
+            
+            this.trackLine.push(this.missilePt.clone());
+            this.tlGeometry.setFromPoints(this.trackLine);
+            this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
+            this.scene.add(this.tlMesh);
+
+            this.aircraft.hit = true;
+            this.aircraft.hitcam(this.camera, this.controls);
+            
+            this.controls.enablePan = true;
+            this.controls.enableZoom = true;
+
+            this.camera.setFocalLength(this.worldSettings.operator.normal.focalLength);
+            this.controls.dampingFactor = this.worldSettings.operator.normal.dampingFactor;
+            
+            this.controls.maxPolarAngle = Math.PI;
+            this.controls.minPolarAngle = 0;
+
+            this.controls.update();
+            return;
+        }
+
+        if (Math.round(this.missilePt.length()) > 9000 || Math.round(MissileMesh.position.y) > 5500) {
+            this.shotend = true;
+            this.inFlight = false;
+            console.log("- ! - Max Range Exceeded");
+            this.tlGeometry.setFromPoints(this.trackLine);
+            this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
+            this.scene.add(this.tlMesh);
+            
+            this.uiElements.tempCross.innerHTML = "------ <br />|-=!=-|<br />------";
+            this.uiElements.alertDoc.innerText = "Max Range";
             this.uiElements.alertDoc.style.opacity = "1";
             this.uiElements.alertDoc.style.background = "#dd2222";
         }
     }
 
     reset() {
+        this.inFlight = false;
         this.shotout = false;
         this.fired = false;
         this.shotend = false;
