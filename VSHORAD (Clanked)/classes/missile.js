@@ -41,6 +41,7 @@ export class Missile {
         this.focalVec = new THREE.Vector3();
         this.longFocal = new THREE.Vector3();
         this.missilePt = new THREE.Vector3();
+        this.lookTarget = new THREE.Vector3();
         
         this.missileMixer = null;
         this.animActions = [];
@@ -49,7 +50,7 @@ export class Missile {
 
     load() {
         const loader = new GLTFLoader();
-        const path = window.innerWidth <= 1000 ? "assets/rbs70missile_scaled_1_5 (MIN).glb" : "assets/rbs70missile_scaled_1_5_(EXPORT).glb";
+        const path = "assets/rbs70missile_scaled_1_5_(EXPORT).glb";
         loader.load(path, (gltf) => {
             this.mesh = gltf.scene;
             this.mesh.scale.set(this.mesh.scale.x * 0.1, this.mesh.scale.y * 0.1, this.mesh.scale.z * 0.1);
@@ -63,7 +64,7 @@ export class Missile {
                 this.fuseMesh.geometry.computeBoundingBox();
             }
 
-            if (window.innerWidth > 1000) {
+            if (gltf.animations && gltf.animations.length > 0) {
                 this.missileMixer = new THREE.AnimationMixer(gltf.scene);
                 this.animActions = [];
                 gltf.animations.forEach((iclip) => {
@@ -72,6 +73,14 @@ export class Missile {
                     finDeploy.loop = THREE.LoopOnce;
                     this.animActions.push(finDeploy);
                 });
+
+                if (this.inFlight) {
+                    this.missileMixer.timeScale = 1;
+                    this.animActions.forEach(action => {
+                        action.reset();
+                        action.play();
+                    });
+                }
             }
         });
     }
@@ -117,7 +126,7 @@ export class Missile {
             console.log("- ^ - Missile fired");
 
             if (this.missileMixer && this.animActions.length > 0) {
-                this.missileMixer.timeScale = 10;
+                this.missileMixer.timeScale = 1;
                 this.animActions.forEach(action => {
                     action.reset();
                     action.play();
@@ -148,17 +157,17 @@ export class Missile {
             this.uiElements.tempCross.innerHTML = "------ <br /> " + ("000" + Math.round(this.currSpeed)).slice(-4) + " | + | " + ("000" + Math.round(parseFloat(this.currDist / 10).toFixed(4))).slice(-3) + "0<br />------";
         }
 
-        this.camera.getWorldDirection(this.focalVec);
-        this.longFocal.copy(this.focalVec);
-        this.focalVec.normalize();
-        this.focalVec.multiplyScalar(this.currDist);
-        this.focalVec.setY(this.focalVec.y + 2);
+        this.camera.getWorldDirection(this.longFocal);
+        this.focalVec.copy(this.longFocal).normalize().multiplyScalar(this.currDist);
+        this.focalVec.y += 2;
 
         this.currDist += this.getDistance(this.currSpeed);
 
-        MissileMesh.position.set(this.focalVec.x, this.focalVec.y, this.focalVec.z);
+        MissileMesh.position.copy(this.focalVec);
         MissileMesh.getWorldPosition(this.missilePt);
-        MissileMesh.lookAt(this.longFocal.multiplyScalar(10000));
+
+        this.lookTarget.copy(this.missilePt).add(this.longFocal);
+        MissileMesh.lookAt(this.lookTarget);
 
         MissileMesh.rotateZ(this.rotateAnim * (Math.PI / 180));
         this.rotateAnim += 2;
@@ -261,8 +270,13 @@ export class Missile {
             this.mesh.position.set(0, 2, 0);
             this.mesh.rotation.set(0, 0, 0);
         }
-        if (this.missileMixer && this.animActions) {
-            this.animActions.forEach(action => action.stop());
+        if (this.missileMixer && this.animActions.length > 0) {
+            this.animActions.forEach(action => {
+                action.stop();
+                action.reset();
+            });
+            this.missileMixer.stopAllAction();
+            this.missileMixer.update(0);
         }
 
         this.scene.remove(this.light);
