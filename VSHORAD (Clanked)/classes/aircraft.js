@@ -14,10 +14,11 @@ export class Aircraft {
         this.obb = new OBB();
         this.fuseOBB = new OBB();
         this.wingOBB = new OBB();
+        this.stabOBB = new OBB();
         
-        // Compound hitbox: test fuselage and wings separately for realistic conformity
+        // Compound hitbox: test fuselage, wings, and horizontal stabilizer separately
         this.obb.intersectsBox3 = (box3) => {
-            return this.fuseOBB.intersectsBox3(box3) || this.wingOBB.intersectsBox3(box3);
+            return this.fuseOBB.intersectsBox3(box3) || this.wingOBB.intersectsBox3(box3) || this.stabOBB.intersectsBox3(box3);
         };
         
         this.tlGeometry = new THREE.BufferGeometry();
@@ -28,8 +29,10 @@ export class Aircraft {
         
         this.fuseLocalCenter = new THREE.Vector3(-0.75, 1.5, 0);
         this.fuseLocalHalfSize = new THREE.Vector3(10.1, 3.9, 1.5);
-        this.wingLocalCenter = new THREE.Vector3(-2.7, 0.1, 0);
-        this.wingLocalHalfSize = new THREE.Vector3(6.5, 0.8, 13.8);
+        this.wingLocalCenter = new THREE.Vector3(1.05, 0.08, 0);
+        this.wingLocalHalfSize = new THREE.Vector3(2.69, 0.74, 13.8);
+        this.stabLocalCenter = new THREE.Vector3(-8.54, 0.42, 0);
+        this.stabLocalHalfSize = new THREE.Vector3(0.63, 0.16, 5.59);
         this.overallLocalCenter = new THREE.Vector3(-0.75, 1.5, 0);
         this.overallLocalHalfSize = new THREE.Vector3(10.1, 3.9, 13.8);
         this.halfSize = this.overallLocalHalfSize;
@@ -46,6 +49,21 @@ export class Aircraft {
         this.uVec = new THREE.Vector3();
         this.rotMatrix = new THREE.Matrix4();
         
+        // Pre-allocated scratch objects for zero-allocation collision queries
+        this._clampedPt = new THREE.Vector3();
+        this._segVec = new THREE.Vector3();
+        this._rayDir = new THREE.Vector3();
+        this._ray = new THREE.Ray();
+        this._hitPt = new THREE.Vector3();
+        this._clampTestPt = new THREE.Vector3();
+        this._obbSize = new THREE.Vector3();
+        this._zeroVec = new THREE.Vector3(0, 0, 0);
+        this._expandedAABB = new THREE.Box3();
+        this._obbMatrix = new THREE.Matrix4();
+        this._invOBBMatrix = new THREE.Matrix4();
+        this._localRay = new THREE.Ray();
+        this._localHitPt = new THREE.Vector3();
+        
         this.load();
     }
 
@@ -56,7 +74,7 @@ export class Aircraft {
             this.mesh = gltf.scene;
             this.mesh.name = "c130Mesh";
             this.scene.add(this.mesh);
-            this.mesh.position.set(0, 20, 0);
+            this.mesh.position.set(0, 0, 0);
             this.aircraftMesh = this.mesh.children[0] || this.mesh;
             if (this.aircraftMesh && this.aircraftMesh.geometry) {
                 this.aircraftMesh.geometry.computeBoundingBox();
@@ -74,21 +92,38 @@ export class Aircraft {
                     }
                     const fuseHalfWidth = (maxZ - minZ) * 0.1;
 
+                    let outMinX = Infinity, outMaxX = -Infinity;
+                    for (let i = 0; i < pos.count; i++) {
+                        const z = pos.getZ(i);
+                        if (Math.abs(z) > fuseHalfWidth) {
+                            const x = pos.getX(i);
+                            if (x < outMinX) outMinX = x;
+                            if (x > outMaxX) outMaxX = x;
+                        }
+                    }
+                    const splitX = outMinX + (outMaxX - outMinX) * 0.35;
+
                     let fMinX = Infinity, fMaxX = -Infinity, fMinY = Infinity, fMaxY = -Infinity, fMinZ = Infinity, fMaxZ = -Infinity;
                     let wMinX = Infinity, wMaxX = -Infinity, wMinY = Infinity, wMaxY = -Infinity, wMinZ = Infinity, wMaxZ = -Infinity;
+                    let tMinX = Infinity, tMaxX = -Infinity, tMinY = Infinity, tMaxY = -Infinity, tMinZ = Infinity, tMaxZ = -Infinity;
 
                     for (let i = 0; i < pos.count; i++) {
                         const x = pos.getX(i);
                         const y = pos.getY(i);
                         const z = pos.getZ(i);
+
                         if (Math.abs(z) <= fuseHalfWidth) {
                             if (x < fMinX) fMinX = x; if (x > fMaxX) fMaxX = x;
                             if (y < fMinY) fMinY = y; if (y > fMaxY) fMaxY = y;
                             if (z < fMinZ) fMinZ = z; if (z > fMaxZ) fMaxZ = z;
-                        } else {
+                        } else if (x > splitX) {
                             if (x < wMinX) wMinX = x; if (x > wMaxX) wMaxX = x;
                             if (y < wMinY) wMinY = y; if (y > wMaxY) wMaxY = y;
                             if (z < wMinZ) wMinZ = z; if (z > wMaxZ) wMaxZ = z;
+                        } else {
+                            if (x < tMinX) tMinX = x; if (x > tMaxX) tMaxX = x;
+                            if (y < tMinY) tMinY = y; if (y > tMaxY) tMaxY = y;
+                            if (z < tMinZ) tMinZ = z; if (z > tMaxZ) tMaxZ = z;
                         }
                     }
 
@@ -97,6 +132,9 @@ export class Aircraft {
 
                     this.wingLocalCenter.set((wMinX + wMaxX) / 2, (wMinY + wMaxY) / 2, (wMinZ + wMaxZ) / 2);
                     this.wingLocalHalfSize.set((wMaxX - wMinX) / 2, (wMaxY - wMinY) / 2, (wMaxZ - wMinZ) / 2);
+
+                    this.stabLocalCenter.set((tMinX + tMaxX) / 2, (tMinY + tMaxY) / 2, (tMinZ + tMaxZ) / 2);
+                    this.stabLocalHalfSize.set((tMaxX - tMinX) / 2, (tMaxY - tMinY) / 2, (tMaxZ - tMinZ) / 2);
                 }
             }
         });
@@ -145,24 +183,38 @@ export class Aircraft {
         this.rotMatrix.makeBasis(this.fwd, this.uVec, this.rVec);
         c130Mesh.quaternion.setFromRotationMatrix(this.rotMatrix);
 
-        c130Mesh.updateMatrixWorld();
+        if (this.mesh) {
+            this.mesh.updateMatrixWorld(true);
+        } else {
+            c130Mesh.updateMatrixWorld(true);
+        }
 
         // Update Fuselage OBB
         this.fuseOBB.halfSize.copy(this.fuseLocalHalfSize);
         this.fuseOBB.rotation.identity();
         this.fuseOBB.applyMatrix4(c130Mesh.matrixWorld);
+        this.fuseOBB.halfSize.set(Math.abs(this.fuseOBB.halfSize.x), Math.abs(this.fuseOBB.halfSize.y), Math.abs(this.fuseOBB.halfSize.z));
         this.fuseOBB.center.copy(this.fuseLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
 
         // Update Wings OBB
         this.wingOBB.halfSize.copy(this.wingLocalHalfSize);
         this.wingOBB.rotation.identity();
         this.wingOBB.applyMatrix4(c130Mesh.matrixWorld);
+        this.wingOBB.halfSize.set(Math.abs(this.wingOBB.halfSize.x), Math.abs(this.wingOBB.halfSize.y), Math.abs(this.wingOBB.halfSize.z));
         this.wingOBB.center.copy(this.wingLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
+
+        // Update Horizontal Stabilizer OBB
+        this.stabOBB.halfSize.copy(this.stabLocalHalfSize);
+        this.stabOBB.rotation.identity();
+        this.stabOBB.applyMatrix4(c130Mesh.matrixWorld);
+        this.stabOBB.halfSize.set(Math.abs(this.stabOBB.halfSize.x), Math.abs(this.stabOBB.halfSize.y), Math.abs(this.stabOBB.halfSize.z));
+        this.stabOBB.center.copy(this.stabLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
 
         // Update overall bounding OBB
         this.obb.halfSize.copy(this.overallLocalHalfSize);
         this.obb.rotation.identity();
         this.obb.applyMatrix4(c130Mesh.matrixWorld);
+        this.obb.halfSize.set(Math.abs(this.obb.halfSize.x), Math.abs(this.obb.halfSize.y), Math.abs(this.obb.halfSize.z));
         this.obb.center.copy(this.overallLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
 
         c130Mesh.userData.obb = this.obb;
@@ -182,6 +234,79 @@ export class Aircraft {
             }
             this.tlMesh.visible = false;
         }
+    }
+
+    intersectRayExpandedOBB(ray, obb, expansion, hitPoint) {
+        obb.clampPoint(ray.origin, this._clampTestPt);
+        if (ray.origin.distanceTo(this._clampTestPt) <= expansion) {
+            if (hitPoint) hitPoint.copy(ray.origin);
+            return true;
+        }
+
+        obb.getSize(this._obbSize);
+        this._obbSize.x += expansion * 2;
+        this._obbSize.y += expansion * 2;
+        this._obbSize.z += expansion * 2;
+
+        this._expandedAABB.setFromCenterAndSize(this._zeroVec, this._obbSize);
+
+        this._obbMatrix.setFromMatrix3(obb.rotation);
+        this._obbMatrix.setPosition(obb.center);
+
+        this._invOBBMatrix.copy(this._obbMatrix).invert();
+        this._localRay.copy(ray).applyMatrix4(this._invOBBMatrix);
+
+        if (this._localRay.intersectBox(this._expandedAABB, this._localHitPt)) {
+            if (hitPoint) hitPoint.copy(this._localHitPt).applyMatrix4(this._obbMatrix);
+            return true;
+        }
+
+        return false;
+    }
+
+    checkCollision(missileBox, prevPt, currPt, proxFuse) {
+        if (this.hit || !this.aircraftMesh) return false;
+
+        // 1. Discrete Box3 check against all 3 OBBs
+        if (this.fuseOBB.intersectsBox3(missileBox) ||
+            this.wingOBB.intersectsBox3(missileBox) ||
+            this.stabOBB.intersectsBox3(missileBox)) {
+            return true;
+        }
+
+        // 2. Point proximity check for current point
+        if (currPt) {
+            this.fuseOBB.clampPoint(currPt, this._clampedPt);
+            if (currPt.distanceTo(this._clampedPt) <= proxFuse) return true;
+
+            this.wingOBB.clampPoint(currPt, this._clampedPt);
+            if (currPt.distanceTo(this._clampedPt) <= proxFuse) return true;
+
+            this.stabOBB.clampPoint(currPt, this._clampedPt);
+            if (currPt.distanceTo(this._clampedPt) <= proxFuse) return true;
+        }
+
+        // 3. Swept continuous collision check (eliminates tunneling at 686 m/s)
+        if (prevPt && currPt) {
+            this._segVec.subVectors(currPt, prevPt);
+            const segLen = this._segVec.length();
+            if (segLen > 0.001) {
+                this._rayDir.copy(this._segVec).normalize();
+                this._ray.set(prevPt, this._rayDir);
+
+                if (this.intersectRayExpandedOBB(this._ray, this.fuseOBB, proxFuse, this._hitPt)) {
+                    if (prevPt.distanceTo(this._hitPt) <= segLen + proxFuse) return true;
+                }
+                if (this.intersectRayExpandedOBB(this._ray, this.wingOBB, proxFuse, this._hitPt)) {
+                    if (prevPt.distanceTo(this._hitPt) <= segLen + proxFuse) return true;
+                }
+                if (this.intersectRayExpandedOBB(this._ray, this.stabOBB, proxFuse, this._hitPt)) {
+                    if (prevPt.distanceTo(this._hitPt) <= segLen + proxFuse) return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     hitcam(camera, controls) {

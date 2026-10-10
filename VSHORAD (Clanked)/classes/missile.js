@@ -24,6 +24,7 @@ export class Missile {
         this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
         
         this.box = new THREE.Box3();
+        this.prevMissilePt = new THREE.Vector3(0, 2, 0);
         
         this.fired = false;
         this.shotout = false;
@@ -103,6 +104,7 @@ export class Missile {
 
         if (!this.shotend) {
             this.fired = true;
+            this.prevMissilePt.set(0, 2, 0);
             if (this.mesh) {
                 this.mesh.position.set(0, 2, 0);
                 this.mesh.rotation.set(0, 0, 0);
@@ -178,8 +180,17 @@ export class Missile {
             this.tlCount += 1;
         }
 
-        const c130Mesh = this.aircraft.aircraftMesh;
-        if (c130Mesh && c130Mesh.userData.obb && c130Mesh.userData.obb.intersectsBox3(this.box)) {
+        let isHit = false;
+        if (this.aircraft && typeof this.aircraft.checkCollision === "function") {
+            isHit = this.aircraft.checkCollision(this.box, this.prevMissilePt, this.missilePt, this.worldSettings.missile.proxFuse);
+        } else {
+            const c130Mesh = this.aircraft ? this.aircraft.aircraftMesh : null;
+            if (c130Mesh && c130Mesh.userData.obb && c130Mesh.userData.obb.intersectsBox3(this.box)) {
+                isHit = true;
+            }
+        }
+
+        if (isHit) {
             this.light.intensity = 10;
             this.light.distance = 10;
             this.shotend = true;
@@ -210,6 +221,8 @@ export class Missile {
             return;
         }
 
+        this.prevMissilePt.copy(this.missilePt);
+
         if (Math.round(this.missilePt.length()) > 9000 || Math.round(MissileMesh.position.y) > 5500) {
             this.shotend = true;
             this.inFlight = false;
@@ -231,6 +244,7 @@ export class Missile {
         this.shotout = false;
         this.fired = false;
         this.shotend = false;
+        this.prevMissilePt.set(0, 2, 0);
         this.currDist = 0;
         this.currSpeed = 50;
         this.currAccel = this.worldSettings.missile["accel factor"];

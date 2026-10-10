@@ -405,9 +405,9 @@ class OBB {
 
 		this.rotation.multiply( rotationMatrix );
 
-		this.halfSize.x *= sx;
-		this.halfSize.y *= sy;
-		this.halfSize.z *= sz;
+		this.halfSize.x = Math.abs( this.halfSize.x * sx );
+		this.halfSize.y = Math.abs( this.halfSize.y * sy );
+		this.halfSize.z = Math.abs( this.halfSize.z * sz );
 
 		v1.setFromMatrixPosition( matrix );
 		this.center.add( v1 );
