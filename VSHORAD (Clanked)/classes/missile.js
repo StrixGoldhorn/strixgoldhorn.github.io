@@ -13,6 +13,7 @@ export class Missile {
         this.clock = clock;
         
         this.mesh = null;
+        this.fuseMesh = null;
         this.light = new THREE.PointLight(0xcca412, 6, 1, 1);
         this.light.position.set(0, -50, 0);
         
@@ -50,6 +51,11 @@ export class Missile {
             this.mesh.position.set(0, 2, 0);
             this.mesh.name = "MissileMesh";
             this.scene.add(this.mesh);
+
+            this.fuseMesh = this.mesh.getObjectByName("Fuse") || (this.mesh.children && this.mesh.children.find(obj => obj.name === "Fuse"));
+            if (this.fuseMesh && this.fuseMesh.geometry) {
+                this.fuseMesh.geometry.computeBoundingBox();
+            }
 
             if (window.innerWidth > 1000) {
                 const missileMixer = new THREE.AnimationMixer(gltf.scene);
@@ -118,13 +124,11 @@ export class Missile {
         if (!this.inFlight || this.shotend) return;
         if (!this.mesh) return;
 
-        const MissileMesh = this.scene.children.find(obj => obj.name === "MissileMesh");
-        if (!MissileMesh) return;
-        const MissileFuse = MissileMesh.children.find(obj => obj.name === "Fuse");
-        if (!MissileFuse) return;
-        MissileFuse.geometry.computeBoundingBox();
-        this.box.copy(MissileFuse.geometry.boundingBox).applyMatrix4(MissileFuse.matrixWorld);
-        this.box.expandByScalar(this.worldSettings.missile.proxFuse);
+        const MissileMesh = this.mesh;
+        if (this.fuseMesh && this.fuseMesh.geometry && this.fuseMesh.geometry.boundingBox) {
+            this.box.copy(this.fuseMesh.geometry.boundingBox).applyMatrix4(this.fuseMesh.matrixWorld);
+            this.box.expandByScalar(this.worldSettings.missile.proxFuse);
+        }
 
         if (this.worldSettings.operator.showStats) {
             this.uiElements.tempCross.innerHTML = "------ <br /> " + ("000" + Math.round(this.currSpeed)).slice(-4) + " | + | " + ("000" + Math.round(parseFloat(this.currDist / 10).toFixed(4))).slice(-3) + "0<br />------";
@@ -158,8 +162,7 @@ export class Missile {
             this.tlCount += 1;
         }
 
-        const c130MeshObj = this.aircraft.scene.children.find(obj => obj.name === "c130Mesh");
-        const c130Mesh = c130MeshObj && c130MeshObj.children[0];
+        const c130Mesh = this.aircraft.aircraftMesh;
         if (c130Mesh && c130Mesh.userData.obb && c130Mesh.userData.obb.intersectsBox3(this.box)) {
             this.light.intensity = 10;
             this.light.distance = 10;
@@ -220,8 +223,11 @@ export class Missile {
         this.trackLine.push(new THREE.Vector3(0, 2, 0));
         if (this.tlMesh) this.scene.remove(this.tlMesh);
 
-        const MissileMesh = this.scene.children.find(obj => obj.name === "MissileMesh");
-        if (MissileMesh) this.scene.remove(MissileMesh);
+        if (this.mesh) {
+            this.scene.remove(this.mesh);
+            this.mesh = null;
+            this.fuseMesh = null;
+        }
 
         this.scene.remove(this.light);
         console.log("--- Missile reset ---");

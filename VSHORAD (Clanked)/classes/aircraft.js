@@ -10,10 +10,13 @@ export class Aircraft {
         
         this.t = 0;
         this.hit = false;
-        this.trackLine = [];
+        this.aircraftMesh = null;
+        this.obb = new OBB();
+        
         this.tlGeometry = new THREE.BufferGeometry();
         this.tlMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 1 });
-        this.tlMesh = null;
+        this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
+        this.scene.add(this.tlMesh);
         
         this.halfSize = new THREE.Vector3(10, 10, 10);
         this.pt = new THREE.Vector3();
@@ -30,16 +33,17 @@ export class Aircraft {
             this.mesh.name = "c130Mesh";
             this.scene.add(this.mesh);
             this.mesh.position.set(0, 20, 0);
+            this.aircraftMesh = this.mesh.children[0] || this.mesh;
+            if (this.aircraftMesh && this.aircraftMesh.geometry) {
+                this.aircraftMesh.geometry.computeBoundingBox();
+            }
         });
     }
 
     update(delta) {
-        if (this.hit) return;
+        if (this.hit || !this.aircraftMesh) return;
 
-        const c130MeshObj = this.scene.children.find(obj => obj.name === "c130Mesh");
-        if (!c130MeshObj || !c130MeshObj.children[0]) return;
-        const c130Mesh = c130MeshObj.children[0];
-        c130Mesh.geometry.computeBoundingBox();
+        const c130Mesh = this.aircraftMesh;
 
         const step = (delta !== undefined && delta > 0) ? this.worldSettings.c130.gndspeed * (delta * 60) : this.worldSettings.c130.gndspeed;
         this.t += step;
@@ -50,31 +54,31 @@ export class Aircraft {
         c130Mesh.lookAt(0, 0, 0);
         c130Mesh.rotateX(Math.PI / 8);
 
-        c130Mesh.userData.obb = new OBB();
-        c130Mesh.userData.obb.applyMatrix4(c130Mesh.matrixWorld);
-        c130Mesh.userData.obb.halfSize = this.halfSize;
+        this.obb.center.set(0, 0, 0);
+        this.obb.halfSize.copy(this.halfSize);
+        this.obb.rotation.identity();
+        this.obb.applyMatrix4(c130Mesh.matrixWorld);
+        c130Mesh.userData.obb = this.obb;
 
         if (this.worldSettings.c130.c130trackline === true) {
             if (this.trackLine.length > 500 && this.worldSettings.c130.tracklineAutoLength === true) {
                 this.trackLine.shift();
             }
-            if (this.tlMesh) this.scene.remove(this.tlMesh);
             c130Mesh.getWorldPosition(this.pt);
             this.trackLine.push(this.pt.clone());
             this.tlGeometry.setFromPoints(this.trackLine);
-            this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
-            this.tlGeometry.dispose();
-            this.scene.add(this.tlMesh);
+            this.tlMesh.visible = true;
         } else {
             this.trackLine = [];
+            this.tlGeometry.setFromPoints(this.trackLine);
+            this.tlMesh.visible = false;
         }
     }
 
     hitcam(camera, controls) {
+        if (!this.aircraftMesh) return;
+        const c130Mesh = this.aircraftMesh;
         const c130pcam = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 5000);
-        const c130MeshObj = this.scene.children.find(obj => obj.name === "c130Mesh");
-        const c130Mesh = c130MeshObj && c130MeshObj.children[0];
-        if (!c130Mesh) return;
         c130pcam.position.set(c130Mesh.position.x, c130Mesh.position.y + 2, c130Mesh.position.z);
         
         camera.position.set(c130Mesh.position.x, c130Mesh.position.y + 50, c130Mesh.position.z);
@@ -85,5 +89,7 @@ export class Aircraft {
         this.hit = false;
         this.t = 0;
         this.trackLine = [];
+        this.tlGeometry.setFromPoints(this.trackLine);
+        this.tlMesh.visible = false;
     }
 }
