@@ -12,13 +12,26 @@ export class Aircraft {
         this.hit = false;
         this.aircraftMesh = null;
         this.obb = new OBB();
+        this.fuseOBB = new OBB();
+        this.wingOBB = new OBB();
+        
+        // Compound hitbox: test fuselage and wings separately for realistic conformity
+        this.obb.intersectsBox3 = (box3) => {
+            return this.fuseOBB.intersectsBox3(box3) || this.wingOBB.intersectsBox3(box3);
+        };
         
         this.tlGeometry = new THREE.BufferGeometry();
         this.tlMaterial = new THREE.LineBasicMaterial({ color: 0xff00ff, linewidth: 1 });
         this.tlMesh = new THREE.Line(this.tlGeometry, this.tlMaterial);
         this.scene.add(this.tlMesh);
         
-        this.halfSize = new THREE.Vector3(10, 10, 10);
+        this.fuseLocalCenter = new THREE.Vector3(-0.75, 1.5, 0);
+        this.fuseLocalHalfSize = new THREE.Vector3(10.1, 3.9, 1.5);
+        this.wingLocalCenter = new THREE.Vector3(-2.7, 0.1, 0);
+        this.wingLocalHalfSize = new THREE.Vector3(6.5, 0.8, 13.8);
+        this.overallLocalCenter = new THREE.Vector3(-0.75, 1.5, 0);
+        this.overallLocalHalfSize = new THREE.Vector3(10.1, 3.9, 13.8);
+        
         this.pt = new THREE.Vector3();
         this.mesh = null;
         
@@ -45,6 +58,44 @@ export class Aircraft {
             this.aircraftMesh = this.mesh.children[0] || this.mesh;
             if (this.aircraftMesh && this.aircraftMesh.geometry) {
                 this.aircraftMesh.geometry.computeBoundingBox();
+                const geomBox = this.aircraftMesh.geometry.boundingBox;
+                geomBox.getCenter(this.overallLocalCenter);
+                geomBox.getSize(this.overallLocalHalfSize).multiplyScalar(0.5);
+
+                const pos = this.aircraftMesh.geometry.attributes.position;
+                if (pos && pos.count > 0) {
+                    let minZ = Infinity, maxZ = -Infinity;
+                    for (let i = 0; i < pos.count; i++) {
+                        const z = pos.getZ(i);
+                        if (z < minZ) minZ = z;
+                        if (z > maxZ) maxZ = z;
+                    }
+                    const fuseHalfWidth = (maxZ - minZ) * 0.1;
+
+                    let fMinX = Infinity, fMaxX = -Infinity, fMinY = Infinity, fMaxY = -Infinity, fMinZ = Infinity, fMaxZ = -Infinity;
+                    let wMinX = Infinity, wMaxX = -Infinity, wMinY = Infinity, wMaxY = -Infinity, wMinZ = Infinity, wMaxZ = -Infinity;
+
+                    for (let i = 0; i < pos.count; i++) {
+                        const x = pos.getX(i);
+                        const y = pos.getY(i);
+                        const z = pos.getZ(i);
+                        if (Math.abs(z) <= fuseHalfWidth) {
+                            if (x < fMinX) fMinX = x; if (x > fMaxX) fMaxX = x;
+                            if (y < fMinY) fMinY = y; if (y > fMaxY) fMaxY = y;
+                            if (z < fMinZ) fMinZ = z; if (z > fMaxZ) fMaxZ = z;
+                        } else {
+                            if (x < wMinX) wMinX = x; if (x > wMaxX) wMaxX = x;
+                            if (y < wMinY) wMinY = y; if (y > wMaxY) wMaxY = y;
+                            if (z < wMinZ) wMinZ = z; if (z > wMaxZ) wMaxZ = z;
+                        }
+                    }
+
+                    this.fuseLocalCenter.set((fMinX + fMaxX) / 2, (fMinY + fMaxY) / 2, (fMinZ + fMaxZ) / 2);
+                    this.fuseLocalHalfSize.set((fMaxX - fMinX) / 2, (fMaxY - fMinY) / 2, (fMaxZ - fMinZ) / 2);
+
+                    this.wingLocalCenter.set((wMinX + wMaxX) / 2, (wMinY + wMaxY) / 2, (wMinZ + wMaxZ) / 2);
+                    this.wingLocalHalfSize.set((wMaxX - wMinX) / 2, (wMaxY - wMinY) / 2, (wMaxZ - wMinZ) / 2);
+                }
             }
         });
     }
@@ -93,10 +144,25 @@ export class Aircraft {
         c130Mesh.quaternion.setFromRotationMatrix(this.rotMatrix);
 
         c130Mesh.updateMatrixWorld();
-        this.obb.center.set(0, 0, 0);
-        this.obb.halfSize.copy(this.halfSize);
+
+        // Update Fuselage OBB
+        this.fuseOBB.halfSize.copy(this.fuseLocalHalfSize);
+        this.fuseOBB.rotation.identity();
+        this.fuseOBB.applyMatrix4(c130Mesh.matrixWorld);
+        this.fuseOBB.center.copy(this.fuseLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
+
+        // Update Wings OBB
+        this.wingOBB.halfSize.copy(this.wingLocalHalfSize);
+        this.wingOBB.rotation.identity();
+        this.wingOBB.applyMatrix4(c130Mesh.matrixWorld);
+        this.wingOBB.center.copy(this.wingLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
+
+        // Update overall bounding OBB
+        this.obb.halfSize.copy(this.overallLocalHalfSize);
         this.obb.rotation.identity();
         this.obb.applyMatrix4(c130Mesh.matrixWorld);
+        this.obb.center.copy(this.overallLocalCenter).applyMatrix4(c130Mesh.matrixWorld);
+
         c130Mesh.userData.obb = this.obb;
 
         if (this.worldSettings.c130.c130trackline === true) {
