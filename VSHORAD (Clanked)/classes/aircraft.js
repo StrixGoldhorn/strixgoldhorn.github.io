@@ -22,6 +22,15 @@ export class Aircraft {
         this.pt = new THREE.Vector3();
         this.mesh = null;
         
+        this.velocity = new THREE.Vector3();
+        this.fwd = new THREE.Vector3();
+        this.worldUp = new THREE.Vector3(0, 1, 0);
+        this.rLevel = new THREE.Vector3();
+        this.uLevel = new THREE.Vector3();
+        this.rVec = new THREE.Vector3();
+        this.uVec = new THREE.Vector3();
+        this.rotMatrix = new THREE.Matrix4();
+        
         this.load();
     }
 
@@ -47,13 +56,43 @@ export class Aircraft {
 
         const step = (delta !== undefined && delta > 0) ? this.worldSettings.c130.gndspeed * (delta * 60) : this.worldSettings.c130.gndspeed;
         this.t += step;
-        c130Mesh.position.x = this.worldSettings.c130.pathx * Math.cos(this.t);
-        c130Mesh.position.z = this.worldSettings.c130.pathy * Math.sin(this.t);
-        c130Mesh.position.y = this.worldSettings.c130.agl + this.worldSettings.c130.zamp * Math.sin(this.worldSettings.c130.zperiod * this.t) ** 2;
+        const pathx = this.worldSettings.c130.pathx;
+        const pathy = this.worldSettings.c130.pathy;
+        const zamp = this.worldSettings.c130.zamp;
+        const zperiod = this.worldSettings.c130.zperiod;
 
-        c130Mesh.lookAt(0, 0, 0);
-        c130Mesh.rotateX(Math.PI / 8);
+        c130Mesh.position.x = pathx * Math.cos(this.t);
+        c130Mesh.position.z = pathy * Math.sin(this.t);
+        c130Mesh.position.y = this.worldSettings.c130.agl + zamp * Math.sin(zperiod * this.t) ** 2;
 
+        // Tangent flight velocity vector d/dt [position]
+        const vx = -pathx * Math.sin(this.t);
+        const vz = pathy * Math.cos(this.t);
+        const vy = 2 * zamp * zperiod * Math.sin(zperiod * this.t) * Math.cos(zperiod * this.t);
+
+        this.velocity.set(vx, vy, vz);
+        this.fwd.copy(this.velocity).normalize();
+
+        // Level right vector and level up vector
+        this.rLevel.crossVectors(this.fwd, this.worldUp).normalize();
+        this.uLevel.crossVectors(this.rLevel, this.fwd).normalize();
+
+        // Bank angle into turn: base angle ~22.5 deg (PI/8) scaled dynamically with ellipse curvature
+        const denom = Math.sqrt(pathx * pathx * Math.sin(this.t) ** 2 + pathy * pathy * Math.cos(this.t) ** 2);
+        const curvatureScale = denom > 0.001 ? Math.sqrt((pathx * pathy) / (denom * denom)) : 1;
+        const phi = Math.min(Math.max((Math.PI / 8) * curvatureScale, 0.15), 0.55);
+
+        // Banked right and up vectors (rolling around forward axis)
+        const cosPhi = Math.cos(phi);
+        const sinPhi = Math.sin(phi);
+        this.rVec.copy(this.rLevel).multiplyScalar(cosPhi).addScaledVector(this.uLevel, -sinPhi);
+        this.uVec.copy(this.rLevel).multiplyScalar(sinPhi).addScaledVector(this.uLevel, cosPhi);
+
+        // Build rotation matrix from basis: X=Forward, Y=Up, Z=Right
+        this.rotMatrix.makeBasis(this.fwd, this.uVec, this.rVec);
+        c130Mesh.quaternion.setFromRotationMatrix(this.rotMatrix);
+
+        c130Mesh.updateMatrixWorld();
         this.obb.center.set(0, 0, 0);
         this.obb.halfSize.copy(this.halfSize);
         this.obb.rotation.identity();
