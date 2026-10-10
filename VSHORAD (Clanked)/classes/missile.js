@@ -40,6 +40,10 @@ export class Missile {
         this.focalVec = new THREE.Vector3();
         this.longFocal = new THREE.Vector3();
         this.missilePt = new THREE.Vector3();
+        
+        this.missileMixer = null;
+        this.animActions = [];
+        this.load();
     }
 
     load() {
@@ -50,6 +54,7 @@ export class Missile {
             this.mesh.scale.set(this.mesh.scale.x * 0.1, this.mesh.scale.y * 0.1, this.mesh.scale.z * 0.1);
             this.mesh.position.set(0, 2, 0);
             this.mesh.name = "MissileMesh";
+            this.mesh.visible = false;
             this.scene.add(this.mesh);
 
             this.fuseMesh = this.mesh.getObjectByName("Fuse") || (this.mesh.children && this.mesh.children.find(obj => obj.name === "Fuse"));
@@ -58,20 +63,14 @@ export class Missile {
             }
 
             if (window.innerWidth > 1000) {
-                const missileMixer = new THREE.AnimationMixer(gltf.scene);
+                this.missileMixer = new THREE.AnimationMixer(gltf.scene);
+                this.animActions = [];
                 gltf.animations.forEach((iclip) => {
-                    const finDeploy = missileMixer.clipAction(iclip);
+                    const finDeploy = this.missileMixer.clipAction(iclip);
                     finDeploy.clampWhenFinished = true;
                     finDeploy.loop = THREE.LoopOnce;
-                    finDeploy.play();
+                    this.animActions.push(finDeploy);
                 });
-
-                const missileAnim = () => {
-                    missileMixer.timeScale = 10;
-                    missileMixer.update(this.clock.getDelta());
-                    requestAnimationFrame(missileAnim);
-                };
-                missileAnim();
             }
         });
     }
@@ -103,12 +102,24 @@ export class Missile {
         }
 
         if (!this.shotend) {
-            this.load();
+            if (this.mesh) {
+                this.mesh.position.set(0, 2, 0);
+                this.mesh.rotation.set(0, 0, 0);
+                this.mesh.visible = true;
+            }
             this.scene.add(this.light);
             this.light.intensity = 10;
             this.shotout = true;
             this.inFlight = true;
             console.log("- ^ - Missile fired");
+
+            if (this.missileMixer && this.animActions.length > 0) {
+                this.missileMixer.timeScale = 10;
+                this.animActions.forEach(action => {
+                    action.reset();
+                    action.play();
+                });
+            }
 
             this.uiElements.loadIndicate.style.background = "yellow";
             this.uiElements.loadIndicate.innerText = "In-Flight";
@@ -123,6 +134,10 @@ export class Missile {
     update(delta) {
         if (!this.inFlight || this.shotend) return;
         if (!this.mesh) return;
+
+        if (this.missileMixer) {
+            this.missileMixer.update(delta);
+        }
 
         const MissileMesh = this.mesh;
         if (this.fuseMesh && this.fuseMesh.geometry && this.fuseMesh.geometry.boundingBox) {
@@ -224,9 +239,12 @@ export class Missile {
         if (this.tlMesh) this.scene.remove(this.tlMesh);
 
         if (this.mesh) {
-            this.scene.remove(this.mesh);
-            this.mesh = null;
-            this.fuseMesh = null;
+            this.mesh.visible = false;
+            this.mesh.position.set(0, 2, 0);
+            this.mesh.rotation.set(0, 0, 0);
+        }
+        if (this.missileMixer && this.animActions) {
+            this.animActions.forEach(action => action.stop());
         }
 
         this.scene.remove(this.light);
